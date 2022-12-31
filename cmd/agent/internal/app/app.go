@@ -15,7 +15,6 @@ func Run(client transport.MyClient) {
 
 	rand.Seed(time.Now().UnixNano())
 
-m:
 	for {
 		runtime.ReadMemStats(&runtimeStats)
 
@@ -25,13 +24,10 @@ m:
 
 		if r := counter % config.ReportInterval; r == 0 {
 			services.Report(client, runtimeStats, counter, rnd)
+			counter = 0
 		}
 
 		time.Sleep(time.Second * config.PollInterval)
-
-		if counter == 30 {
-			break m
-		}
 	}
 
 }
