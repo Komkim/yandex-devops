@@ -3,13 +3,13 @@ package app
 import (
 	"Komkim/go-musthave-devops-tpl/cmd/agent/config"
 	"Komkim/go-musthave-devops-tpl/cmd/agent/internal/services"
-	transport "Komkim/go-musthave-devops-tpl/cmd/agent/pkg"
+	"Komkim/go-musthave-devops-tpl/cmd/agent/storage"
 	"math/rand"
 	"runtime"
 	"time"
 )
 
-func Run(client transport.MyClient) {
+func Run(storage storage.Sending) {
 	var runtimeStats runtime.MemStats
 	var counter int
 
@@ -23,7 +23,7 @@ func Run(client transport.MyClient) {
 		rnd := rand.Float64()
 
 		if r := counter % config.ReportInterval; r == 0 {
-			services.Report(client, runtimeStats, counter, rnd)
+			services.Report(storage, runtimeStats, counter, rnd)
 			counter = 0
 		}
 
