@@ -18,8 +18,8 @@ func (h *Router) SaveOrUpdate(c *gin.Context) {
 	switch t {
 	case "counter":
 		mm, err := h.services.MemStorage.GetByKey(n)
-		cc, err := strconv.Atoi(mm.Value)
-		cv, err := strconv.Atoi(v)
+		cc, _ := strconv.Atoi(mm.Value)
+		cv, _ := strconv.Atoi(v)
 
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, "Bad value")
