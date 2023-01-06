@@ -1,9 +1,9 @@
 package router
 
 import (
-	"Komkim/go-musthave-devops-tpl/cmd/server/storage"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"server/storage"
 	"strconv"
 )
 

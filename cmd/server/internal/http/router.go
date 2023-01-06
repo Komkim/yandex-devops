@@ -1,9 +1,9 @@
 package router
 
 import (
-	"Komkim/go-musthave-devops-tpl/cmd/server/internal/service"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"server/internal/service"
 )
 
 type Router struct {

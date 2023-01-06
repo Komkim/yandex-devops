@@ -1,6 +1,6 @@
 package service
 
-import "Komkim/go-musthave-devops-tpl/cmd/server/storage"
+import "server/storage"
 
 type MemStorage interface {
 	SaveOrUpdate(metric storage.Metric) error

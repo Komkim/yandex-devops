@@ -1,9 +1,9 @@
 package pkg
 
 import (
-	"Komkim/go-musthave-devops-tpl/cmd/server/config"
 	"context"
 	"net/http"
+	"server/config"
 )
 
 type Server struct {

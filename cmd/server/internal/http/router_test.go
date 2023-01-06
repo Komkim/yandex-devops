@@ -1,11 +1,11 @@
 package router_test
 
 import (
-	router "Komkim/go-musthave-devops-tpl/cmd/server/internal/http"
-	"Komkim/go-musthave-devops-tpl/cmd/server/internal/service"
 	"github.com/stretchr/testify/require"
 	"net/http"
 	"net/http/httptest"
+	router "server/internal/http"
+	"server/internal/service"
 	"testing"
 )
 

@@ -1,16 +1,16 @@
 package app
 
 import (
-	"Komkim/go-musthave-devops-tpl/cmd/server/internal/entity"
-	router "Komkim/go-musthave-devops-tpl/cmd/server/internal/http"
-	"Komkim/go-musthave-devops-tpl/cmd/server/internal/service"
-	server "Komkim/go-musthave-devops-tpl/cmd/server/pkg"
-	"Komkim/go-musthave-devops-tpl/cmd/server/storage"
 	"errors"
 	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
+	"server/internal/entity"
+	router "server/internal/http"
+	"server/internal/service"
+	server "server/pkg"
+	"server/storage"
 	"syscall"
 )
 

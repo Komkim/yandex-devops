@@ -1,7 +1,7 @@
 package entity
 
 import (
-	"Komkim/go-musthave-devops-tpl/cmd/server/storage"
+	"server/storage"
 	"sync"
 )
 
