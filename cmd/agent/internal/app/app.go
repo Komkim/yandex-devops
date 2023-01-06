@@ -1,9 +1,9 @@
 package app
 
 import (
-	"Komkim/go-musthave-devops-tpl/cmd/agent/config"
-	"Komkim/go-musthave-devops-tpl/cmd/agent/internal/services"
-	"Komkim/go-musthave-devops-tpl/cmd/agent/storage"
+	"cmd/config"
+	"cmd/internal/services"
+	"cmd/storage"
 	"math/rand"
 	"runtime"
 	"time"

@@ -1,7 +1,7 @@
 package services
 
 import (
-	"Komkim/go-musthave-devops-tpl/cmd/agent/storage"
+	"cmd/storage"
 	"fmt"
 	"reflect"
 	"runtime"

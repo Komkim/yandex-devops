@@ -1,8 +1,8 @@
 package transport
 
 import (
-	"Komkim/go-musthave-devops-tpl/cmd/agent/config"
-	"Komkim/go-musthave-devops-tpl/cmd/agent/storage"
+	"cmd/config"
+	"cmd/storage"
 	"fmt"
 	"net/http"
 )
