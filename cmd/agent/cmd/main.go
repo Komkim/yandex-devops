@@ -1,8 +1,8 @@
 package main
 
 import (
-	"cmd/internal/app"
-	transport "cmd/pkg"
+	"agent/internal/app"
+	transport "agent/pkg"
 )
 
 func main() {

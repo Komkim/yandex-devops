@@ -1,9 +1,9 @@
 package app
 
 import (
-	"cmd/config"
-	"cmd/internal/services"
-	"cmd/storage"
+	"agent/config"
+	"agent/internal/services"
+	"agent/storage"
 	"math/rand"
 	"runtime"
 	"time"

@@ -1,8 +1,8 @@
 package transport
 
 import (
-	"cmd/config"
-	"cmd/storage"
+	"agent/config"
+	"agent/storage"
 	"fmt"
 	"net/http"
 )

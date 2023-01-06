@@ -1,3 +1,3 @@
-module cmd
+module agent
 
 go 1.19

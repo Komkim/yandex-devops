@@ -1,7 +1,7 @@
 package services
 
 import (
-	"cmd/storage"
+	"agent/storage"
 	"fmt"
 	"reflect"
 	"runtime"
