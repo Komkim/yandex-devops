@@ -1,5 +1,7 @@
 package storage
 
 type OneMetric struct {
-	TypeMetric, Name, Value string
+	TypeMetric string
+	Name       string
+	Value      string
 }
