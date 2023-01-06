@@ -13,18 +13,22 @@ func (h *Router) SaveOrUpdate(c *gin.Context) {
 	n := c.Param("n")
 	v := c.Param("v")
 
+	if v == "" {
+		c.JSON(http.StatusInternalServerError, "Bad value")
+	}
+
 	var m storage.Metric
 
 	switch t {
 	case "counter":
 		mm, err := h.services.MemStorage.GetByKey(n)
-		cc, _ := strconv.Atoi(mm.Value)
-		cv, _ := strconv.Atoi(v)
-
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, "Bad value")
+			c.JSON(http.StatusInternalServerError, err)
 			return
 		}
+
+		cc, _ := strconv.Atoi(mm.Value)
+		cv, _ := strconv.Atoi(v)
 
 		m = storage.Metric{
 			Name:  n,

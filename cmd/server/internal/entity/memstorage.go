@@ -1,24 +1,33 @@
 package entity
 
 import (
+	"errors"
 	"server/storage"
 	"sync"
 )
 
 type MemStorage struct {
 	*sync.RWMutex
-	storage map[string]storage.Metric
+	storage   map[string]storage.Metric
+	keySlice  []string
+	typeSlice []string
 }
 
-func NewMemStorage() MemStorage {
+func NewMemStorage(keySlice []string, typeSlice []string) MemStorage {
 	return MemStorage{
-		storage: make(map[string]storage.Metric),
+		storage:   make(map[string]storage.Metric),
+		keySlice:  keySlice,
+		typeSlice: typeSlice,
 	}
 }
 
 func (s MemStorage) GetOne(key string) (storage.Metric, error) {
 	s.RLock()
 	defer s.RUnlock()
+
+	if !s.checkKey(key) {
+		return storage.Metric{}, errors.New("Bad key")
+	}
 
 	if m, ok := s.storage[key]; ok {
 		return m, nil
@@ -43,6 +52,14 @@ func (s MemStorage) SetOne(metric storage.Metric) error {
 	s.RLock()
 	defer s.RUnlock()
 
+	if !s.checkKey(metric.Name) {
+		return errors.New("Bad key")
+	}
+
+	if !s.checkType(metric.Type) {
+		return errors.New("Bad type")
+	}
+
 	s.storage[metric.Name] = metric
 
 	return nil
@@ -50,8 +67,28 @@ func (s MemStorage) SetOne(metric storage.Metric) error {
 
 func (s MemStorage) SetAll(metric []storage.Metric) error {
 	for _, m := range metric {
-		s.SetOne(m)
+		if err := s.SetOne(m); err != nil {
+			return err
+		}
 	}
 
 	return nil
+}
+
+func (s MemStorage) checkKey(key string) bool {
+	for _, v := range s.keySlice {
+		if v == key {
+			return true
+		}
+	}
+	return false
+}
+
+func (s MemStorage) checkType(t string) bool {
+	for _, v := range s.typeSlice {
+		if v == t {
+			return true
+		}
+	}
+	return false
 }

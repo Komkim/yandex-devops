@@ -16,7 +16,7 @@ import (
 
 func Run() {
 
-	rep := storage.NewRepositories(entity.NewMemStorage())
+	rep := storage.NewRepositories(entity.NewMemStorage(keyInit(), typeInit()))
 	srv := service.NewServices(rep)
 
 	r := router.NewRouter(srv)
@@ -33,4 +33,46 @@ func Run() {
 	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
 
 	<-quit
+}
+
+func keyInit() []string {
+	return []string{
+		"Alloc",
+		"BuckHashSys",
+		"Frees",
+		"GCCPUFraction",
+		"GCSys",
+		"HeapAlloc",
+		"HeapIdle",
+		"HeapInuse",
+		"HeapObjects",
+		"HeapReleased",
+		"HeapSys",
+		"LastGC",
+		"Lookups",
+		"MCacheInuse",
+		"MCacheSys",
+		"MSpanInuse",
+		"MSpanSys",
+		"Mallocs",
+		"NextGC",
+		"NumForcedGC",
+		"NumGC",
+		"OtherSys",
+		"PauseTotalNs",
+		"StackInuse",
+		"StackSys",
+		"Sys",
+		"TotalAlloc",
+
+		"PollCount",
+		"RandomValue",
+	}
+}
+
+func typeInit() []string {
+	return []string{
+		"gauge",
+		"counter",
+	}
 }
