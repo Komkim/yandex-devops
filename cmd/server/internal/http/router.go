@@ -2,6 +2,7 @@ package router
 
 import (
 	"Komkim/go-musthave-devops-tpl/cmd/server/internal/service"
+	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
@@ -15,10 +16,14 @@ func NewRouter(s *service.Services) *Router {
 
 func (r *Router) Init() http.Handler {
 
-	mux := http.NewServeMux()
+	mux := gin.Default()
 
-	mux.HandleFunc("/update/", r.SaveOrUpdate)
-	mux.HandleFunc("/ping", Ping)
+	//mux.Use(gin.Recovery())
+
+	mux.POST("/update/:t/:n/:v", r.SaveOrUpdate)
+	mux.GET("/value/:t/:n", r.GetByKey)
+	mux.GET("/", r.GetAll)
+	mux.GET("/ping", Ping)
 
 	return mux
 }

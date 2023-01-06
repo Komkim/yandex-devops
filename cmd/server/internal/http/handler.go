@@ -2,56 +2,79 @@ package router
 
 import (
 	"Komkim/go-musthave-devops-tpl/cmd/server/storage"
-	"fmt"
+	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
-	"strings"
 )
 
-func (h *Router) SaveOrUpdate(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Only POST requests are allowed!", http.StatusMethodNotAllowed)
-		return
-	}
+func (h *Router) SaveOrUpdate(c *gin.Context) {
 
-	fmt.Println(r.URL.Path)
-	urlSlice := strings.SplitN(r.URL.Path, "/", 5)
+	t := c.Param("t")
+	n := c.Param("n")
+	v := c.Param("v")
+
 	var m storage.Metric
 
-	switch urlSlice[3] {
+	switch t {
 	case "counter":
-		mm, err := h.services.MemStorage.GetByKey(urlSlice[2])
+		mm, err := h.services.MemStorage.GetByKey(n)
 		cc, err := strconv.Atoi(mm.Value)
-		c, err := strconv.Atoi(urlSlice[4])
+		cv, err := strconv.Atoi(v)
 
 		if err != nil {
-			http.Error(w, "Bad value", http.StatusInternalServerError)
+			c.JSON(http.StatusInternalServerError, "Bad value")
 			return
 		}
 
 		m = storage.Metric{
-			Name:  urlSlice[2],
-			Type:  urlSlice[3],
-			Value: strconv.Itoa(c + cc),
+			Name:  n,
+			Type:  t,
+			Value: strconv.Itoa(cv + cc),
 		}
 	case "gauge":
 		m = storage.Metric{
-			Name:  urlSlice[2],
-			Type:  urlSlice[3],
-			Value: urlSlice[4],
+			Name:  n,
+			Type:  t,
+			Value: v,
 		}
 	default:
-		http.Error(w, "Bad value type!", http.StatusInternalServerError)
+		c.JSON(http.StatusInternalServerError, "Bad value type!")
 		return
 	}
 
 	h.services.MemStorage.SaveOrUpdate(m)
 
-	fmt.Println(h.services.MemStorage.GetAll())
-
-	w.WriteHeader(http.StatusOK)
+	c.JSON(http.StatusOK, "Ok")
 }
 
-func Ping(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Pong"))
+func (h *Router) GetByKey(c *gin.Context) {
+	n := c.Param("n")
+	t := c.Param("t")
+
+	mm, err := h.services.MemStorage.GetByKey(n)
+	if err != nil || mm == (storage.Metric{}) {
+		c.JSON(http.StatusNotFound, "Bad key")
+		return
+	}
+	if mm.Type != t {
+		c.JSON(http.StatusNotFound, "Bad type")
+		return
+	}
+
+	c.JSON(http.StatusOK, mm)
+}
+
+func (h *Router) GetAll(c *gin.Context) {
+
+	mm, err := h.services.MemStorage.GetAll()
+	if err != nil {
+		c.JSON(http.StatusNotFound, "Bad key")
+		return
+	}
+
+	c.JSON(http.StatusOK, mm)
+}
+
+func Ping(c *gin.Context) {
+	c.JSON(http.StatusOK, "Pong")
 }
