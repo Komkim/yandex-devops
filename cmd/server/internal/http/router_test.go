@@ -25,6 +25,7 @@ func TestRouter_Init(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
+	defer res.Body.Close()
 
 	require.Equal(t, http.StatusOK, res.StatusCode)
 }
