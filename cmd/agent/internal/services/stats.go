@@ -6,7 +6,6 @@ import (
 	"reflect"
 	"runtime"
 	"strings"
-
 )
 
 type gauge float64
@@ -60,9 +59,9 @@ func (m MyStats) convertToOneMetricSlice() []storage.OneMetric {
 
 	for i := 0; i < val.NumField(); i++ {
 		metrics = append(metrics, storage.OneMetric{
-			strings.Replace(val.Type().Field(i).Type.String(), "services.", "", -1),
-			string(val.Type().Field(i).Name),
-			fmt.Sprint(val.Field(i)),
+			TypeMetric: strings.Replace(val.Type().Field(i).Type.String(), "services.", "", -1),
+			Name:       string(val.Type().Field(i).Name),
+			Value:      fmt.Sprint(val.Field(i)),
 		})
 	}
 	return metrics

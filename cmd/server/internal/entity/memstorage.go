@@ -6,7 +6,7 @@ import (
 )
 
 type MemStorage struct {
-	sync.RWMutex
+	*sync.RWMutex
 	storage map[string]storage.Metric
 }
 
