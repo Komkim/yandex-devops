@@ -79,7 +79,7 @@ func (h *Router) GetByKey(c *gin.Context) {
 
 	switch t {
 	case "gauge":
-		r, _ := strconv.ParseFloat(mm.Value, 3)
+		r, _ := strconv.ParseFloat(mm.Value, 64)
 		c.JSON(http.StatusOK, r)
 		return
 	case "counter":
