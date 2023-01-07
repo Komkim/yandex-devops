@@ -75,7 +75,7 @@ func (h *Router) GetByKey(c *gin.Context) {
 	}
 
 	if mm == (storage.Metric{}) {
-		c.JSON(http.StatusOK, mm)
+		c.JSON(http.StatusNotFound, mm)
 		return
 	}
 
