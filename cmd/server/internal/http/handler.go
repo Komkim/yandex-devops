@@ -73,6 +73,12 @@ func (h *Router) GetByKey(c *gin.Context) {
 		c.JSON(http.StatusNotFound, "Bad key")
 		return
 	}
+
+	if mm != (storage.Metric{}) {
+		c.JSON(http.StatusOK, mm)
+		return
+	}
+
 	if mm.Type != t && mm != (storage.Metric{}) {
 		c.JSON(http.StatusNotFound, "Bad type")
 		return
