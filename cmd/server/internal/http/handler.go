@@ -13,8 +13,9 @@ func (h *Router) SaveOrUpdate(c *gin.Context) {
 	n := c.Param("n")
 	v := c.Param("v")
 
-	if v == "" {
+	if _, err := strconv.Atoi(v); err != nil {
 		c.JSON(http.StatusBadRequest, "Bad value")
+		return
 	}
 
 	var m storage.Metric
@@ -32,12 +33,14 @@ func (h *Router) SaveOrUpdate(c *gin.Context) {
 			cc, err = strconv.Atoi(m.Value)
 			if err != nil {
 				c.JSON(http.StatusBadRequest, "Bad value")
+				return
 			}
 		}
 
 		cv, err := strconv.Atoi(v)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, "Bad value")
+			return
 		}
 
 		m = storage.Metric{
