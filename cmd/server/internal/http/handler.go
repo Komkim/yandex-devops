@@ -35,7 +35,10 @@ func (h *Router) SaveOrUpdate(c *gin.Context) {
 			}
 		}
 
-		cv, _ := strconv.Atoi(v)
+		cv, err := strconv.Atoi(v)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, "Bad value")
+		}
 
 		m = storage.Metric{
 			Name:  n,
@@ -49,7 +52,7 @@ func (h *Router) SaveOrUpdate(c *gin.Context) {
 			Value: v,
 		}
 	default:
-		c.JSON(http.StatusInternalServerError, "Bad value type!")
+		c.JSON(http.StatusNotImplemented, "Bad value type!")
 		return
 	}
 
