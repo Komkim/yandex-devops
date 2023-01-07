@@ -19,6 +19,7 @@ func (h *Router) SaveOrUpdate(c *gin.Context) {
 	}
 
 	var m storage.Metric
+	var val string
 
 	switch t {
 	case "counter":
@@ -43,21 +44,19 @@ func (h *Router) SaveOrUpdate(c *gin.Context) {
 			return
 		}
 
-		m = storage.Metric{
-			Name:  n,
-			Type:  t,
-			Value: strconv.Itoa(cv + cc),
-		}
+		val = strconv.Itoa(cv + cc)
+
 	case "gauge":
-		m = storage.Metric{
-			Name:  n,
-			Type:  t,
-			Value: v,
-		}
+		val = v
 	default:
+
 		c.JSON(http.StatusNotImplemented, "Bad value type!")
 		return
 	}
+
+	m.Type = t
+	m.Name = n
+	m.Value = val
 
 	h.services.MemStorage.SaveOrUpdate(m)
 
@@ -73,12 +72,12 @@ func (h *Router) GetByKey(c *gin.Context) {
 		c.JSON(http.StatusNotFound, "Bad key")
 		return
 	}
-	if mm.Type != t && !(mm == (storage.Metric{})) {
+	if mm.Type != t && mm != (storage.Metric{}) {
 		c.JSON(http.StatusNotFound, "Bad type")
 		return
 	}
 
-	c.JSON(http.StatusOK, mm)
+	c.JSON(http.StatusOK, mm.Value)
 }
 
 func (h *Router) GetAll(c *gin.Context) {
