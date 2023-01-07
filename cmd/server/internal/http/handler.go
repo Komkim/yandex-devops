@@ -14,20 +14,27 @@ func (h *Router) SaveOrUpdate(c *gin.Context) {
 	v := c.Param("v")
 
 	if v == "" {
-		c.JSON(http.StatusInternalServerError, "Bad value")
+		c.JSON(http.StatusBadRequest, "Bad value")
 	}
 
 	var m storage.Metric
 
 	switch t {
 	case "counter":
-		mm, err := h.services.MemStorage.GetByKey(n)
+		var cc int
+		m, err := h.services.MemStorage.GetByKey(n)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, err)
+			c.JSON(http.StatusBadRequest, err)
 			return
 		}
 
-		cc, _ := strconv.Atoi(mm.Value)
+		if m != (storage.Metric{}) {
+			cc, err = strconv.Atoi(m.Value)
+			if err != nil {
+				c.JSON(http.StatusBadRequest, "Bad value")
+			}
+		}
+
 		cv, _ := strconv.Atoi(v)
 
 		m = storage.Metric{
