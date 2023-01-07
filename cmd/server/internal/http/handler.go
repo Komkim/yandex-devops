@@ -1,6 +1,7 @@
 package router
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"server/storage"
@@ -13,7 +14,7 @@ func (h *Router) SaveOrUpdate(c *gin.Context) {
 	n := c.Param("n")
 	v := c.Param("v")
 
-	if _, err := strconv.Atoi(v); err != nil {
+	if _, err := strconv.ParseFloat(v, 64); err != nil {
 		c.JSON(http.StatusBadRequest, "Bad value")
 		return
 	}
@@ -23,7 +24,7 @@ func (h *Router) SaveOrUpdate(c *gin.Context) {
 
 	switch t {
 	case "counter":
-		var cc int
+		var cc float64
 		m, err := h.services.MemStorage.GetByKey(n)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, err)
@@ -31,20 +32,20 @@ func (h *Router) SaveOrUpdate(c *gin.Context) {
 		}
 
 		if m != (storage.Metric{}) {
-			cc, err = strconv.Atoi(m.Value)
+			cc, err = strconv.ParseFloat(m.Value, 64)
 			if err != nil {
 				c.JSON(http.StatusBadRequest, "Bad value")
 				return
 			}
 		}
 
-		cv, err := strconv.Atoi(v)
+		cv, err := strconv.ParseFloat(v, 64)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, "Bad value")
 			return
 		}
 
-		val = strconv.Itoa(cv + cc)
+		val = fmt.Sprintf("%v", cv+cc)
 
 	case "gauge":
 		val = v
