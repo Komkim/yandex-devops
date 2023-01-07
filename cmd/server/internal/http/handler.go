@@ -74,7 +74,7 @@ func (h *Router) GetByKey(c *gin.Context) {
 		return
 	}
 
-	if mm != (storage.Metric{}) {
+	if mm == (storage.Metric{}) {
 		c.JSON(http.StatusOK, mm)
 		return
 	}
