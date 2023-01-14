@@ -3,6 +3,7 @@ package transport
 import (
 	"fmt"
 	"net/http"
+	"net/url"
 	"yandex-devops/config"
 	"yandex-devops/internal/agent/storage"
 )
@@ -20,9 +21,20 @@ func New(config *config.Config) MyClient {
 }
 
 func (c MyClient) SendOne(metric storage.OneMetric) {
+	u := &url.URL{
+		Scheme: c.config.Scheme,
+		Host:   c.config.Host + ":" + c.config.Port,
+	}
+	u = u.JoinPath("update")
+	u = u.JoinPath(metric.TypeMetric)
+	u = u.JoinPath(metric.Name)
+	u = u.JoinPath(metric.Value)
+
+	fmt.Println(u.String())
+
 	req, err := http.NewRequest(
 		http.MethodPost,
-		c.config.Host+":"+c.config.Port+"/update/"+metric.TypeMetric+"/"+metric.Name+"/"+metric.Value,
+		u.String(),
 		nil,
 	)
 	if err != nil {

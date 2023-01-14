@@ -4,13 +4,15 @@ const (
 	pollIntervalDefault   = 2
 	reportIntervalDefault = 10
 
-	hostDefault = "127.0.0.1"
-	portDefault = "8080"
+	schemeDefault = "http"
+	hostDefault   = "127.0.0.1"
+	portDefault   = "8080"
 )
 
-type Http struct {
-	Port string
-	Host string
+type HTTP struct {
+	Scheme string
+	Port   string
+	Host   string
 }
 
 type Agent struct {
@@ -19,15 +21,16 @@ type Agent struct {
 }
 
 type Config struct {
-	Http
+	HTTP
 	Agent
 }
 
 func Init() *Config {
 	return &Config{
-		Http: Http{
-			Host: hostDefault,
-			Port: portDefault,
+		HTTP: HTTP{
+			Scheme: schemeDefault,
+			Host:   hostDefault,
+			Port:   portDefault,
 		},
 		Agent: Agent{
 			Poll:   pollIntervalDefault,
