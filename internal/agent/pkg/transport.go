@@ -1,26 +1,28 @@
 package transport
 
 import (
-	"agent/config"
-	"agent/storage"
 	"fmt"
 	"net/http"
+	"yandex-devops/config"
+	"yandex-devops/internal/agent/storage"
 )
 
 type MyClient struct {
 	client *http.Client
+	config *config.Config
 }
 
-func New() MyClient {
-	c := &http.Client{}
-	client := MyClient{c}
-	return client
+func New(config *config.Config) MyClient {
+	return MyClient{
+		client: &http.Client{},
+		config: config,
+	}
 }
 
 func (c MyClient) SendOne(metric storage.OneMetric) {
 	req, err := http.NewRequest(
 		http.MethodPost,
-		config.DeliveryAddress+":"+config.DeliveryPort+"/update/"+metric.TypeMetric+"/"+metric.Name+"/"+metric.Value,
+		c.config.Host+":"+c.config.Port+"/update/"+metric.TypeMetric+"/"+metric.Name+"/"+metric.Value,
 		nil,
 	)
 	if err != nil {

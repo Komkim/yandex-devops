@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"server/storage"
 	"strconv"
+	"yandex-devops/internal/server/storage"
 )
 
 func (h *Router) SaveOrUpdate(c *gin.Context) {
@@ -86,13 +86,21 @@ func (h *Router) GetByKey(c *gin.Context) {
 
 	switch t {
 	case "gauge":
-		r, _ := strconv.ParseFloat(mm.Value, 64)
-		c.JSON(http.StatusOK, r)
-		return
+		if r, err := strconv.ParseFloat(mm.Value, 64); err != nil {
+			c.JSON(http.StatusBadRequest, err)
+			return
+		} else {
+			c.JSON(http.StatusOK, r)
+			return
+		}
 	case "counter":
-		r, _ := strconv.Atoi(mm.Value)
-		c.JSON(http.StatusOK, r)
-		return
+		if r, err := strconv.Atoi(mm.Value); err != nil {
+			c.JSON(http.StatusBadRequest, err)
+			return
+		} else {
+			c.JSON(http.StatusOK, r)
+			return
+		}
 	}
 
 	c.JSON(http.StatusOK, mm.Value)

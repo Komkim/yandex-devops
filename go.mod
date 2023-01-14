@@ -1,4 +1,4 @@
-module Komkim/go-musthave-devops-tpl
+module yandex-devops
 
 go 1.19
 

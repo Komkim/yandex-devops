@@ -1,16 +1,16 @@
-package pkg
+package server
 
 import (
 	"context"
 	"net/http"
-	"server/config"
+	"yandex-devops/config"
 )
 
 type Server struct {
 	httpServer *http.Server
 }
 
-func NewServer(handler http.Handler) *Server {
+func NewServer(config *config.Config, handler http.Handler) *Server {
 	return &Server{
 		httpServer: &http.Server{
 			Addr:    config.Host + ":" + config.Port,

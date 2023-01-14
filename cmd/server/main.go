@@ -1,10 +1,10 @@
 package main
 
 import (
-	"server/internal/app"
+	"yandex-devops/config"
+	"yandex-devops/internal/server/app"
 )
 
 func main() {
-
-	app.Run()
+	app.Run(config.Init())
 }

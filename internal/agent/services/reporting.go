@@ -1,8 +1,8 @@
 package services
 
 import (
-	"agent/storage"
 	"runtime"
+	"yandex-devops/internal/agent/storage"
 )
 
 type Reporting interface {

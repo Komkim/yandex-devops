@@ -6,28 +6,28 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"server/internal/entity"
-	router "server/internal/http"
-	"server/internal/service"
-	server "server/pkg"
-	"server/storage"
 	"syscall"
+	"yandex-devops/config"
+	"yandex-devops/internal/server/entity"
+	router "yandex-devops/internal/server/http"
+	"yandex-devops/internal/server/server"
+	"yandex-devops/internal/server/service"
+	"yandex-devops/internal/server/storage"
 )
 
-func Run() {
+func Run(config *config.Config) {
 
 	rep := storage.NewRepositories(entity.NewMemStorage(keyInit(), typeInit()))
 	srv := service.NewServices(rep)
 
 	r := router.NewRouter(srv)
-	s := server.NewServer(r.Init())
+	s := server.NewServer(config, r.Init())
 
 	go func() {
 		if err := s.Start(); !errors.Is(err, http.ErrServerClosed) {
 			fmt.Printf("error occurred while running http server: %s\n", err.Error())
 		}
 	}()
-	s.Start()
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)

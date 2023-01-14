@@ -4,9 +4,9 @@ import (
 	"github.com/stretchr/testify/require"
 	"net/http"
 	"net/http/httptest"
-	router "server/internal/http"
-	"server/internal/service"
 	"testing"
+	router "yandex-devops/internal/server/http"
+	"yandex-devops/internal/server/service"
 )
 
 func TestNewRouter(t *testing.T) {

@@ -1,6 +1,6 @@
 package service
 
-import "server/storage"
+import "yandex-devops/internal/server/storage"
 
 type MemStorageService struct {
 	repo storage.Storage

@@ -1,6 +1,6 @@
 package service
 
-import "server/storage"
+import "yandex-devops/internal/server/storage"
 
 type MemStorage interface {
 	SaveOrUpdate(metric storage.Metric) error

@@ -1,11 +1,11 @@
 package services
 
 import (
-	"agent/storage"
 	"fmt"
 	"reflect"
 	"runtime"
 	"strings"
+	"yandex-devops/internal/agent/storage"
 )
 
 type gauge float64

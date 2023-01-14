@@ -1,8 +1,8 @@
 package entity
 
 import (
-	"server/storage"
 	"sync"
+	"yandex-devops/internal/server/storage"
 )
 
 type MemStorage struct {

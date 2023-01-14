@@ -1,8 +1,8 @@
 package services
 
 import (
-	"agent/storage"
 	"runtime"
+	"yandex-devops/internal/agent/storage"
 )
 
 func Report(storage storage.Sending, stats runtime.MemStats, count int, rand float64) {

@@ -1,12 +1,10 @@
 package main
 
 import (
-	"agent/internal/app"
-	transport "agent/pkg"
+	"yandex-devops/config"
+	"yandex-devops/internal/agent/app"
 )
 
 func main() {
-
-	client := transport.New()
-	app.Run(client)
+	app.Run(config.Init())
 }

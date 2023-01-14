@@ -3,7 +3,7 @@ package router
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"server/internal/service"
+	"yandex-devops/internal/server/service"
 )
 
 type Router struct {
