@@ -1,8 +1,8 @@
 package services
 
 import (
-	"Komkim/go-musthave-devops-tpl/cmd/agent/storage"
 	"runtime"
+	"yandex-devops/internal/agent/storage"
 )
 
 func Report(storage storage.Sending, stats runtime.MemStats, count int, rand float64) {

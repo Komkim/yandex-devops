@@ -2,7 +2,7 @@ package main
 
 import (
 	"yandex-devops/config"
-	"yandex-devops/internal/server/app"
+	"yandex-devops/internal/agent/app"
 )
 
 func main() {
