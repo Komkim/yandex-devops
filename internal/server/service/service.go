@@ -2,17 +2,10 @@ package service
 
 import "yandex-devops/internal/server/storage"
 
-type MemStorage interface {
-	SaveOrUpdate(metric storage.Metric) error
-	SaveOrUpdateAll(metrics []storage.Metric) error
-	GetByKey(key string) (storage.Metric, error)
-	GetAll() ([]storage.Metric, error)
-}
-
 type Services struct {
-	MemStorage MemStorage
+	Storage storage.Storage
 }
 
-func NewServices(r *storage.Repositories) *Services {
-	return &Services{NewMemStorageService(r.Storage)}
+func NewServices(r storage.Storage) *Services {
+	return &Services{NewMemStorageService(r)}
 }

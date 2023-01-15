@@ -12,13 +12,11 @@ import (
 	router "yandex-devops/internal/server/http"
 	"yandex-devops/internal/server/server"
 	"yandex-devops/internal/server/service"
-	"yandex-devops/internal/server/storage"
 )
 
 func Run(config *config.Config) {
 
-	rep := storage.NewRepositories(entity.NewMemStorage(keyInit(), typeInit()))
-	srv := service.NewServices(rep)
+	srv := service.NewServices(entity.NewMemStorage(keyInit(), typeInit()))
 
 	r := router.NewRouter(srv)
 	s := server.NewServer(config, r.Init())

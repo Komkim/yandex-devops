@@ -25,7 +25,7 @@ func (h *Router) SaveOrUpdate(c *gin.Context) {
 	switch t {
 	case "counter":
 		var cc float64
-		m, err := h.services.MemStorage.GetByKey(n)
+		m, err := h.services.Storage.GetOne(n)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, err)
 			return
@@ -59,7 +59,7 @@ func (h *Router) SaveOrUpdate(c *gin.Context) {
 	m.Name = n
 	m.Value = val
 
-	h.services.MemStorage.SaveOrUpdate(m)
+	h.services.Storage.SetOne(m)
 
 	c.JSON(http.StatusOK, "Ok")
 }
@@ -68,7 +68,7 @@ func (h *Router) GetByKey(c *gin.Context) {
 	n := c.Param("n")
 	t := c.Param("t")
 
-	mm, err := h.services.MemStorage.GetByKey(n)
+	mm, err := h.services.Storage.GetOne(n)
 	if err != nil {
 		c.JSON(http.StatusNotFound, "Bad key")
 		return
@@ -108,7 +108,7 @@ func (h *Router) GetByKey(c *gin.Context) {
 
 func (h *Router) GetAll(c *gin.Context) {
 
-	mm, err := h.services.MemStorage.GetAll()
+	mm, err := h.services.Storage.GetAll()
 	if err != nil {
 		c.JSON(http.StatusNotFound, "Bad key")
 		return

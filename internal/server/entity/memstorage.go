@@ -12,8 +12,8 @@ type MemStorage struct {
 	typeSlice []string
 }
 
-func NewMemStorage(keySlice []string, typeSlice []string) MemStorage {
-	return MemStorage{
+func NewMemStorage(keySlice []string, typeSlice []string) *MemStorage {
+	return &MemStorage{
 		mutex:     &sync.RWMutex{},
 		storage:   make(map[string]storage.Metric),
 		keySlice:  keySlice,
