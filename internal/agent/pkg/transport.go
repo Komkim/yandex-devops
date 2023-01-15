@@ -1,7 +1,7 @@
 package transport
 
 import (
-	"fmt"
+	"log"
 	"net/http"
 	"net/url"
 	"yandex-devops/config"
@@ -30,15 +30,13 @@ func (c MyClient) SendOne(metric storage.OneMetric) {
 	u = u.JoinPath(metric.Name)
 	u = u.JoinPath(metric.Value)
 
-	fmt.Println(u.String())
-
 	req, err := http.NewRequest(
 		http.MethodPost,
 		u.String(),
 		nil,
 	)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return
 	}
 
@@ -46,7 +44,7 @@ func (c MyClient) SendOne(metric storage.OneMetric) {
 
 	resp, err := c.client.Do(req)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return
 	}
 	defer resp.Body.Close()

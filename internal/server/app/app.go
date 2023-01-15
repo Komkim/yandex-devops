@@ -2,7 +2,7 @@ package app
 
 import (
 	"errors"
-	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -23,7 +23,7 @@ func Run(config *config.Config) {
 
 	go func() {
 		if err := s.Start(); !errors.Is(err, http.ErrServerClosed) {
-			fmt.Printf("error occurred while running http server: %s\n", err.Error())
+			log.Printf("error occurred while running http server: %s\n", err.Error())
 		}
 	}()
 
