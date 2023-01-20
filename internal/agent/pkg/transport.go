@@ -1,11 +1,13 @@
 package transport
 
 import (
+	"bytes"
+	"encoding/json"
 	"log"
 	"net/http"
 	"net/url"
 	"yandex-devops/config"
-	"yandex-devops/internal/agent/storage"
+	"yandex-devops/storage"
 )
 
 type MyClient struct {
@@ -20,38 +22,54 @@ func New(config *config.Config) MyClient {
 	}
 }
 
-func (c MyClient) SendOne(metric storage.OneMetric) {
+func (c MyClient) SetOne(metric storage.Metrics) error {
 	u := &url.URL{
 		Scheme: c.config.Scheme,
 		Host:   c.config.Host + ":" + c.config.Port,
 	}
 	u = u.JoinPath("update")
-	u = u.JoinPath(metric.TypeMetric)
-	u = u.JoinPath(metric.Name)
-	u = u.JoinPath(metric.Value)
+
+	data, err := json.Marshal(metric)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
 
 	req, err := http.NewRequest(
 		http.MethodPost,
 		u.String(),
-		nil,
+		bytes.NewBuffer(data),
 	)
 	if err != nil {
 		log.Println(err)
-		return
+		return err
 	}
 
-	req.Header.Add("Content-Type", "text/plain")
+	req.Header.Add("Content-Type", "application/json")
 
 	resp, err := c.client.Do(req)
 	if err != nil {
 		log.Println(err)
-		return
+		return err
 	}
 	defer resp.Body.Close()
+	return nil
 }
 
-func (c MyClient) SendAll(metrics []storage.OneMetric) {
+func (c MyClient) SetAll(metrics []storage.Metrics) error {
 	for _, v := range metrics {
-		c.SendOne(v)
+		err := c.SetOne(v)
+		if err != nil {
+			return err
+		}
 	}
+	return nil
+}
+
+func (c MyClient) GetOne(key string) (storage.Metrics, error) {
+	return storage.Metrics{}, nil
+}
+
+func (c MyClient) GetAll() ([]storage.Metrics, error) {
+	return []storage.Metrics{}, nil
 }

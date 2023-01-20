@@ -2,12 +2,16 @@ package services
 
 import (
 	"runtime"
-	"yandex-devops/internal/agent/storage"
+	"yandex-devops/storage"
 )
 
-func Report(storage storage.Sending, stats runtime.MemStats, count int, rand float64) {
+func Report(storage storage.Storage, stats runtime.MemStats, count int64, rand float64) error {
 
 	m := myStatsConversionFromRuntimeMemStats(stats, count, rand)
 
-	storage.SendAll(m.convertToOneMetricSlice())
+	err := storage.SetAll(m.convertToOneMetricSlice())
+	if err != nil {
+		return err
+	}
+	return nil
 }

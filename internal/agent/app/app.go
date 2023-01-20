@@ -1,6 +1,7 @@
 package app
 
 import (
+	"log"
 	"math/rand"
 	"runtime"
 	"time"
@@ -11,7 +12,7 @@ import (
 
 func Run(config *config.Config) {
 	var runtimeStats runtime.MemStats
-	var counter int
+	var counter int64
 
 	storage := transport.New(config)
 
@@ -25,7 +26,10 @@ func Run(config *config.Config) {
 		rnd := rand.Float64()
 
 		if r := counter % config.Report; r == 0 {
-			services.Report(storage, runtimeStats, counter, rnd)
+			err := services.Report(storage, runtimeStats, counter, rnd)
+			if err != nil {
+				log.Println(err)
+			}
 			counter = 0
 		}
 

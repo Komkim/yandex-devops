@@ -8,16 +8,15 @@ import (
 	"os/signal"
 	"syscall"
 	"yandex-devops/config"
-	"yandex-devops/internal/server/entity"
 	router "yandex-devops/internal/server/http"
 	"yandex-devops/internal/server/server"
 	"yandex-devops/internal/server/service"
+	"yandex-devops/storage/memory"
 )
 
 func Run(config *config.Config) {
 
-	srv := service.NewServices(entity.NewMemStorage(keyInit(), typeInit()))
-
+	srv := service.NewServices(memory.NewMemStorage())
 	r := router.NewRouter(srv)
 	s := server.NewServer(config, r.Init())
 
@@ -31,46 +30,4 @@ func Run(config *config.Config) {
 	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
 
 	<-quit
-}
-
-func keyInit() []string {
-	return []string{
-		"Alloc",
-		"BuckHashSys",
-		"Frees",
-		"GCCPUFraction",
-		"GCSys",
-		"HeapAlloc",
-		"HeapIdle",
-		"HeapInuse",
-		"HeapObjects",
-		"HeapReleased",
-		"HeapSys",
-		"LastGC",
-		"Lookups",
-		"MCacheInuse",
-		"MCacheSys",
-		"MSpanInuse",
-		"MSpanSys",
-		"Mallocs",
-		"NextGC",
-		"NumForcedGC",
-		"NumGC",
-		"OtherSys",
-		"PauseTotalNs",
-		"StackInuse",
-		"StackSys",
-		"Sys",
-		"TotalAlloc",
-
-		"PollCount",
-		"RandomValue",
-	}
-}
-
-func typeInit() []string {
-	return []string{
-		"gauge",
-		"counter",
-	}
 }

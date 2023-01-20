@@ -1,11 +1,11 @@
 package service
 
-import "yandex-devops/internal/server/storage"
+import "yandex-devops/storage"
 
 type Services struct {
-	Storage storage.Storage
+	Mss *MemStorageService
 }
 
 func NewServices(r storage.Storage) *Services {
-	return &Services{NewMemStorageService(r)}
+	return &Services{NewMemStorageService(&r)}
 }
