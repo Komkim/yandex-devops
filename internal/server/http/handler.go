@@ -54,10 +54,6 @@ func (h *Router) SaveOrUpdateOld(c *gin.Context) {
 			c.JSON(http.StatusBadRequest, err)
 			return
 		}
-		if m == (storage.Metrics{}) {
-			c.JSON(http.StatusNotFound, err)
-			return
-		}
 
 		//if m != (storage.Metrics{}) {
 		//	cc, err = strconv.ParseFloat(m.Value, 64)
