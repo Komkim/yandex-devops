@@ -54,6 +54,10 @@ func (h *Router) SaveOrUpdateOld(c *gin.Context) {
 			c.JSON(http.StatusBadRequest, err)
 			return
 		}
+		if m == (storage.Metrics{}) {
+			c.JSON(http.StatusNotFound, err)
+			return
+		}
 
 		//if m != (storage.Metrics{}) {
 		//	cc, err = strconv.ParseFloat(m.Value, 64)
@@ -156,7 +160,7 @@ func (h *Router) GetByKeyOld(c *gin.Context) {
 		//	c.JSON(http.StatusOK, r)
 		//	return
 		//}
-		c.JSON(http.StatusOK, mm.Value)
+		c.JSON(http.StatusOK, mm.Delta)
 		return
 	default:
 		c.JSON(http.StatusBadRequest, err)
