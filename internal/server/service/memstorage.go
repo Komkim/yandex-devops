@@ -11,10 +11,19 @@ func NewMemStorageService(r *storage.Storage) *MemStorageService {
 }
 
 func (m MemStorageService) SaveOrUpdateOne(metric storage.Metrics) error {
-	//mtr, err := m.GetByKey(metric.ID)
-	//if err != nil{
-	//	return err
-	//}
+	if metric.MType == COUNTER {
+		mtr, err := m.GetByKey(metric)
+		if err != nil {
+			return err
+		}
+		if mtr != (storage.Metrics{}) {
+			c1 := mtr.Delta
+			c2 := metric.Delta
+			c := *c1 + *c2
+			metric.Delta = &c
+		}
+	}
+
 	return m.repo.SetOne(metric)
 }
 
@@ -31,7 +40,6 @@ func (m MemStorageService) GetByKey(metric storage.Metrics) (storage.Metrics, er
 		return mm, nil
 	}
 	return mm, nil
-	//return m.repo.GetOne(metric.ID)
 }
 
 func (m MemStorageService) GetAll() ([]storage.Metrics, error) {

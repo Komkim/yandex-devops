@@ -2,6 +2,9 @@ package service
 
 import "yandex-devops/storage"
 
+const GAUGE = "gauge"
+const COUNTER = "counter"
+
 type Services struct {
 	Mss *MemStorageService
 }
