@@ -36,9 +36,9 @@ func (m MemStorageService) GetByKey(metric storage.Metrics) (storage.Metrics, er
 	if err != nil {
 		return storage.Metrics{}, err
 	}
-	if mm != (storage.Metrics{}) && mm.MType != metric.MType {
-		return mm, nil
-	}
+	//if mm != (storage.Metrics{}) && mm.MType != metric.MType {
+	//	return mm, nil
+	//}
 	return mm, nil
 }
 

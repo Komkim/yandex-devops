@@ -114,6 +114,9 @@ func (h *Router) GetByKey(c *gin.Context) {
 	if str, err := h.services.Mss.GetByKey(mtr); err != nil {
 		c.JSON(http.StatusBadRequest, "Bad value")
 		return
+	} else if str == (storage.Metrics{}) {
+		c.JSON(http.StatusNotFound, err)
+		return
 	} else {
 		c.JSON(http.StatusOK, str)
 	}
