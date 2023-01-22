@@ -22,7 +22,7 @@ func New(config *config.Config) MyClient {
 	}
 }
 
-func (c MyClient) SetOne(metric storage.Metrics) error {
+func (c MyClient) SetOne(metric storage.Metrics) (*storage.Metrics, error) {
 	u := &url.URL{
 		Scheme: c.config.Scheme,
 		Host:   c.config.Host + ":" + c.config.Port,
@@ -32,7 +32,7 @@ func (c MyClient) SetOne(metric storage.Metrics) error {
 	data, err := json.Marshal(metric)
 	if err != nil {
 		log.Println(err)
-		return err
+		return nil, err
 	}
 
 	req, err := http.NewRequest(
@@ -42,7 +42,7 @@ func (c MyClient) SetOne(metric storage.Metrics) error {
 	)
 	if err != nil {
 		log.Println(err)
-		return err
+		return nil, err
 	}
 
 	req.Header.Add("Content-Type", "application/json")
@@ -50,20 +50,23 @@ func (c MyClient) SetOne(metric storage.Metrics) error {
 	resp, err := c.client.Do(req)
 	if err != nil {
 		log.Println(err)
-		return err
+		return nil, err
 	}
 	defer resp.Body.Close()
-	return nil
+	return &metric, nil
 }
 
-func (c MyClient) SetAll(metrics []storage.Metrics) error {
-	for _, v := range metrics {
-		err := c.SetOne(v)
-		if err != nil {
-			return err
+func (c MyClient) SetAll(metrics []storage.Metrics) (*[]storage.Metrics, error) {
+	mm := make([]storage.Metrics, 0, len(metrics))
+	for _, m := range metrics {
+		if ss, err := c.SetOne(m); err != nil {
+			return nil, err
+		} else {
+			mm = append(mm, *ss)
 		}
 	}
-	return nil
+
+	return &mm, nil
 }
 
 func (c MyClient) GetOne(key string) (storage.Metrics, error) {
