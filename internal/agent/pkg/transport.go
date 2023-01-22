@@ -25,7 +25,8 @@ func New(config *config.Config) MyClient {
 func (c MyClient) SetOne(metric storage.Metrics) (*storage.Metrics, error) {
 	u := &url.URL{
 		Scheme: c.config.Scheme,
-		Host:   c.config.Host + ":" + c.config.Port,
+		//Host:   c.config.Host + ":" + c.config.Port,
+		Host: c.config.Address,
 	}
 	u = u.JoinPath("update")
 

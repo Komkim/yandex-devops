@@ -23,6 +23,7 @@ type Agent struct {
 type Config struct {
 	HTTP
 	Agent
+	Address string `env:"ADDRESS" envDefault:"127.0.0.1:8080"`
 }
 
 //func Init() *Config {
