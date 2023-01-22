@@ -21,10 +21,17 @@ type Agent struct {
 }
 
 type Config struct {
-	HTTP
-	Agent
+	Scheme  string `env:"SCHEME" envDefault:"http"`
 	Address string `env:"ADDRESS" envDefault:"127.0.0.1:8080"`
+	Poll    int32  `env:"POLL_INTERVAL" envDefault:"2"`
+	Report  int64  `env:"REPORT_INTERVAL" envDefault:"10"`
 }
+
+//type Config struct {
+//	HTTP
+//	Agent
+//	Address string `env:"ADDRESS" envDefault:"127.0.0.1:8080"`
+//}
 
 //func Init() *Config {
 //	return &Config{
