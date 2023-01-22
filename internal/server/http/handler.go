@@ -12,12 +12,12 @@ func (h *Router) SaveOrUpdate(c *gin.Context) {
 	var mtr storage.Metrics
 
 	if err := json.NewDecoder(c.Request.Body).Decode(&mtr); err != nil {
-		c.JSON(http.StatusBadRequest, "Bad value")
+		c.JSON(http.StatusBadRequest, err)
 		return
 	}
 
 	if err := h.services.Mss.SaveOrUpdateOne(mtr); err != nil {
-		c.JSON(http.StatusBadRequest, "Bad value")
+		c.JSON(http.StatusBadRequest, err)
 		return
 	}
 
@@ -31,64 +31,27 @@ func (h *Router) SaveOrUpdateOld(c *gin.Context) {
 	n := c.Param("n")
 	v := c.Param("v")
 
-	if _, err := strconv.ParseFloat(v, 64); err != nil {
-		c.JSON(http.StatusBadRequest, "Bad value")
-		return
-	}
-
-	var m storage.Metrics
-	var val float64
+	m := storage.Metrics{MType: t, ID: n}
 
 	switch t {
 	case "counter":
-
-		//m := storage.Metrics{
-		//ID: n,
-		//MType: t,
-		//Value: v
-		//}
-
-		var cc float64
-		m, err := h.services.Mss.GetByKey(storage.Metrics{ID: n})
-		if err != nil {
-			c.JSON(http.StatusBadRequest, err)
-			return
-		}
-
-		//if m != (storage.Metrics{}) {
-		//	cc, err = strconv.ParseFloat(m.Value, 64)
-		//	if err != nil {
-		//		c.JSON(http.StatusBadRequest, "Bad value")
-		//		return
-		//	}
-		//}
-		if m.Value != nil {
-			cc = *m.Value
-		}
-
-		cv, err := strconv.ParseFloat(v, 64)
-		if err != nil {
+		if vf, err := strconv.ParseInt(v, 10, 64); err != nil {
 			c.JSON(http.StatusBadRequest, "Bad value")
 			return
+		} else {
+			m.Delta = &vf
 		}
-
-		val = cc + cv
-
 	case "gauge":
 		vc, err := strconv.ParseFloat(v, 64)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, "Bad value")
 			return
 		}
-		val = vc
+		m.Value = &vc
 	default:
 		c.JSON(http.StatusNotImplemented, "Bad value type!")
 		return
 	}
-
-	m.MType = t
-	m.ID = n
-	m.Value = &val
 
 	err := h.services.Mss.SaveOrUpdateOne(m)
 	if err != nil {
@@ -103,15 +66,15 @@ func (h *Router) GetByKey(c *gin.Context) {
 	var mtr storage.Metrics
 
 	if err := json.NewDecoder(c.Request.Body).Decode(&mtr); err != nil {
-		c.JSON(http.StatusBadRequest, "Bad value")
+		c.JSON(http.StatusBadRequest, err)
 		return
 	}
 
 	if str, err := h.services.Mss.GetByKey(mtr); err != nil {
-		c.JSON(http.StatusBadRequest, "Bad value")
+		c.JSON(http.StatusBadRequest, err)
 		return
 	} else if str == (storage.Metrics{}) {
-		c.JSON(http.StatusNotFound, err)
+		c.JSON(http.StatusNotFound, "Bad key")
 		return
 	} else {
 		c.JSON(http.StatusOK, str)
@@ -142,23 +105,9 @@ func (h *Router) GetByKeyOld(c *gin.Context) {
 
 	switch t {
 	case "gauge":
-		//if r, err := strconv.ParseFloat(mm.Value, 64); err != nil {
-		//	c.JSON(http.StatusBadRequest, err)
-		//	return
-		//} else {
-		//	c.JSON(http.StatusOK, r)
-		//	return
-		//}
 		c.JSON(http.StatusOK, mm.Value)
 		return
 	case "counter":
-		//if r, err := strconv.Atoi(mm.Value); err != nil {
-		//	c.JSON(http.StatusBadRequest, err)
-		//	return
-		//} else {
-		//	c.JSON(http.StatusOK, r)
-		//	return
-		//}
 		c.JSON(http.StatusOK, mm.Delta)
 		return
 	default:

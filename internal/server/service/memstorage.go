@@ -17,9 +17,8 @@ func (m MemStorageService) SaveOrUpdateOne(metric storage.Metrics) error {
 			return err
 		}
 		if mtr != (storage.Metrics{}) {
-			c1 := mtr.Delta
-			c2 := metric.Delta
-			c := *c1 + *c2
+
+			c := *mtr.Delta + *metric.Delta
 			metric.Delta = &c
 		}
 	}
