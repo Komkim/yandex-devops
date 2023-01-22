@@ -1,5 +1,7 @@
 package config
 
+import "time"
+
 const (
 	pollIntervalDefault   = 2
 	reportIntervalDefault = 10
@@ -21,10 +23,10 @@ type Agent struct {
 }
 
 type Config struct {
-	Scheme  string `env:"SCHEME" envDefault:"http"`
-	Address string `env:"ADDRESS" envDefault:"127.0.0.1:8080"`
-	Poll    int32  `env:"POLL_INTERVAL" envDefault:"2"`
-	Report  int64  `env:"REPORT_INTERVAL" envDefault:"10"`
+	Scheme  string        `env:"SCHEME" envDefault:"http"`
+	Address string        `env:"ADDRESS" envDefault:"127.0.0.1:8080"`
+	Poll    time.Duration `env:"POLL_INTERVAL" envDefault:"2s"`
+	Report  time.Duration `env:"REPORT_INTERVAL" envDefault:"10s"`
 }
 
 //type Config struct {
