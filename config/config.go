@@ -17,7 +17,7 @@ type HTTP struct {
 
 type Agent struct {
 	Poll   int32 `env:"POLL_INTERVAL" envDefault:"2"`
-	Report int64 `env:"REPORT_INTERVAL"`
+	Report int64 `env:"REPORT_INTERVAL" envDefault:"10"`
 }
 
 type Config struct {
