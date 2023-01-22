@@ -10,11 +10,11 @@ func NewMemStorageService(r *storage.Storage) *MemStorageService {
 	return &MemStorageService{*r}
 }
 
-func (m MemStorageService) SaveOrUpdateOne(metric storage.Metrics) error {
+func (m MemStorageService) SaveOrUpdateOne(metric storage.Metrics) (*storage.Metrics, error) {
 	if metric.MType == COUNTER {
 		mtr, err := m.GetByKey(metric)
 		if err != nil {
-			return err
+			return nil, err
 		}
 		if mtr != (storage.Metrics{}) {
 
@@ -26,7 +26,7 @@ func (m MemStorageService) SaveOrUpdateOne(metric storage.Metrics) error {
 	return m.repo.SetOne(metric)
 }
 
-func (m MemStorageService) SaveOrUpdateAll(metrics []storage.Metrics) error {
+func (m MemStorageService) SaveOrUpdateAll(metrics []storage.Metrics) (*[]storage.Metrics, error) {
 	return m.repo.SetAll(metrics)
 }
 

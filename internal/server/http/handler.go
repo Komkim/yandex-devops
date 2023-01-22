@@ -16,8 +16,11 @@ func (h *Router) SaveOrUpdate(c *gin.Context) {
 		return
 	}
 
-	if err := h.services.Mss.SaveOrUpdateOne(mtr); err != nil {
+	if r, err := h.services.Mss.SaveOrUpdateOne(mtr); err != nil {
 		c.JSON(http.StatusBadRequest, err)
+		return
+	} else {
+		c.JSON(http.StatusOK, r)
 		return
 	}
 
@@ -53,13 +56,13 @@ func (h *Router) SaveOrUpdateOld(c *gin.Context) {
 		return
 	}
 
-	err := h.services.Mss.SaveOrUpdateOne(m)
+	r, err := h.services.Mss.SaveOrUpdateOne(m)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err)
 		return
 	}
 
-	c.JSON(http.StatusOK, "Ok")
+	c.JSON(http.StatusOK, r)
 }
 
 func (h *Router) GetByKey(c *gin.Context) {

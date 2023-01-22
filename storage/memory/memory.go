@@ -40,21 +40,25 @@ func (s *MemStorage) GetAll() ([]storage.Metrics, error) {
 	return metricSlice, nil
 }
 
-func (s *MemStorage) SetOne(metric storage.Metrics) error {
+func (s *MemStorage) SetOne(metric storage.Metrics) (*storage.Metrics, error) {
 	s.mutex.RLock()
 	defer s.mutex.RUnlock()
 
 	s.storage[metric.ID] = metric
+	r := s.storage[metric.ID]
 
-	return nil
+	return &r, nil
 }
 
-func (s *MemStorage) SetAll(metric []storage.Metrics) error {
+func (s *MemStorage) SetAll(metric []storage.Metrics) (*[]storage.Metrics, error) {
+	mm := make([]storage.Metrics, 0, len(metric))
 	for _, m := range metric {
-		if err := s.SetOne(m); err != nil {
-			return err
+		if ss, err := s.SetOne(m); err != nil {
+			return nil, err
+		} else {
+			mm = append(mm, *ss)
 		}
 	}
 
-	return nil
+	return &mm, nil
 }
