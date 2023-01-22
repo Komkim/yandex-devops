@@ -23,8 +23,6 @@ func (h *Router) SaveOrUpdate(c *gin.Context) {
 		c.JSON(http.StatusOK, r)
 		return
 	}
-
-	c.JSON(http.StatusOK, "Ok")
 }
 
 // Deprecated: Old version api

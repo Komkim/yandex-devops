@@ -50,15 +50,16 @@ func (s *MemStorage) SetOne(metric storage.Metrics) (*storage.Metrics, error) {
 	return &r, nil
 }
 
-func (s *MemStorage) SetAll(metric []storage.Metrics) (*[]storage.Metrics, error) {
-	mm := make([]storage.Metrics, 0, len(metric))
+func (s *MemStorage) SetAll(metric []storage.Metrics) error {
+	//mm := make([]storage.Metrics, 0, len(metric))
 	for _, m := range metric {
-		if ss, err := s.SetOne(m); err != nil {
-			return nil, err
-		} else {
-			mm = append(mm, *ss)
+		if _, err := s.SetOne(m); err != nil {
+			return err
 		}
+		//} else {
+		//	mm = append(mm, *ss)
+		//}
 	}
 
-	return &mm, nil
+	return nil
 }

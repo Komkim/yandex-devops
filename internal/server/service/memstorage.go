@@ -26,7 +26,7 @@ func (m MemStorageService) SaveOrUpdateOne(metric storage.Metrics) (*storage.Met
 	return m.repo.SetOne(metric)
 }
 
-func (m MemStorageService) SaveOrUpdateAll(metrics []storage.Metrics) (*[]storage.Metrics, error) {
+func (m MemStorageService) SaveOrUpdateAll(metrics []storage.Metrics) error {
 	return m.repo.SetAll(metrics)
 }
 
