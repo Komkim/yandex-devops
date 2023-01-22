@@ -10,14 +10,14 @@ const (
 )
 
 type HTTP struct {
-	Scheme string
-	Port   string
-	Host   string
+	Scheme string `env:"SCHEME" envDefault:"http"`
+	Port   string `env:"ADDRESS" envDefault:"8080"`
+	Host   string `env:"HOST" envDefault:"127.0.0.1"`
 }
 
 type Agent struct {
-	Poll   int32
-	Report int64
+	Poll   int32 `env:"POLL_INTERVAL" envDefault:"2"`
+	Report int64 `env:"REPORT_INTERVAL"`
 }
 
 type Config struct {
@@ -25,16 +25,16 @@ type Config struct {
 	Agent
 }
 
-func Init() *Config {
-	return &Config{
-		HTTP: HTTP{
-			Scheme: schemeDefault,
-			Host:   hostDefault,
-			Port:   portDefault,
-		},
-		Agent: Agent{
-			Poll:   pollIntervalDefault,
-			Report: reportIntervalDefault,
-		},
-	}
-}
+//func Init() *Config {
+//	return &Config{
+//		HTTP: HTTP{
+//			Scheme: schemeDefault,
+//			Host:   hostDefault,
+//			Port:   portDefault,
+//		},
+//		Agent: Agent{
+//			Poll:   pollIntervalDefault,
+//			Report: reportIntervalDefault,
+//		},
+//	}
+//}
