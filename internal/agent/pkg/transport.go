@@ -70,10 +70,10 @@ func (c MyClient) SetAll(metrics []storage.Metrics) (*[]storage.Metrics, error) 
 	return &mm, nil
 }
 
-func (c MyClient) GetOne(key string) (storage.Metrics, error) {
-	return storage.Metrics{}, nil
+func (c MyClient) GetOne(key string) (*storage.Metrics, error) {
+	return nil, nil
 }
 
-func (c MyClient) GetAll() ([]storage.Metrics, error) {
-	return []storage.Metrics{}, nil
+func (c MyClient) GetAll() (*[]storage.Metrics, error) {
+	return nil, nil
 }

@@ -15,7 +15,7 @@ func Run(config *config.Config) {
 	var counter int64
 	ticker := time.NewTicker(config.Report)
 
-	storage := transport.New(config)
+	memStorage := transport.New(config)
 
 	rand.Seed(time.Now().UnixNano())
 
@@ -23,7 +23,7 @@ func Run(config *config.Config) {
 		for {
 			<-ticker.C
 			rnd := rand.Float64()
-			err := services.Report(storage, runtimeStats, counter, rnd)
+			err := services.Report(memStorage, runtimeStats, counter, rnd)
 			if err != nil {
 				log.Println(err)
 			}

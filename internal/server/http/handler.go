@@ -74,7 +74,7 @@ func (h *Router) GetByKey(c *gin.Context) {
 	if str, err := h.services.Mss.GetByKey(mtr); err != nil {
 		c.JSON(http.StatusBadRequest, err)
 		return
-	} else if str == (storage.Metrics{}) {
+	} else if str == nil {
 		c.JSON(http.StatusNotFound, "Bad key")
 		return
 	} else {
@@ -94,12 +94,12 @@ func (h *Router) GetByKeyOld(c *gin.Context) {
 		return
 	}
 
-	if mm == (storage.Metrics{}) {
+	if mm == nil {
 		c.JSON(http.StatusNotFound, mm)
 		return
 	}
 
-	if mm.MType != t && mm != (storage.Metrics{}) {
+	if mm.MType != t && mm != nil {
 		c.JSON(http.StatusNotFound, "Bad type")
 		return
 	}

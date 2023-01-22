@@ -7,8 +7,12 @@ const COUNTER = "counter"
 
 type Services struct {
 	Mss *MemStorageService
+	Fss *FileStorageService
 }
 
-func NewServices(r storage.Storage) *Services {
-	return &Services{NewMemStorageService(&r)}
+func NewServices(memory, file storage.Storage) *Services {
+	return &Services{
+		Mss: NewMemStorageService(&memory),
+		Fss: NewFileStorageService(&file),
+	}
 }
