@@ -17,7 +17,7 @@ type HTTP struct {
 
 type Agent struct {
 	Poll   int32
-	Report int
+	Report int64
 }
 
 type Config struct {

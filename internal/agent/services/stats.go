@@ -1,11 +1,10 @@
 package services
 
 import (
-	"fmt"
 	"reflect"
 	"runtime"
 	"strings"
-	"yandex-devops/internal/agent/storage"
+	"yandex-devops/storage"
 )
 
 type gauge float64
@@ -53,21 +52,35 @@ type MyStats struct {
 	RandomValue gauge
 }
 
-func (m MyStats) convertToOneMetricSlice() []storage.OneMetric {
+func (m MyStats) convertToOneMetricSlice() []storage.Metrics {
 	val := reflect.ValueOf(m)
-	metrics := make([]storage.OneMetric, 0, val.NumField())
+	metrics := make([]storage.Metrics, 0, val.NumField())
 
 	for i := 0; i < val.NumField(); i++ {
-		metrics = append(metrics, storage.OneMetric{
-			TypeMetric: strings.Replace(val.Type().Field(i).Type.String(), "services.", "", -1),
-			Name:       string(val.Type().Field(i).Name),
-			Value:      fmt.Sprint(val.Field(i)),
-		})
+		id := val.Type().Field(i).Name
+		mtype := strings.Replace(val.Type().Field(i).Type.String(), "services.", "", -1)
+		switch mtype {
+		case "gauge":
+			value := val.Field(i).Float()
+			metrics = append(metrics, storage.Metrics{
+				ID:    id,
+				MType: mtype,
+				Value: &value,
+			})
+		case "counter":
+			delta := val.Field(i).Int()
+			metrics = append(metrics, storage.Metrics{
+				ID:    id,
+				MType: mtype,
+				Delta: &delta,
+			})
+		}
 	}
 	return metrics
+
 }
 
-func myStatsConversionFromRuntimeMemStats(stats runtime.MemStats, c int, rand float64) MyStats {
+func myStatsConversionFromRuntimeMemStats(stats runtime.MemStats, c int64, rand float64) MyStats {
 	return MyStats{
 		Alloc:         gauge(stats.Alloc),
 		BuckHashSys:   gauge(stats.BuckHashSys),
@@ -100,4 +113,33 @@ func myStatsConversionFromRuntimeMemStats(stats runtime.MemStats, c int, rand fl
 		PollCount:   counter(c),
 		RandomValue: gauge(rand),
 	}
+}
+
+func convert(stats runtime.MemStats, count int64, rand float64) *[]storage.Metrics {
+
+	val := reflect.ValueOf(stats)
+	metrics := make([]storage.Metrics, 0, val.NumField()+2)
+
+	for i := 0; i < val.NumField(); i++ {
+		value := val.Field(i).Interface().(float64)
+		metrics = append(metrics, storage.Metrics{
+			ID:    string(val.Type().Field(i).Name),
+			MType: "gauge",
+			Value: &value,
+		})
+	}
+
+	metrics = append(metrics, storage.Metrics{
+		ID:    "PollCount",
+		MType: "counter",
+		Delta: &count,
+	})
+
+	metrics = append(metrics, storage.Metrics{
+		ID:    "RandomValue",
+		MType: "gauge",
+		Value: &rand,
+	})
+
+	return &metrics
 }
