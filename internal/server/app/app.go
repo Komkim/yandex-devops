@@ -33,21 +33,23 @@ func Run(config *config.Config) {
 		}
 	}()
 
-	go func(memStorage storage.Storage) {
-		if config.File.Restore {
-			metrics, err := srv.Fss.GetAll()
-			if err != nil {
-				log.Println(metrics)
-			}
-			if metrics != nil {
-				_, err = srv.Fss.SetAll(*metrics)
+	if fileStorage != nil {
+		go func(memStorage storage.Storage) {
+			if config.File.Restore {
+				metrics, err := srv.Fss.GetAll()
 				if err != nil {
-					log.Println(err)
+					log.Println(metrics)
+				}
+				if metrics != nil {
+					_, err = srv.Fss.SetAll(*metrics)
+					if err != nil {
+						log.Println(err)
+					}
 				}
 			}
-		}
-		srv.Fss.Start(config, memoryStorage)
-	}(memoryStorage)
+			srv.Fss.Start(config, memoryStorage)
+		}(memoryStorage)
+	}
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)

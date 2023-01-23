@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io"
 	"os"
+	"time"
 	"yandex-devops/storage"
 )
 
@@ -12,16 +13,26 @@ type producer struct {
 	encoder *json.Encoder
 }
 
-func NewProducer(filename string) (*producer, error) {
-	file, err := os.OpenFile(filename, os.O_WRONLY|os.O_CREATE, 0777)
-	if err != nil {
-		return nil, err
+func NewProducer(filename string, stream time.Duration) (*producer, error) {
+	if stream == 0 {
+		file, err := os.OpenFile(filename, os.O_WRONLY|os.O_CREATE|os.O_SYNC, 0777)
+		if err != nil {
+			return nil, err
+		}
+		return &producer{
+			file:    file,
+			encoder: json.NewEncoder(file),
+		}, nil
+	} else {
+		file, err := os.OpenFile(filename, os.O_WRONLY|os.O_CREATE, 0777)
+		if err != nil {
+			return nil, err
+		}
+		return &producer{
+			file:    file,
+			encoder: json.NewEncoder(file),
+		}, nil
 	}
-
-	return &producer{
-		file:    file,
-		encoder: json.NewEncoder(file),
-	}, nil
 }
 func (p *producer) Write(metric *storage.Metrics) error {
 	return p.encoder.Encode(&metric)

@@ -99,7 +99,7 @@ func (h *Router) GetByKeyOld(c *gin.Context) {
 		return
 	}
 
-	if mm.MType != t && mm != nil {
+	if mm.MType != t {
 		c.JSON(http.StatusNotFound, "Bad type")
 		return
 	}

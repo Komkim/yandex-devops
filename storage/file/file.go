@@ -17,7 +17,7 @@ type FileMetrics struct {
 }
 
 func NewFileStorage(cfg *config.Config) (*FileStorage, error) {
-	p, err := NewProducer(cfg.File.Path)
+	p, err := NewProducer(cfg.File.Path, cfg.File.Interval)
 	if err != nil {
 		return nil, err
 	}

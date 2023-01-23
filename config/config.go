@@ -15,7 +15,7 @@ type Agent struct {
 }
 
 type File struct {
-	Interval time.Duration `env:"STORE_INTERVAL" envDefault:"10s"`
+	Interval time.Duration `env:"STORE_INTERVAL" envDefault:"300s"`
 	Path     string        `env:"STORE_FILE" envDefault:"/tmp/devops-metrics-db.json"`
 	Restore  bool          `env:"RESTORE" envDefault:"true"`
 }
