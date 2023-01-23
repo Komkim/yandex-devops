@@ -57,8 +57,17 @@ func Run(config *config.Config) {
 	<-quit
 
 	if fileStorage != nil {
-		err = fileStorage.Close()
+		metrics, err := memoryStorage.GetAll()
+		if err != nil {
+			log.Println(err)
 
+		}
+		_, err = fileStorage.SetAll(*metrics)
+		if err != nil {
+			log.Println(err)
+
+		}
+		err = fileStorage.Close()
 		if err != nil {
 			log.Println(err)
 		}
