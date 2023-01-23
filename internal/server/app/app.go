@@ -11,12 +11,19 @@ import (
 	router "yandex-devops/internal/server/http"
 	"yandex-devops/internal/server/server"
 	"yandex-devops/internal/server/service"
+	"yandex-devops/storage"
+	"yandex-devops/storage/file"
 	"yandex-devops/storage/memory"
 )
 
 func Run(config *config.Config) {
 
-	srv := service.NewServices(memory.NewMemStorage())
+	memoryStorage := memory.NewMemStorage()
+	fileStorage, err := file.NewFileStorage(config)
+	if err != nil {
+		log.Println("file storage error")
+	}
+	srv := service.NewServices(memoryStorage, fileStorage)
 	r := router.NewRouter(srv)
 	s := server.NewServer(config, r.Init())
 
@@ -26,8 +33,43 @@ func Run(config *config.Config) {
 		}
 	}()
 
+	if fileStorage != nil {
+		go func(memStorage storage.Storage) {
+			if config.File.Restore {
+				metrics, err := srv.Fss.GetAll()
+				if err != nil {
+					log.Println(metrics)
+				}
+				if metrics != nil {
+					_, err = srv.Fss.SetAll(*metrics)
+					if err != nil {
+						log.Println(err)
+					}
+				}
+			}
+			srv.Fss.Start(config, memoryStorage)
+		}(memoryStorage)
+	}
+
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
 
 	<-quit
+
+	if fileStorage != nil {
+		metrics, err := memoryStorage.GetAll()
+		if err != nil {
+			log.Println(err)
+
+		}
+		_, err = fileStorage.SetAll(*metrics)
+		if err != nil {
+			log.Println(err)
+
+		}
+		err = fileStorage.Close()
+		if err != nil {
+			log.Println(err)
+		}
+	}
 }

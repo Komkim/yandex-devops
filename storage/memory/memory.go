@@ -17,18 +17,18 @@ func NewMemStorage() *MemStorage {
 	}
 }
 
-func (s *MemStorage) GetOne(key string) (storage.Metrics, error) {
+func (s *MemStorage) GetOne(key string) (*storage.Metrics, error) {
 	s.mutex.RLock()
 	defer s.mutex.RUnlock()
 
 	if m, ok := s.storage[key]; ok {
-		return m, nil
+		return &m, nil
 	} else {
-		return storage.Metrics{}, nil
+		return nil, nil
 	}
 }
 
-func (s *MemStorage) GetAll() ([]storage.Metrics, error) {
+func (s *MemStorage) GetAll() (*[]storage.Metrics, error) {
 	s.mutex.RLock()
 	defer s.mutex.RUnlock()
 
@@ -37,7 +37,7 @@ func (s *MemStorage) GetAll() ([]storage.Metrics, error) {
 		metricSlice = append(metricSlice, m)
 	}
 
-	return metricSlice, nil
+	return &metricSlice, nil
 }
 
 func (s *MemStorage) SetOne(metric storage.Metrics) (*storage.Metrics, error) {
