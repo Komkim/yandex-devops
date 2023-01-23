@@ -2,6 +2,7 @@ package file
 
 import (
 	"sync"
+	"yandex-devops/config"
 	"yandex-devops/storage"
 )
 
@@ -12,15 +13,15 @@ type FileStorage struct {
 }
 
 type FileMetrics struct {
-	Metrics []storage.Metrics
+	Metrics []storage.Metrics `json:"metrics_nodes"`
 }
 
-func NewFileStorage(path string) (*FileStorage, error) {
-	p, err := NewProducer(path)
+func NewFileStorage(cfg *config.Config) (*FileStorage, error) {
+	p, err := NewProducer(cfg.File.Path)
 	if err != nil {
 		return nil, err
 	}
-	c, err := NewConsumer(path)
+	c, err := NewConsumer(cfg.File.Path)
 	if err != nil {
 		return nil, err
 	}
@@ -36,7 +37,7 @@ func (f *FileStorage) GetOne(key string) (*storage.Metrics, error) {
 	if err != nil {
 		return nil, err
 	}
-	for _, v := range m.Metrics {
+	for _, v := range *m {
 		if v.ID == key {
 			return &v, nil
 		}
@@ -45,12 +46,7 @@ func (f *FileStorage) GetOne(key string) (*storage.Metrics, error) {
 }
 
 func (f *FileStorage) GetAll() (*[]storage.Metrics, error) {
-	r, err := f.consumer.Read()
-	if err != nil {
-		return nil, err
-	}
-
-	return &r.Metrics, err
+	return f.consumer.Read()
 }
 
 func (f *FileStorage) SetOne(metric storage.Metrics) (*storage.Metrics, error) {
@@ -64,6 +60,10 @@ func (f *FileStorage) SetOne(metric storage.Metrics) (*storage.Metrics, error) {
 
 func (f *FileStorage) SetAll(metric []storage.Metrics) (*[]storage.Metrics, error) {
 	metrics := make([]storage.Metrics, 0, len(metric))
+	err := f.producer.Cleaning()
+	if err != nil {
+		return nil, err
+	}
 	for _, m := range metric {
 		mm, err := f.SetOne(m)
 		if err != nil {

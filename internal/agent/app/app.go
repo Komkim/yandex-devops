@@ -35,18 +35,6 @@ func Run(config *config.Config) {
 		runtime.ReadMemStats(&runtimeStats)
 
 		counter++
-		//
-		//rnd := rand.Float64()
-		//
-		//
-		//
-		//if r := counter % config.Report; r == 0 {
-		//	err := services.Report(storage, runtimeStats, counter, rnd)
-		//	if err != nil {
-		//		log.Println(err)
-		//	}
-		//	counter = 0
-		//}
 
 		time.Sleep(config.Poll)
 	}

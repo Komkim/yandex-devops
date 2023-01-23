@@ -19,8 +19,7 @@ import (
 func Run(config *config.Config) {
 
 	memoryStorage := memory.NewMemStorage()
-	fileStorage, err := file.NewFileStorage(config.File.Path)
-	defer fileStorage.Close()
+	fileStorage, err := file.NewFileStorage(config)
 	if err != nil {
 		log.Println("file storage error")
 	}
@@ -55,4 +54,11 @@ func Run(config *config.Config) {
 
 	<-quit
 
+	if fileStorage != nil {
+		err = fileStorage.Close()
+
+		if err != nil {
+			log.Println(err)
+		}
+	}
 }

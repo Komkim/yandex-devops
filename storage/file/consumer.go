@@ -3,6 +3,7 @@ package file
 import (
 	"encoding/json"
 	"os"
+	"yandex-devops/storage"
 )
 
 type consumer struct {
@@ -20,12 +21,18 @@ func NewConsumer(fileName string) (*consumer, error) {
 		decoder: json.NewDecoder(file),
 	}, nil
 }
-func (c *consumer) Read() (*FileMetrics, error) {
-	metrics := &FileMetrics{}
-	if err := c.decoder.Decode(&metrics); err != nil {
-		return nil, err
+func (c *consumer) Read() (*[]storage.Metrics, error) {
+	mm := []storage.Metrics{}
+	metrics := storage.Metrics{}
+	for c.decoder.More() {
+		if err := c.decoder.Decode(&metrics); err != nil {
+			return nil, err
+		} else {
+			mm = append(mm, metrics)
+		}
 	}
-	return metrics, nil
+	c.decoder.UseNumber()
+	return &mm, nil
 }
 func (c *consumer) Close() error {
 	return c.file.Close()

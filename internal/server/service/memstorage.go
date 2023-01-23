@@ -31,14 +31,6 @@ func (m MemStorageService) SaveOrUpdateAll(metrics []storage.Metrics) (*[]storag
 }
 
 func (m MemStorageService) GetByKey(metric storage.Metrics) (*storage.Metrics, error) {
-	//mm, err := m.repo.GetOne(metric.ID)
-	//if err != nil {
-	//	return storage.Metrics{}, err
-	//}
-	////if mm != (storage.Metrics{}) && mm.MType != metric.MType {
-	////	return mm, nil
-	////}
-	//return mm, nil
 	return m.repo.GetOne(metric.ID)
 }
 
