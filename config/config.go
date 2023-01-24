@@ -4,14 +4,15 @@ import (
 	"github.com/caarlos0/env/v6"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"os"
 	"time"
 )
 
 const (
-	defaultHttpScheme   = "http"
-	defaultHttpPort     = "8080"
-	defaultHttpHost     = "127.0.0.1"
-	defaultHttpAddress  = "127.0.0.1:8080"
+	defaultHTTPScheme   = "http"
+	defaultHTTPPort     = "8080"
+	defaultHTTPHost     = "127.0.0.1"
+	defaultHTTPAddress  = "127.0.0.1:8080"
 	defaultAgentPoll    = 2 * time.Second
 	defaultAgentReport  = 10 * time.Second
 	defaultFileInterval = 300 * time.Second
@@ -112,6 +113,7 @@ func parseEnv(cfg *Config) error {
 	if err != nil {
 		return err
 	}
+	cfg.HTTP.Address = os.Getenv("ADDRESS")
 	return nil
 }
 
@@ -129,10 +131,10 @@ func unmarshal(cfg *Config) error {
 }
 
 func populateDefaults() {
-	viper.SetDefault("http.port", defaultHttpPort)
-	viper.SetDefault("http.scheme", defaultHttpScheme)
-	viper.SetDefault("http.host", defaultHttpHost)
-	viper.SetDefault("http.address", defaultHttpAddress)
+	viper.SetDefault("http.port", defaultHTTPPort)
+	viper.SetDefault("http.scheme", defaultHTTPScheme)
+	viper.SetDefault("http.host", defaultHTTPHost)
+	viper.SetDefault("http.address", defaultHTTPAddress)
 
 	viper.SetDefault("agent.poll", defaultAgentPoll)
 	viper.SetDefault("agent.report", defaultAgentReport)
