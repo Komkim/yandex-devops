@@ -4,7 +4,6 @@ import (
 	"github.com/caarlos0/env/v6"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"os"
 	"time"
 )
 
@@ -113,7 +112,7 @@ func parseEnv(cfg *Config) error {
 	if err != nil {
 		return err
 	}
-	cfg.HTTP.Address = os.Getenv("ADDRESS")
+	//cfg.HTTP.Address = os.Getenv("ADDRESS")
 	return nil
 }
 
