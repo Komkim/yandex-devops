@@ -64,12 +64,12 @@ func initCfg() (*Config, error) {
 
 	var cfg Config
 
-	err := parseEnv(&cfg)
+	err := unmarshal(&cfg)
 	if err != nil {
 		return nil, err
 	}
 
-	err = unmarshal(&cfg)
+	err = parseEnv(&cfg)
 	if err != nil {
 		return nil, err
 	}
