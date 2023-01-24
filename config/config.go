@@ -64,17 +64,17 @@ func initCfg() (*Config, error) {
 
 	var cfg Config
 
-	err := unmarshal(&cfg)
+	err := parseEnv(&cfg)
 	if err != nil {
 		return nil, err
 	}
 
-	//err = parseEnv(&cfg)
-	//if err != nil {
-	//	return nil, err
-	//}
+	err = unmarshal(&cfg)
+	if err != nil {
+		return nil, err
+	}
 
-	viper.AutomaticEnv()
+	//viper.AutomaticEnv()
 
 	err = execute()
 	if err != nil {
