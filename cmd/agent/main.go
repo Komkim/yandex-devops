@@ -7,8 +7,7 @@ import (
 )
 
 func main() {
-
-	cfg, err := config.IninServer()
+	cfg, err := config.InitAgent()
 	if err != nil {
 		log.Println(err)
 	}
