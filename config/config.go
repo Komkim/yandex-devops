@@ -69,10 +69,12 @@ func initCfg() (*Config, error) {
 		return nil, err
 	}
 
-	err = parseEnv(&cfg)
-	if err != nil {
-		return nil, err
-	}
+	//err = parseEnv(&cfg)
+	//if err != nil {
+	//	return nil, err
+	//}
+
+	viper.AutomaticEnv()
 
 	err = execute()
 	if err != nil {
