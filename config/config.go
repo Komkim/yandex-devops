@@ -1,8 +1,10 @@
 package config
 
 import (
+	"fmt"
 	"github.com/caarlos0/env/v6"
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 	"time"
 )
@@ -45,7 +47,13 @@ type Config struct {
 
 var (
 	agentCmd  = &cobra.Command{}
-	serverCmd = &cobra.Command{}
+	serverCmd = &cobra.Command{
+		Run: func(cmd *cobra.Command, args []string) {
+			fmt.Println(args)
+		},
+	}
+
+	address string
 )
 
 func IninServer() (*Config, error) {
@@ -107,16 +115,10 @@ func initServer() {
 	serverCmd.Flags().BoolP("file.restore", "r", true, "server file restore")
 	serverCmd.Flags().DurationP("file.interval", "i", 0, "server file report interval")
 	serverCmd.Flags().StringP("file.path", "f", "", "server file path")
-
 }
 
 func parseEnv(cfg *Config) error {
-	err := env.Parse(cfg)
-	if err != nil {
-		return err
-	}
-	//cfg.HTTP.Address = os.Getenv("ADDRESS")
-	return nil
+	return env.Parse(cfg)
 }
 
 func unmarshal(cfg *Config) error {
@@ -144,4 +146,63 @@ func populateDefaults() {
 	viper.SetDefault("file.path", defaultFilePath)
 	viper.SetDefault("file.restore", defaultFileRestore)
 	viper.SetDefault("file.interval", defaultFileInterval)
+}
+
+func InitFlagServer() (*Config, error) {
+	cfg := new(Config)
+
+	defaultFlag(cfg)
+
+	initFlagServer(cfg)
+
+	err := env.Parse(cfg)
+	if err != nil {
+		return nil, err
+	}
+
+	return cfg, nil
+}
+
+func InitFlagAgent() (*Config, error) {
+	cfg := new(Config)
+
+	defaultFlag(cfg)
+
+	initFlagAgent(cfg)
+
+	err := env.Parse(cfg)
+	if err != nil {
+		return nil, err
+	}
+
+	return cfg, nil
+}
+
+func defaultFlag(cfg *Config) {
+	cfg.HTTP.Address = defaultHTTPAddress
+	cfg.HTTP.Port = defaultHTTPPort
+	cfg.HTTP.Host = defaultHTTPHost
+	cfg.HTTP.Scheme = defaultHTTPScheme
+
+	cfg.Agent.Poll = defaultAgentPoll
+	cfg.Agent.Report = defaultAgentReport
+
+	cfg.File.Interval = defaultFileInterval
+	cfg.File.Path = defaultFilePath
+	cfg.File.Restore = defaultFileRestore
+}
+
+func initFlagServer(cfg *Config) {
+	pflag.StringVarP(&cfg.Address, "address", "a", "127.0.0.1:8080", "address")
+	pflag.StringVarP(&cfg.File.Path, "file.path", "f", "/tmp/devops-metrics-db.json", "server file path")
+	pflag.BoolVarP(&cfg.File.Restore, "file.restore", "r", true, "server file restore")
+	pflag.DurationVarP(&cfg.File.Interval, "file.interval", "i", 300, "server file report interval")
+	pflag.Parse()
+}
+
+func initFlagAgent(cfg *Config) {
+	pflag.StringVarP(&cfg.Address, "address", "a", "", "address")
+	pflag.DurationVarP(&cfg.Agent.Poll, "agent.poll", "p", 2, "agent poll interval")
+	pflag.DurationVarP(&cfg.Agent.Report, "agent.report", "r", 10, "agent report interval")
+	pflag.Parse()
 }

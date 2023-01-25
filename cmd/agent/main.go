@@ -7,7 +7,8 @@ import (
 )
 
 func main() {
-	cfg, err := config.InitAgent()
+	//cfg, err := config.InitAgent()
+	cfg, err := config.InitFlagAgent()
 	if err != nil {
 		log.Println(err)
 	}
