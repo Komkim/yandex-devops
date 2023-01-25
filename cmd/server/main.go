@@ -1,16 +1,16 @@
 package main
 
 import (
-	"github.com/caarlos0/env/v6"
 	"log"
 	"yandex-devops/config"
 	"yandex-devops/internal/server/app"
 )
 
 func main() {
-	var cfg config.Config
-	if err := env.Parse(&cfg); err != nil {
+	cfg, err := config.IninServer()
+	//cfg, err := config.InitFlagServer()
+	if err != nil {
 		log.Println(err)
 	}
-	app.Run(&cfg)
+	app.Run(cfg)
 }
