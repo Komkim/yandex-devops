@@ -20,6 +20,7 @@ func (h *Router) Init() http.Handler {
 
 	//mux.Use(gin.Recovery())
 
+	mux.Use(h.gzipMiddleware)
 	mux.POST("/update/:t/:n/:v", h.SaveOrUpdateOld)
 	mux.POST("/update/:t/", func(c *gin.Context) { c.JSON(http.StatusNotFound, "Not Found") })
 	mux.GET("/value/:t/:n", h.GetByKeyOld)

@@ -1,10 +1,13 @@
 package router
 
 import (
+	"compress/gzip"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
+	"io"
 	"net/http"
 	"strconv"
+	"strings"
 	"yandex-devops/storage"
 )
 
@@ -130,4 +133,20 @@ func (h *Router) GetAll(c *gin.Context) {
 
 func Ping(c *gin.Context) {
 	c.JSON(http.StatusOK, "Pong")
+}
+
+func (h *Router) gzipMiddleware(c *gin.Context) {
+	if !strings.Contains(c.Request.Header.Get("Accept-Encoding"), "qzip") {
+		c.Next()
+		return
+	}
+	gz, err := gzip.NewWriterLevel(c.Writer, gzip.BestSpeed)
+	if err != nil {
+		io.WriteString(c.Writer, err.Error())
+		return
+	}
+	defer gz.Close()
+
+	c.Writer.Header().Set("Content-Encoding", "gzip")
+	c.Next()
 }
