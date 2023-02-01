@@ -103,10 +103,10 @@ func initAgent() {
 }
 
 func initServer() {
-	agentCmd.PersistentFlags().StringP("http.address", "a", "", "agent http address report")
-	agentCmd.Flags().BoolP("file.restore", "r", true, "server file restore")
-	agentCmd.Flags().DurationP("file.interval", "i", 0, "server file report interval")
-	agentCmd.Flags().StringP("file.path", "f", "", "server file path")
+	serverCmd.PersistentFlags().StringP("http.address", "a", "", "agent http address report")
+	serverCmd.Flags().BoolP("file.restore", "r", true, "server file restore")
+	serverCmd.Flags().DurationP("file.interval", "i", 0, "server file report interval")
+	serverCmd.Flags().StringP("file.path", "f", "", "server file path")
 }
 
 func parseEnv(cfg *Config) error {

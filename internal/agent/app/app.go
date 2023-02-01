@@ -1,21 +1,22 @@
 package app
 
 import (
+	"context"
 	"log"
 	"math/rand"
 	"runtime"
 	"time"
 	"yandex-devops/config"
-	transport "yandex-devops/internal/agent/pkg"
 	"yandex-devops/internal/agent/services"
+	myclient "yandex-devops/provider"
 )
 
-func Run(config *config.Config) {
+func Run(ctx *context.Context, config *config.Config) {
 	var runtimeStats runtime.MemStats
 	var counter int64
 	ticker := time.NewTicker(config.Report)
 
-	memStorage := transport.New(config)
+	memStorage := myclient.New(&config.HTTP)
 
 	rand.Seed(time.Now().UnixNano())
 

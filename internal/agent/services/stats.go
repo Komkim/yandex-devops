@@ -52,34 +52,6 @@ type MyStats struct {
 	RandomValue gauge
 }
 
-func (m MyStats) convertToOneMetricSlice() []storage.Metrics {
-	val := reflect.ValueOf(m)
-	metrics := make([]storage.Metrics, 0, val.NumField())
-
-	for i := 0; i < val.NumField(); i++ {
-		id := val.Type().Field(i).Name
-		mtype := strings.Replace(val.Type().Field(i).Type.String(), "services.", "", -1)
-		switch mtype {
-		case "gauge":
-			value := val.Field(i).Float()
-			metrics = append(metrics, storage.Metrics{
-				ID:    id,
-				MType: mtype,
-				Value: &value,
-			})
-		case "counter":
-			delta := val.Field(i).Int()
-			metrics = append(metrics, storage.Metrics{
-				ID:    id,
-				MType: mtype,
-				Delta: &delta,
-			})
-		}
-	}
-	return metrics
-
-}
-
 func myStatsConversionFromRuntimeMemStats(stats runtime.MemStats, c int64, rand float64) MyStats {
 	return MyStats{
 		Alloc:         gauge(stats.Alloc),
@@ -142,4 +114,32 @@ func convert(stats runtime.MemStats, count int64, rand float64) *[]storage.Metri
 	})
 
 	return &metrics
+}
+
+func (m MyStats) convertToOneMetricSlice() []storage.Metrics {
+	val := reflect.ValueOf(m)
+	metrics := make([]storage.Metrics, 0, val.NumField())
+
+	for i := 0; i < val.NumField(); i++ {
+		id := val.Type().Field(i).Name
+		mtype := strings.Replace(val.Type().Field(i).Type.String(), "services.", "", -1)
+		switch mtype {
+		case "gauge":
+			value := val.Field(i).Float()
+			metrics = append(metrics, storage.Metrics{
+				ID:    id,
+				MType: mtype,
+				Value: &value,
+			})
+		case "counter":
+			delta := val.Field(i).Int()
+			metrics = append(metrics, storage.Metrics{
+				ID:    id,
+				MType: mtype,
+				Delta: &delta,
+			})
+		}
+	}
+	return metrics
+
 }

@@ -16,12 +16,12 @@ type FileMetrics struct {
 	Metrics []storage.Metrics `json:"metrics_nodes"`
 }
 
-func NewFileStorage(cfg *config.Config) (*FileStorage, error) {
-	p, err := NewProducer(cfg.File.Path, cfg.File.Interval)
+func NewFileStorage(cfg *config.File) (*FileStorage, error) {
+	p, err := NewProducer(cfg.Path, cfg.Interval)
 	if err != nil {
 		return nil, err
 	}
-	c, err := NewConsumer(cfg.File.Path)
+	c, err := NewConsumer(cfg.Path)
 	if err != nil {
 		return nil, err
 	}
@@ -32,7 +32,7 @@ func NewFileStorage(cfg *config.Config) (*FileStorage, error) {
 	}, nil
 }
 
-func (f *FileStorage) GetOne(key string) (*storage.Metrics, error) {
+func (f FileStorage) GetOne(key string) (*storage.Metrics, error) {
 	m, err := f.consumer.Read()
 	if err != nil {
 		return nil, err
@@ -45,11 +45,11 @@ func (f *FileStorage) GetOne(key string) (*storage.Metrics, error) {
 	return nil, nil
 }
 
-func (f *FileStorage) GetAll() (*[]storage.Metrics, error) {
+func (f FileStorage) GetAll() (*[]storage.Metrics, error) {
 	return f.consumer.Read()
 }
 
-func (f *FileStorage) SetOne(metric storage.Metrics) (*storage.Metrics, error) {
+func (f FileStorage) SetOne(metric storage.Metrics) (*storage.Metrics, error) {
 	err := f.producer.Write(&metric)
 	if err != nil {
 		return nil, err
@@ -58,7 +58,7 @@ func (f *FileStorage) SetOne(metric storage.Metrics) (*storage.Metrics, error) {
 
 }
 
-func (f *FileStorage) SetAll(metric []storage.Metrics) (*[]storage.Metrics, error) {
+func (f FileStorage) SetAll(metric []storage.Metrics) (*[]storage.Metrics, error) {
 	metrics := make([]storage.Metrics, 0, len(metric))
 	err := f.producer.Cleaning()
 	if err != nil {
