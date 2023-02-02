@@ -11,7 +11,7 @@ import (
 
 const (
 	defaultHTTPScheme   = "http"
-	defaultHTTPPort     = "8080"
+	defaultHTTPPort     = ":8080"
 	defaultHTTPHost     = "127.0.0.1"
 	defaultHTTPAddress  = "127.0.0.1:8080"
 	defaultAgentPoll    = 2 * time.Second
