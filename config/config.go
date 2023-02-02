@@ -77,14 +77,14 @@ func initCfg() (*Config, error) {
 		return nil, err
 	}
 
-	err = parseEnv(&cfg)
+	//viper.AutomaticEnv()
+
+	err = execute()
 	if err != nil {
 		return nil, err
 	}
 
-	//viper.AutomaticEnv()
-
-	err = execute()
+	err = parseEnv(&cfg)
 	if err != nil {
 		return nil, err
 	}
@@ -106,15 +106,15 @@ func execute() error {
 
 func initAgent() {
 	agentCmd.PersistentFlags().StringP("http.address", "a", "", "agent http address report")
-	agentCmd.Flags().DurationP("agent.poll", "p", 0, "agent poll interval")
-	agentCmd.Flags().DurationP("agent.report", "r", 0, "agent report interval")
+	agentCmd.Flags().DurationP("agent.poll", "p", 2, "agent poll interval")
+	agentCmd.Flags().DurationP("agent.report", "r", 10, "agent report interval")
 }
 
 func initServer() {
 	serverCmd.PersistentFlags().StringP("http.address", "a", "", "server http address report")
 	serverCmd.Flags().BoolP("file.restore", "r", true, "server file restore")
-	serverCmd.Flags().DurationP("file.interval", "i", 0, "server file report interval")
-	serverCmd.Flags().StringP("file.path", "f", "", "server file path")
+	serverCmd.Flags().DurationP("file.interval", "i", 300, "server file report interval")
+	serverCmd.Flags().StringP("file.path", "f", "/tmp/devops-metrics-db.json", "server file path")
 }
 
 func parseEnv(cfg *Config) error {
@@ -196,14 +196,14 @@ func initFlagServer(cfg *Config) {
 	pflag.StringVarP(&cfg.HTTP.Address, "address", "a", "127.0.0.1:8080", "address")
 	pflag.StringVarP(&cfg.File.Path, "file.path", "f", "/tmp/devops-metrics-db.json", "server file path")
 	pflag.BoolVarP(&cfg.File.Restore, "file.restore", "r", true, "server file restore")
-	pflag.DurationVarP(&cfg.File.Interval, "file.interval", "i", 300, "server file report interval")
+	pflag.DurationVarP(&cfg.File.Interval, "file.interval", "i", 300*time.Second, "server file report interval")
 	pflag.Parse()
 
 }
 
 func initFlagAgent(cfg *Config) {
 	pflag.StringVarP(&cfg.HTTP.Address, "address", "a", "127.0.0.1:8080", "address")
-	pflag.DurationVarP(&cfg.Agent.Poll, "agent.poll", "p", 2, "agent poll interval")
-	pflag.DurationVarP(&cfg.Agent.Report, "agent.report", "r", 10, "agent report interval")
+	pflag.DurationVarP(&cfg.Agent.Poll, "agent.poll", "p", 2*time.Second, "agent poll interval")
+	pflag.DurationVarP(&cfg.Agent.Report, "agent.report", "r", 10*time.Second, "agent report interval")
 	pflag.Parse()
 }
