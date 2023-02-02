@@ -153,12 +153,12 @@ func InitFlagServer() (*Config, error) {
 
 	defaultFlag(cfg)
 
+	initFlagServer(cfg)
+
 	err := env.Parse(cfg)
 	if err != nil {
 		return nil, err
 	}
-
-	initFlagServer(cfg)
 
 	return cfg, nil
 }
