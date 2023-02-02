@@ -201,7 +201,7 @@ func initFlagServer(cfg *Config) {
 }
 
 func initFlagAgent(cfg *Config) {
-	pflag.StringVarP(&cfg.HTTP.Address, "address", "a", "", "address")
+	pflag.StringVarP(&cfg.HTTP.Address, "address", "a", "127.0.0.1:8080", "address")
 	pflag.DurationVarP(&cfg.Agent.Poll, "agent.poll", "p", 2, "agent poll interval")
 	pflag.DurationVarP(&cfg.Agent.Report, "agent.report", "r", 10, "agent report interval")
 	pflag.Parse()
