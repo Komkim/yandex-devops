@@ -153,12 +153,12 @@ func InitFlagServer() (*Config, error) {
 
 	defaultFlag(cfg)
 
-	initFlagServer(cfg)
-
 	err := env.Parse(cfg)
 	if err != nil {
 		return nil, err
 	}
+
+	initFlagServer(cfg)
 
 	return cfg, nil
 }
@@ -198,6 +198,7 @@ func initFlagServer(cfg *Config) {
 	pflag.BoolVarP(&cfg.File.Restore, "file.restore", "r", true, "server file restore")
 	pflag.DurationVarP(&cfg.File.Interval, "file.interval", "i", 300, "server file report interval")
 	pflag.Parse()
+
 }
 
 func initFlagAgent(cfg *Config) {
