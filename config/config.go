@@ -40,9 +40,9 @@ type File struct {
 }
 
 type Config struct {
-	HTTP
-	Agent
-	File
+	HTTP  HTTP
+	Agent Agent
+	File  File
 }
 
 var (
@@ -193,7 +193,7 @@ func defaultFlag(cfg *Config) {
 }
 
 func initFlagServer(cfg *Config) {
-	pflag.StringVarP(&cfg.Address, "address", "a", "127.0.0.1:8080", "address")
+	pflag.StringVarP(&cfg.HTTP.Address, "address", "a", "127.0.0.1:8080", "address")
 	pflag.StringVarP(&cfg.File.Path, "file.path", "f", "/tmp/devops-metrics-db.json", "server file path")
 	pflag.BoolVarP(&cfg.File.Restore, "file.restore", "r", true, "server file restore")
 	pflag.DurationVarP(&cfg.File.Interval, "file.interval", "i", 300, "server file report interval")
@@ -201,7 +201,7 @@ func initFlagServer(cfg *Config) {
 }
 
 func initFlagAgent(cfg *Config) {
-	pflag.StringVarP(&cfg.Address, "address", "a", "", "address")
+	pflag.StringVarP(&cfg.HTTP.Address, "address", "a", "", "address")
 	pflag.DurationVarP(&cfg.Agent.Poll, "agent.poll", "p", 2, "agent poll interval")
 	pflag.DurationVarP(&cfg.Agent.Report, "agent.report", "r", 10, "agent report interval")
 	pflag.Parse()

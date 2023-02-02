@@ -15,7 +15,8 @@ func main() {
 	ctx, cencel := context.WithCancel(context.Background())
 	defer cencel()
 
-	cfg, err := config.InitAgent()
+	//cfg, err := config.InitAgent()
+	cfg, err := config.InitFlagAgent()
 	if err != nil {
 		log.Println(err)
 	}
