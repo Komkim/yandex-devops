@@ -17,8 +17,8 @@ func main() {
 	ctx, cencel := context.WithCancel(context.Background())
 	defer cencel()
 
-	cfg, err := config.IninServer()
-	//cfg, err := config.InitFlagServer()
+	//cfg, err := config.IninServer()
+	cfg, err := config.InitFlagServer()
 	if err != nil {
 		log.Println(err)
 	}
