@@ -18,6 +18,7 @@ func main() {
 	defer cencel()
 
 	cfg, err := config.IninServer()
+	//cfg, err := config.InitFlagServer()
 	if err != nil {
 		log.Println(err)
 	}
