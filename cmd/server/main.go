@@ -16,14 +16,12 @@ func main() {
 	ctx, cencel := context.WithCancel(context.Background())
 	defer cencel()
 
-	//cfg, err := config.IninServer()
 	cfg, err := config.InitFlagServer()
 	if err != nil {
 		log.Println(err)
 	}
 
 	memoryStorage := memory.NewMemStorage()
-	//mm := *memoryStorage
 	if memoryStorage == nil {
 		log.Println("memory storage error")
 		return
