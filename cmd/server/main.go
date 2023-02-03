@@ -8,6 +8,9 @@ import (
 	"syscall"
 	"yandex-devops/config"
 	"yandex-devops/internal/server/app"
+	router "yandex-devops/internal/server/http"
+	"yandex-devops/internal/server/server"
+	"yandex-devops/internal/server/service"
 	"yandex-devops/storage/file"
 	"yandex-devops/storage/memory"
 )
@@ -26,27 +29,20 @@ func main() {
 		log.Println("memory storage error")
 		return
 	}
-	fileStorage, err := file.NewFileStorage(&cfg.File)
+	fileStorage, err := file.NewFileStorage(&cfg.Server)
 	if err != nil && fileStorage == nil {
 		log.Println("file storage error")
 		return
 	}
 
-	err = app.FileRestore(&cfg.File, fileStorage, memoryStorage)
-	if err != nil {
-		log.Println(err)
-	}
+	myFile := app.NewMyFile(ctx, &cfg.Server, memoryStorage, fileStorage)
+
+	go myFile.Restore()
+	go myFile.Start()
+	defer myFile.Finish()
 
 	go func() {
-		err = app.StartFile(ctx, &cfg.File, memoryStorage, fileStorage)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-	}()
-
-	go func() {
-		err = app.StartServer(&cfg.HTTP, memoryStorage, fileStorage)
+		err = startServer(&cfg.HTTP, memoryStorage, fileStorage)
 		if err != nil {
 			log.Println(err)
 			return
@@ -66,4 +62,12 @@ func main() {
 			}
 		}
 	}()
+}
+
+func startServer(cfg *config.HTTP, memStorage *memory.MemStorage, fileStorage *file.FileStorage) error {
+	srv := service.NewServices(memStorage, fileStorage)
+	r := router.NewRouter(srv)
+	s := server.NewServer(cfg, r.Init())
+
+	return s.Start()
 }

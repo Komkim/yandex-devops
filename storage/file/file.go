@@ -16,12 +16,12 @@ type FileMetrics struct {
 	Metrics []storage.Metrics `json:"metrics_nodes"`
 }
 
-func NewFileStorage(cfg *config.File) (*FileStorage, error) {
-	p, err := NewProducer(cfg.Path, cfg.Interval)
+func NewFileStorage(cfg *config.Server) (*FileStorage, error) {
+	p, err := NewProducer(cfg.FilePath, cfg.FileInterval)
 	if err != nil {
 		return nil, err
 	}
-	c, err := NewConsumer(cfg.Path)
+	c, err := NewConsumer(cfg.FilePath)
 	if err != nil {
 		return nil, err
 	}

@@ -20,17 +20,13 @@ func main() {
 		log.Println(err)
 	}
 
-	counter := agent.NewCounter()
 	ch := make(chan *[]myclient.Metrics)
 	client := myclient.New(&cfg.HTTP)
 
-	go agent.UpdateMetric(ctx, &cfg.Agent, ch, counter)
-	go func(ctx context.Context) {
-		err := agent.SendMetric(ctx, &cfg.Agent, &client, ch, counter)
-		if err != nil {
-			log.Println(err)
-		}
-	}(ctx)
+	a := agent.NewAgen(ctx, &cfg.Agent, ch)
+
+	go a.UpdateMetric()
+	go a.SendMetric(&client)
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)

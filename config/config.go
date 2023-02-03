@@ -28,18 +28,20 @@ type HTTP struct {
 type Agent struct {
 	Poll   time.Duration `env:"POLL_INTERVAL" mapstructure:"poll"`
 	Report time.Duration `env:"REPORT_INTERVAL" mapstructure:"report"`
+	Key    string        `env:"KEY" mapstructure:"key"`
 }
 
-type File struct {
-	Interval time.Duration `env:"STORE_INTERVAL" mapstructure:"interval"`
-	Path     string        `env:"STORE_FILE" mapstructure:"path"`
-	Restore  bool          `env:"RESTORE" mapstructure:"restore"`
+type Server struct {
+	FileInterval time.Duration `env:"STORE_INTERVAL" mapstructure:"interval"`
+	FilePath     string        `env:"STORE_FILE" mapstructure:"path"`
+	FileRestore  bool          `env:"RESTORE" mapstructure:"restore"`
+	Key          string        `env:"KEY" mapstructure:"key"`
 }
 
 type Config struct {
-	HTTP  HTTP
-	Agent Agent
-	File  File
+	HTTP   HTTP
+	Agent  Agent
+	Server Server
 }
 
 func InitFlagServer() (*Config, error) {
@@ -81,16 +83,17 @@ func defaultFlag(cfg *Config) {
 	cfg.Agent.Poll = defaultAgentPoll
 	cfg.Agent.Report = defaultAgentReport
 
-	cfg.File.Interval = defaultFileInterval
-	cfg.File.Path = defaultFilePath
-	cfg.File.Restore = defaultFileRestore
+	cfg.Server.FileInterval = defaultFileInterval
+	cfg.Server.FilePath = defaultFilePath
+	cfg.Server.FileRestore = defaultFileRestore
 }
 
 func initFlagServer(cfg *Config) {
 	pflag.StringVarP(&cfg.HTTP.Address, "address", "a", "127.0.0.1:8080", "address")
-	pflag.StringVarP(&cfg.File.Path, "file.path", "f", "/tmp/devops-metrics-db.json", "server file path")
-	pflag.BoolVarP(&cfg.File.Restore, "file.restore", "r", true, "server file restore")
-	pflag.DurationVarP(&cfg.File.Interval, "file.interval", "i", 300*time.Second, "server file report interval")
+	pflag.StringVarP(&cfg.Server.FilePath, "file.path", "f", "/tmp/devops-metrics-db.json", "server file path")
+	pflag.BoolVarP(&cfg.Server.FileRestore, "file.restore", "r", true, "server file restore")
+	pflag.DurationVarP(&cfg.Server.FileInterval, "file.interval", "i", 300*time.Second, "server file report interval")
+	pflag.StringVarP(&cfg.Server.Key, "server.key", "k", "", "hash key")
 	pflag.Parse()
 
 }
@@ -99,5 +102,6 @@ func initFlagAgent(cfg *Config) {
 	pflag.StringVarP(&cfg.HTTP.Address, "address", "a", "127.0.0.1:8080", "address")
 	pflag.DurationVarP(&cfg.Agent.Poll, "agent.poll", "p", 2*time.Second, "agent poll interval")
 	pflag.DurationVarP(&cfg.Agent.Report, "agent.report", "r", 10*time.Second, "agent report interval")
+	pflag.StringVarP(&cfg.Agent.Key, "server.key", "k", "", "hash key")
 	pflag.Parse()
 }
