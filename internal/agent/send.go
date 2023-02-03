@@ -3,6 +3,7 @@ package agent
 import (
 	"context"
 	"fmt"
+	"log"
 	"time"
 	"yandex-devops/config"
 	myclient "yandex-devops/provider"
@@ -18,7 +19,7 @@ func SendMetric(ctx context.Context, cfg *config.Agent, client *myclient.MyClien
 		case <-ticker.C:
 			err := client.SendAllMetric(metrics)
 			if err != nil {
-				return err
+				log.Println(err)
 			}
 			counter.Reset()
 
