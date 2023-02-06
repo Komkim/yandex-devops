@@ -27,12 +27,12 @@ func main() {
 
 	memoryStorage := memory.NewMemStorage()
 	if memoryStorage == nil {
-		log.Println("memory storage error")
+		log.Panic("memory storage error")
 		return
 	}
 	fileStorage, err := file.NewFileStorage(&cfg.Server)
 	if err != nil && fileStorage == nil {
-		log.Println("file storage error")
+		log.Fatal("file storage error")
 		return
 	}
 

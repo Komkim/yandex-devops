@@ -18,6 +18,7 @@ func main() {
 	cfg, err := config.InitFlagAgent()
 	if err != nil {
 		log.Println(err)
+		panic(err)
 	}
 
 	ch := make(chan *[]myclient.Metrics)
