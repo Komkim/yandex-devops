@@ -34,8 +34,8 @@ func NewProducer(filename string, stream time.Duration) (*producer, error) {
 		}, nil
 	}
 }
-func (p *producer) Write(metric *storage.Metrics) error {
-	return p.encoder.Encode(&metric)
+func (p *producer) Write(metric []storage.Metrics) error {
+	return p.encoder.Encode(metric)
 }
 func (p *producer) Close() error {
 	return p.file.Close()

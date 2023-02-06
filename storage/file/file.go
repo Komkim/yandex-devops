@@ -50,7 +50,8 @@ func (f FileStorage) GetAll() (*[]storage.Metrics, error) {
 }
 
 func (f FileStorage) SetOne(metric storage.Metrics) (*storage.Metrics, error) {
-	err := f.producer.Write(&metric)
+	metrics := []storage.Metrics{metric}
+	err := f.producer.Write(metrics)
 	if err != nil {
 		return nil, err
 	}
@@ -58,18 +59,15 @@ func (f FileStorage) SetOne(metric storage.Metrics) (*storage.Metrics, error) {
 
 }
 
-func (f FileStorage) SetAll(metric []storage.Metrics) (*[]storage.Metrics, error) {
-	metrics := make([]storage.Metrics, 0, len(metric))
+func (f FileStorage) SetAll(metrics []storage.Metrics) (*[]storage.Metrics, error) {
 	err := f.producer.Cleaning()
 	if err != nil {
 		return nil, err
 	}
-	for _, m := range metric {
-		mm, err := f.SetOne(m)
-		if err != nil {
-			return nil, err
-		}
-		metrics = append(metrics, *mm)
+
+	err = f.producer.Write(metrics)
+	if err != nil {
+		return nil, err
 	}
 	return &metrics, nil
 }

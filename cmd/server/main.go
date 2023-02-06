@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 	"yandex-devops/config"
 	"yandex-devops/internal/server/app"
 	router "yandex-devops/internal/server/http"
@@ -35,14 +36,17 @@ func main() {
 		return
 	}
 
-	myFile := app.NewMyFile(ctx, &cfg.Server, memoryStorage, fileStorage)
+	s := service.NewServices(memoryStorage, fileStorage)
+
+	myFile := app.NewMyFile(ctx, &cfg.Server, s)
 
 	go myFile.Restore()
 	go myFile.Start()
-	defer myFile.Finish()
 
+	r := router.NewRouter(s)
+	srv := server.NewServer(&cfg.HTTP, r.Init())
 	go func() {
-		err = startServer(&cfg.HTTP, memoryStorage, fileStorage)
+		err := srv.Start()
 		if err != nil {
 			log.Println(err)
 			return
@@ -54,6 +58,14 @@ func main() {
 
 	<-quit
 
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	if err := srv.GetServer().Shutdown(ctx); err != nil {
+		log.Fatal("Server forced to shutdown: ", err)
+	}
+
+	myFile.Finish()
+
 	defer func() {
 		if fileStorage != nil {
 			err := fileStorage.Close()
@@ -62,12 +74,4 @@ func main() {
 			}
 		}
 	}()
-}
-
-func startServer(cfg *config.HTTP, memStorage *memory.MemStorage, fileStorage *file.FileStorage) error {
-	srv := service.NewServices(memStorage, fileStorage)
-	r := router.NewRouter(srv)
-	s := server.NewServer(cfg, r.Init())
-
-	return s.Start()
 }

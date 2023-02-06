@@ -128,6 +128,7 @@ func (h *Router) GetAll(c *gin.Context) {
 		return
 	}
 
+	c.Writer.Header().Set("Content-Type", "text/html")
 	c.JSON(http.StatusOK, mm)
 }
 

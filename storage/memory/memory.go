@@ -1,6 +1,7 @@
 package memory
 
 import (
+	"log"
 	"sync"
 	"yandex-devops/storage"
 )

@@ -2,25 +2,23 @@ package app
 
 import (
 	"context"
+	"log"
 	"time"
 	"yandex-devops/config"
-	"yandex-devops/storage/file"
-	"yandex-devops/storage/memory"
+	"yandex-devops/internal/server/service"
 )
 
 type MyFile struct {
-	ctx         context.Context
-	cfg         *config.Server
-	fileStorage *file.FileStorage
-	memStorage  *memory.MemStorage
+	ctx      context.Context
+	cfg      *config.Server
+	services *service.Services
 }
 
-func NewMyFile(ctx context.Context, config *config.Server, memStorage *memory.MemStorage, fileStorage *file.FileStorage) *MyFile {
+func NewMyFile(ctx context.Context, config *config.Server, services *service.Services) *MyFile {
 	return &MyFile{
-		ctx:         ctx,
-		cfg:         config,
-		fileStorage: fileStorage,
-		memStorage:  memStorage,
+		ctx:      ctx,
+		cfg:      config,
+		services: services,
 	}
 }
 
@@ -28,16 +26,16 @@ func (f *MyFile) Restore() {
 	if !f.cfg.FileRestore {
 		return
 	}
-	if f.fileStorage == nil {
+	if f.services.Fss == nil {
 		return
 	}
 
-	metrics, err := f.fileStorage.GetAll()
+	metrics, err := f.services.Fss.GetAll()
 	if err != nil {
 		return
 	}
 
-	_, err = f.memStorage.SetAll(*metrics)
+	_, err = f.services.Mss.SaveOrUpdateAll(*metrics)
 	if err != nil {
 		return
 	}
@@ -49,14 +47,8 @@ func (f *MyFile) Start() {
 	for {
 		select {
 		case <-ticker.C:
-			metrics, err := f.memStorage.GetAll()
-			if err != nil {
+			if err := f.recordFile(); err != nil {
 				continue
-			} else {
-				_, err := f.fileStorage.SetAll(*metrics)
-				if err != nil {
-					continue
-				}
 			}
 		case <-f.ctx.Done():
 			return
@@ -65,5 +57,21 @@ func (f *MyFile) Start() {
 }
 
 func (f *MyFile) Finish() {
+	if err := f.recordFile(); err != nil {
+		log.Println(err)
+	}
+}
 
+func (f *MyFile) recordFile() error {
+	metrics, err := f.services.Mss.GetAll()
+
+	if err != nil {
+		return err
+	} else {
+		_, err := f.services.Fss.SetAll(*metrics)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
