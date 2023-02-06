@@ -23,7 +23,7 @@ func NewServer(cfg *config.HTTP, handler http.Handler) *Server {
 
 func (s *Server) Start() {
 	if err := s.httpServer.ListenAndServe(); err != nil {
-		log.Panic(err)
+		log.Println(err)
 	}
 }
 
