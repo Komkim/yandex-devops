@@ -1,76 +1,77 @@
 package app
 
 import (
-	"errors"
+	"context"
 	"log"
-	"net/http"
-	"os"
-	"os/signal"
-	"syscall"
+	"time"
 	"yandex-devops/config"
-	"yandex-devops/internal/server/entity"
-	router "yandex-devops/internal/server/http"
-	"yandex-devops/internal/server/server"
 	"yandex-devops/internal/server/service"
 )
 
-func Run(config *config.Config) {
+type MyFile struct {
+	ctx      context.Context
+	cfg      *config.Server
+	services *service.Services
+}
 
-	srv := service.NewServices(entity.NewMemStorage(keyInit(), typeInit()))
+func NewMyFile(ctx context.Context, config *config.Server, services *service.Services) *MyFile {
+	return &MyFile{
+		ctx:      ctx,
+		cfg:      config,
+		services: services,
+	}
+}
 
-	r := router.NewRouter(srv)
-	s := server.NewServer(config, r.Init())
+func (f *MyFile) Restore() {
+	if !f.cfg.FileRestore {
+		return
+	}
+	if f.services.Fss == nil {
+		return
+	}
 
-	go func() {
-		if err := s.Start(); !errors.Is(err, http.ErrServerClosed) {
-			log.Printf("error occurred while running http server: %s\n", err.Error())
+	metrics, err := f.services.Fss.GetAll()
+	if err != nil {
+		return
+	}
+
+	_, err = f.services.Mss.SaveOrUpdateAll(*metrics)
+	if err != nil {
+		return
+	}
+}
+
+func (f *MyFile) Start() {
+	ticker := time.NewTicker(f.cfg.FileInterval)
+
+	for {
+		select {
+		case <-ticker.C:
+			if err := f.recordFile(); err != nil {
+				continue
+			}
+		case <-f.ctx.Done():
+			return
 		}
-	}()
-
-	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
-
-	<-quit
-}
-
-func keyInit() []string {
-	return []string{
-		"Alloc",
-		"BuckHashSys",
-		"Frees",
-		"GCCPUFraction",
-		"GCSys",
-		"HeapAlloc",
-		"HeapIdle",
-		"HeapInuse",
-		"HeapObjects",
-		"HeapReleased",
-		"HeapSys",
-		"LastGC",
-		"Lookups",
-		"MCacheInuse",
-		"MCacheSys",
-		"MSpanInuse",
-		"MSpanSys",
-		"Mallocs",
-		"NextGC",
-		"NumForcedGC",
-		"NumGC",
-		"OtherSys",
-		"PauseTotalNs",
-		"StackInuse",
-		"StackSys",
-		"Sys",
-		"TotalAlloc",
-
-		"PollCount",
-		"RandomValue",
 	}
 }
 
-func typeInit() []string {
-	return []string{
-		"gauge",
-		"counter",
+func (f *MyFile) Finish() {
+	if err := f.recordFile(); err != nil {
+		log.Println(err)
 	}
+}
+
+func (f *MyFile) recordFile() error {
+	metrics, err := f.services.Mss.GetAll()
+
+	if err != nil {
+		return err
+	} else {
+		_, err := f.services.Fss.SetAll(*metrics)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
