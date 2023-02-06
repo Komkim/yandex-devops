@@ -45,13 +45,8 @@ func main() {
 
 	r := router.NewRouter(s)
 	srv := server.NewServer(&cfg.HTTP, r.Init())
-	go func() {
-		err := srv.Start()
-		if err != nil {
-			log.Println(err)
-			return
-		}
-	}()
+
+	go srv.Start()
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)

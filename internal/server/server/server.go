@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"log"
 	"net/http"
 	"yandex-devops/config"
 )
@@ -20,8 +21,10 @@ func NewServer(cfg *config.HTTP, handler http.Handler) *Server {
 	}
 }
 
-func (s *Server) Start() error {
-	return s.httpServer.ListenAndServe()
+func (s *Server) Start() {
+	if err := s.httpServer.ListenAndServe(); err != nil {
+		log.Panic(err)
+	}
 }
 
 func (s *Server) Stop(ctx context.Context) error {
