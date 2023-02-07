@@ -2,9 +2,13 @@ package router
 
 import (
 	"compress/gzip"
+	"context"
+	"database/sql"
 	"encoding/hex"
 	"encoding/json"
+	"fmt"
 	"github.com/gin-gonic/gin"
+	_ "github.com/jackc/pgx/v5/stdlib"
 	"io"
 	"net/http"
 	"strconv"
@@ -25,13 +29,14 @@ func (h *Router) SaveOrUpdate(c *gin.Context) {
 		return
 	}
 
-	if r, err := h.services.Mss.SaveOrUpdateOne(mtr); err != nil {
+	r, err := h.services.Mss.SaveOrUpdateOne(mtr)
+	if err != nil {
 		c.JSON(http.StatusBadRequest, err)
 		return
-	} else {
-		c.JSON(http.StatusOK, r)
-		return
 	}
+	c.JSON(http.StatusOK, r)
+	return
+
 }
 
 // Deprecated: Old version api
@@ -45,12 +50,13 @@ func (h *Router) SaveOrUpdateOld(c *gin.Context) {
 
 	switch t {
 	case "counter":
-		if vf, err := strconv.ParseInt(v, 10, 64); err != nil {
+		vf, err := strconv.ParseInt(v, 10, 64)
+		if err != nil {
 			c.JSON(http.StatusBadRequest, "Bad value")
 			return
-		} else {
-			m.Delta = &vf
 		}
+		m.Delta = &vf
+
 	case "gauge":
 		vc, err := strconv.ParseFloat(v, 64)
 		if err != nil {
@@ -80,19 +86,21 @@ func (h *Router) GetByKey(c *gin.Context) {
 		return
 	}
 
-	if str, err := h.services.Mss.GetByKey(mtr); err != nil {
+	str, err := h.services.Mss.GetByKey(mtr)
+	if err != nil {
 		c.JSON(http.StatusBadRequest, err)
 		return
-	} else if str == nil {
+	}
+	if str == nil {
 		c.JSON(http.StatusNotFound, "Bad key")
 		return
-	} else {
-		if len(h.cfg.Key) > 0 {
-			mtr.Hash = hex.EncodeToString(h.services.Mss.GenerageHash(mtr, h.cfg.Key))
-		}
-
-		c.JSON(http.StatusOK, str)
 	}
+
+	if len(h.cfg.Key) > 0 {
+		mtr.Hash = hex.EncodeToString(h.services.Mss.GenerageHash(mtr, h.cfg.Key))
+	}
+
+	c.JSON(http.StatusOK, str)
 }
 
 // Deprecated: Old version Api
@@ -142,7 +150,38 @@ func (h *Router) GetAll(c *gin.Context) {
 	c.JSON(http.StatusOK, mm)
 }
 
-func Ping(c *gin.Context) {
+func (h *Router) Ping(c *gin.Context) {
+
+	ctx := context.Background()
+	db, err := sql.Open("pgx", h.cfg.DatabaseDSN)
+	if err != nil {
+		fmt.Println(err)
+		c.JSON(http.StatusInternalServerError, "Error connect database")
+		return
+	}
+	defer db.Close()
+
+	err = db.PingContext(ctx)
+	if err != nil {
+		fmt.Println(err)
+		c.JSON(http.StatusInternalServerError, "Error connect database")
+		return
+	}
+
+	//ctx := context.Background()
+	//conn, err := pgx.Connect(ctx, h.cfg.DatabaseDSN)
+	//if err != nil {
+	//	c.JSON(http.StatusInternalServerError, "Error connect database")
+	//	return
+	//}
+	//
+	//err = conn.Ping(ctx)
+	//if err != nil {
+	//	c.JSON(http.StatusInternalServerError, "Error connect database")
+	//	return
+	//}
+	//defer conn.Close(ctx)
+
 	c.JSON(http.StatusOK, "Pong")
 }
 

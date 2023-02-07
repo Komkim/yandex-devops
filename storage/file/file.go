@@ -1,6 +1,7 @@
 package file
 
 import (
+	"log"
 	"sync"
 	"yandex-devops/config"
 	"yandex-devops/storage"
@@ -16,20 +17,22 @@ type FileMetrics struct {
 	Metrics []storage.Metrics `json:"metrics_nodes"`
 }
 
-func NewFileStorage(cfg *config.Server) (*FileStorage, error) {
+func NewFileStorage(cfg *config.Server) *FileStorage {
 	p, err := NewProducer(cfg.FilePath, cfg.FileInterval)
 	if err != nil {
-		return nil, err
+		log.Fatal(err)
+		return nil
 	}
 	c, err := NewConsumer(cfg.FilePath)
 	if err != nil {
-		return nil, err
+		log.Fatal(err)
+		return nil
 	}
 	return &FileStorage{
 		mutex:    &sync.RWMutex{},
 		producer: p,
 		consumer: c,
-	}, nil
+	}
 }
 
 func (f FileStorage) GetOne(key string) (*storage.Metrics, error) {

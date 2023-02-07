@@ -36,6 +36,7 @@ type Server struct {
 	FilePath     string        `env:"STORE_FILE" mapstructure:"path"`
 	FileRestore  bool          `env:"RESTORE" mapstructure:"restore"`
 	Key          string        `env:"KEY" mapstructure:"key"`
+	DatabaseDSN  string        `env:"DATABASE_DSN" mapstructure:"databasedsn"`
 }
 
 type Config struct {
@@ -94,6 +95,7 @@ func initFlagServer(cfg *Config) {
 	pflag.BoolVarP(&cfg.Server.FileRestore, "file.restore", "r", true, "server file restore")
 	pflag.DurationVarP(&cfg.Server.FileInterval, "file.interval", "i", 300*time.Second, "server file report interval")
 	pflag.StringVarP(&cfg.Server.Key, "server.key", "k", "", "hash key")
+	pflag.StringVarP(&cfg.Server.DatabaseDSN, "server.databasedsn", "d", "", "connect postgresql")
 	pflag.Parse()
 
 }

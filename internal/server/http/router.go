@@ -31,7 +31,7 @@ func (h *Router) Init() http.Handler {
 	mux.GET("/value/:t/:n", h.GetByKeyOld)
 	mux.GET("/value/:t/", func(c *gin.Context) { c.JSON(http.StatusNotFound, "Not Found") })
 	mux.GET("/", h.GetAll)
-	mux.GET("/ping", Ping)
+	mux.GET("/ping", h.Ping)
 	mux.POST("/update/", h.SaveOrUpdate)
 	mux.POST("/value/", h.GetByKey)
 
