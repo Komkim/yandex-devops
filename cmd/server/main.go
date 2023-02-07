@@ -30,18 +30,18 @@ func main() {
 		log.Panic("memory storage error")
 		return
 	}
-	fileStorage, err := file.NewFileStorage(&cfg.Server)
-	if err != nil && fileStorage == nil {
+	fileStorage := file.NewFileStorage(&cfg.Server)
+	if fileStorage == nil {
 		log.Fatal("file storage error")
 		return
 	}
 
 	s := service.NewServices(memoryStorage, fileStorage)
 
-	myFile := app.NewMyFile(ctx, &cfg.Server, s)
+	myFile := app.NewMyFile(&cfg.Server, s)
 
-	go myFile.Restore()
-	go myFile.Start()
+	myFile.Restore()
+	go myFile.Start(ctx)
 
 	r := router.NewRouter(&cfg.Server, s)
 	srv := server.NewServer(&cfg.HTTP, r.Init())
@@ -53,20 +53,22 @@ func main() {
 
 	<-quit
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-	if err := srv.GetServer().Shutdown(ctx); err != nil {
+	ctx2, cancel2 := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel2()
+	if err := srv.GetServer().Shutdown(ctx2); err != nil {
 		log.Fatal("Server forced to shutdown: ", err)
 	}
 
 	myFile.Finish()
 
-	defer func() {
-		if fileStorage != nil {
-			err := fileStorage.Close()
-			if err != nil {
-				log.Println(err)
-			}
+	defer closeFileStorage(fileStorage)
+}
+
+func closeFileStorage(fileStorage *file.FileStorage) {
+	if fileStorage != nil {
+		err := fileStorage.Close()
+		if err != nil {
+			log.Println(err)
 		}
-	}()
+	}
 }

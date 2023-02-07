@@ -24,10 +24,10 @@ func main() {
 	ch := make(chan *[]myclient.Metrics)
 	client := myclient.New(&cfg.HTTP)
 
-	a := agent.NewAgen(ctx, &cfg.Agent, ch)
+	a := agent.NewAgen(&cfg.Agent, ch)
 
-	go a.UpdateMetric()
-	go a.SendMetric(&client)
+	go a.UpdateMetric(ctx)
+	go a.SendMetric(ctx, &client)
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)

@@ -11,20 +11,18 @@ import (
 )
 
 type Agent struct {
-	ctx context.Context
 	cfg *config.Agent
 	sm  chan *[]myclient.Metrics
 }
 
-func NewAgen(ctx context.Context, cfg *config.Agent, ch chan *[]myclient.Metrics) *Agent {
+func NewAgen(cfg *config.Agent, ch chan *[]myclient.Metrics) *Agent {
 	return &Agent{
-		ctx: ctx,
 		cfg: cfg,
 		sm:  ch,
 	}
 }
 
-func (a *Agent) SendMetric(client *myclient.MyClient) {
+func (a *Agent) SendMetric(ctx context.Context, client *myclient.MyClient) {
 	ticker := time.NewTicker(a.cfg.Report)
 	var metrics *[]myclient.Metrics
 
@@ -39,13 +37,13 @@ func (a *Agent) SendMetric(client *myclient.MyClient) {
 
 		case metrics = <-a.sm:
 
-		case <-a.ctx.Done():
+		case <-ctx.Done():
 			return
 		}
 	}
 }
 
-func (a *Agent) UpdateMetric() {
+func (a *Agent) UpdateMetric(ctx context.Context) {
 	var runtimeStats runtime.MemStats
 	ticker := time.NewTicker(a.cfg.Poll)
 	rand.Seed(time.Now().UnixNano())
@@ -59,7 +57,7 @@ func (a *Agent) UpdateMetric() {
 			counter++
 			runtime.ReadMemStats(&runtimeStats)
 			a.sm <- ConvertRuntumeStatsToStorageMetrics(&runtimeStats, counter, rnd, a.cfg.Key)
-		case <-a.ctx.Done():
+		case <-ctx.Done():
 			return
 		}
 	}

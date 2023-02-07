@@ -9,14 +9,12 @@ import (
 )
 
 type MyFile struct {
-	ctx      context.Context
 	cfg      *config.Server
 	services *service.Services
 }
 
-func NewMyFile(ctx context.Context, config *config.Server, services *service.Services) *MyFile {
+func NewMyFile(config *config.Server, services *service.Services) *MyFile {
 	return &MyFile{
-		ctx:      ctx,
 		cfg:      config,
 		services: services,
 	}
@@ -41,7 +39,7 @@ func (f *MyFile) Restore() {
 	}
 }
 
-func (f *MyFile) Start() {
+func (f *MyFile) Start(ctx context.Context) {
 	ticker := time.NewTicker(f.cfg.FileInterval)
 
 	for {
@@ -50,7 +48,7 @@ func (f *MyFile) Start() {
 			if err := f.recordFile(); err != nil {
 				continue
 			}
-		case <-f.ctx.Done():
+		case <-ctx.Done():
 			return
 		}
 	}
