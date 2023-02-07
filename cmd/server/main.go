@@ -43,7 +43,7 @@ func main() {
 	go myFile.Restore()
 	go myFile.Start()
 
-	r := router.NewRouter(s)
+	r := router.NewRouter(&cfg.Server, s)
 	srv := server.NewServer(&cfg.HTTP, r.Init())
 
 	go srv.Start()

@@ -5,18 +5,19 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"yandex-devops/config"
 	router "yandex-devops/internal/server/http"
 	"yandex-devops/internal/server/service"
 )
 
 func TestNewRouter(t *testing.T) {
-	r := router.NewRouter(&service.Services{})
+	r := router.NewRouter(&config.Server{}, &service.Services{})
 
 	require.IsType(t, &router.Router{}, r)
 }
 
 func TestRouter_Init(t *testing.T) {
-	r := router.NewRouter(&service.Services{})
+	r := router.NewRouter(&config.Server{}, &service.Services{})
 	h := r.Init()
 	ts := httptest.NewServer(h)
 	defer ts.Close()

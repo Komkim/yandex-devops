@@ -1,6 +1,10 @@
 package agent
 
 import (
+	"crypto/hmac"
+	"crypto/sha256"
+	"encoding/hex"
+	"fmt"
 	"runtime"
 	myclient "yandex-devops/provider"
 )
@@ -8,7 +12,7 @@ import (
 const GAUGE = "gauge"
 const COUNTER = "counter"
 
-func ConvertRuntumeStatsToStorageMetrics(stats *runtime.MemStats, counter int64, rand float64) *[]myclient.Metrics {
+func convert(stats *runtime.MemStats, counter int64, rand float64) *[]myclient.Metrics {
 	metrics := make([]myclient.Metrics, 0, 29)
 
 	Alloc := float64(stats.Alloc)
@@ -213,4 +217,33 @@ func ConvertRuntumeStatsToStorageMetrics(stats *runtime.MemStats, counter int64,
 	})
 
 	return &metrics
+}
+
+func generateHas(key string, metrics *[]myclient.Metrics) *[]myclient.Metrics {
+	if len(key) <= 0 {
+		return metrics
+	}
+
+	m := *metrics
+	for k, v := range m {
+		var data []byte
+		switch m[k].MType {
+		case COUNTER:
+			data = []byte(fmt.Sprintf("%s:%s:%d", v.ID, v.MType, *v.Delta))
+		case GAUGE:
+			data = []byte(fmt.Sprintf("%s:%s:%f", v.ID, v.MType, *v.Value))
+		}
+
+		h := hmac.New(sha256.New, []byte(key))
+		h.Write(data)
+		dst := h.Sum(nil)
+
+		m[k].Hash = hex.EncodeToString(dst)
+	}
+
+	return &m
+}
+
+func ConvertRuntumeStatsToStorageMetrics(stats *runtime.MemStats, counter int64, rand float64, key string) *[]myclient.Metrics {
+	return generateHas(key, convert(stats, counter, rand))
 }
