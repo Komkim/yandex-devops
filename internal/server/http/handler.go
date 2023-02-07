@@ -2,6 +2,7 @@ package router
 
 import (
 	"compress/gzip"
+	"encoding/hex"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"io"
@@ -15,6 +16,11 @@ func (h *Router) SaveOrUpdate(c *gin.Context) {
 	var mtr storage.Metrics
 
 	if err := json.NewDecoder(c.Request.Body).Decode(&mtr); err != nil {
+		c.JSON(http.StatusBadRequest, err)
+		return
+	}
+
+	if checkHas, err := h.services.Mss.CheckHash(mtr, h.cfg.Key); err != nil || !checkHas {
 		c.JSON(http.StatusBadRequest, err)
 		return
 	}
@@ -81,6 +87,10 @@ func (h *Router) GetByKey(c *gin.Context) {
 		c.JSON(http.StatusNotFound, "Bad key")
 		return
 	} else {
+		if len(h.cfg.Key) > 0 {
+			mtr.Hash = hex.EncodeToString(h.services.Mss.GenerageHash(mtr, h.cfg.Key))
+		}
+
 		c.JSON(http.StatusOK, str)
 	}
 }

@@ -58,8 +58,7 @@ func (a *Agent) UpdateMetric() {
 			rnd := rand.Float64()
 			counter++
 			runtime.ReadMemStats(&runtimeStats)
-			a.sm <- ConvertRuntumeStatsToStorageMetrics(&runtimeStats, counter, rnd)
-
+			a.sm <- ConvertRuntumeStatsToStorageMetrics(&runtimeStats, counter, rnd, a.cfg.Key)
 		case <-a.ctx.Done():
 			return
 		}

@@ -4,15 +4,17 @@ import (
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"yandex-devops/config"
 	"yandex-devops/internal/server/service"
 )
 
 type Router struct {
 	services *service.Services
+	cfg      *config.Server
 }
 
-func NewRouter(s *service.Services) *Router {
-	return &Router{s}
+func NewRouter(cfg *config.Server, s *service.Services) *Router {
+	return &Router{cfg: cfg, services: s}
 }
 
 func (h *Router) Init() http.Handler {
