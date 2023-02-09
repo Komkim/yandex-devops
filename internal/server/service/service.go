@@ -1,18 +1,22 @@
 package service
 
-import "yandex-devops/storage"
+import (
+	"yandex-devops/config"
+	"yandex-devops/storage"
+)
 
 const GAUGE = "gauge"
 const COUNTER = "counter"
 
 type Services struct {
-	Mss *MemStorageService
-	Fss *FileStorageService
+	Mss            *MemStorageService
+	StorageService *StorageService
 }
 
-func NewServices(memory, file storage.Storage) *Services {
+func NewServices(cfg *config.Server, memory, storage storage.Storage) *Services {
+	memoryService := NewMemStorageService(&memory)
 	return &Services{
-		Mss: NewMemStorageService(&memory),
-		Fss: NewFileStorageService(&file),
+		Mss:            memoryService,
+		StorageService: NewStorageService(cfg, &storage, memoryService),
 	}
 }

@@ -35,8 +35,6 @@ func (h *Router) SaveOrUpdate(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, r)
-	return
-
 }
 
 // Deprecated: Old version api

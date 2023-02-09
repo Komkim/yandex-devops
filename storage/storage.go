@@ -5,4 +5,5 @@ type Storage interface {
 	GetAll() (*[]Metrics, error)
 	SetOne(metric Metrics) (*Metrics, error)
 	SetAll(metric []Metrics) (*[]Metrics, error)
+	Close() error
 }
