@@ -62,3 +62,7 @@ func (s *MemStorage) SetAll(metric []storage.Metrics) (*[]storage.Metrics, error
 
 	return &mm, nil
 }
+
+func (s *MemStorage) Close() error {
+	return nil
+}

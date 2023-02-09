@@ -2,23 +2,26 @@ package main
 
 import (
 	"context"
+	"database/sql"
+	"github.com/pressly/goose/v3"
 	"log"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 	"yandex-devops/config"
-	"yandex-devops/internal/server/app"
 	router "yandex-devops/internal/server/http"
 	"yandex-devops/internal/server/server"
 	"yandex-devops/internal/server/service"
+	"yandex-devops/storage"
 	"yandex-devops/storage/file"
 	"yandex-devops/storage/memory"
+	postgresql "yandex-devops/storage/postgre"
+	_ "yandex-devops/storage/postgre/migrations"
 )
 
 func main() {
 	ctx, cencel := context.WithCancel(context.Background())
-	defer cencel()
 
 	cfg, err := config.InitFlagServer()
 	if err != nil {
@@ -30,18 +33,13 @@ func main() {
 		log.Panic("memory storage error")
 		return
 	}
-	fileStorage := file.NewFileStorage(&cfg.Server)
-	if fileStorage == nil {
-		log.Fatal("file storage error")
-		return
-	}
 
-	s := service.NewServices(memoryStorage, fileStorage)
+	myStorage := selectionStorage(ctx, &cfg.Server)
 
-	myFile := app.NewMyFile(&cfg.Server, s)
+	s := service.NewServices(&cfg.Server, memoryStorage, myStorage)
 
-	myFile.Restore()
-	go myFile.Start(ctx)
+	s.StorageService.Restore()
+	go s.StorageService.Start(ctx)
 
 	r := router.NewRouter(&cfg.Server, s)
 	srv := server.NewServer(&cfg.HTTP, r.Init())
@@ -59,16 +57,44 @@ func main() {
 		log.Fatal("Server forced to shutdown: ", err)
 	}
 
-	myFile.Finish()
+	s.StorageService.Finish()
 
-	defer closeFileStorage(fileStorage)
+	defer closeStorage(&myStorage)
+	defer cencel()
 }
 
-func closeFileStorage(fileStorage *file.FileStorage) {
-	if fileStorage != nil {
-		err := fileStorage.Close()
+func closeStorage(storage *storage.Storage) {
+	if storage != nil {
+		s := *storage
+		err := s.Close()
 		if err != nil {
 			log.Println(err)
 		}
 	}
+}
+
+func selectionStorage(ctx context.Context, cfg *config.Server) storage.Storage {
+	switch len(cfg.DatabaseDSN) > 0 {
+	case true:
+		dbStorage, err := postgresql.New(ctx, cfg.DatabaseDSN)
+		if err != nil {
+			log.Println(err)
+			return file.NewFileStorage(cfg)
+		}
+
+		db, err := sql.Open("pgx", cfg.DatabaseDSN)
+		if err != nil {
+			log.Println(err)
+			return file.NewFileStorage(cfg)
+		}
+
+		err = goose.Up(db, "/var")
+		if err != nil {
+			log.Println()
+			return file.NewFileStorage(cfg)
+		}
+
+		return dbStorage
+	}
+	return file.NewFileStorage(cfg)
 }
