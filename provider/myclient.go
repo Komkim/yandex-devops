@@ -60,12 +60,43 @@ func (c MyClient) SendOneMetric(metric Metrics) error {
 	return nil
 }
 
+//func (c MyClient) SendAllMetric(metrics *[]Metrics) error {
+//	for _, m := range *metrics {
+//		if err := c.SendOneMetric(m); err != nil {
+//			return err
+//		}
+//	}
+//
+//	return nil
+//}
+
 func (c MyClient) SendAllMetric(metrics *[]Metrics) error {
-	for _, m := range *metrics {
-		if err := c.SendOneMetric(m); err != nil {
-			return err
-		}
+	u := &url.URL{
+		Scheme: c.config.Scheme,
+		Host:   c.config.Address,
+	}
+	u = u.JoinPath("updates")
+
+	data, err := json.Marshal(metrics)
+	if err != nil {
+		return err
 	}
 
+	req, err := http.NewRequest(
+		http.MethodPost,
+		u.String(),
+		bytes.NewBuffer(data),
+	)
+	if err != nil {
+		return err
+	}
+
+	req.Header.Add("Content-Type", "application/json")
+
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
 	return nil
 }
