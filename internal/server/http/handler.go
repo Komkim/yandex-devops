@@ -183,29 +183,6 @@ func (h *Router) Ping(c *gin.Context) {
 	c.JSON(http.StatusOK, "Pong")
 }
 
-func (h *Router) SetAll(c *gin.Context) {
-	metrics := &[]storage.Metrics{}
-
-	if err := json.NewDecoder(c.Request.Body).Decode(&metrics); err != nil {
-		c.JSON(http.StatusBadRequest, err)
-		return
-	}
-
-	for _, m := range *metrics {
-		if checkHas, err := h.services.Mss.CheckHash(m, h.cfg.Key); err != nil || !checkHas {
-			c.JSON(http.StatusBadRequest, err)
-			return
-		}
-	}
-	r, err := h.services.Mss.SaveOrUpdateAll(*metrics)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, err)
-		return
-	}
-	c.JSON(http.StatusOK, r)
-
-}
-
 func (h *Router) gzipMiddleware(c *gin.Context) {
 	if !strings.Contains(c.Request.Header.Get("Accept-Encoding"), "qzip") {
 		c.Next()
