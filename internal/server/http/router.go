@@ -33,6 +33,7 @@ func (h *Router) Init() http.Handler {
 	mux.GET("/", h.GetAll)
 	mux.GET("/ping", h.Ping)
 	mux.POST("/update/", h.SaveOrUpdate)
+	mux.POST("/updates/", h.SetAll)
 	mux.POST("/value/", h.GetByKey)
 
 	return mux

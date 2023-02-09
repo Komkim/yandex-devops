@@ -24,7 +24,8 @@ func New(ctx context.Context, connString string) (*PostgreStorage, error) {
 
 func (f PostgreStorage) GetOne(key string) (*storage.Metrics, error) {
 	metric := metrics{}
-	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
 	err := f.PGXpool.QueryRow(ctx, "select * from metrics where id = ?", key).Scan(metric)
 	if err != nil {
 		return nil, err
@@ -35,7 +36,8 @@ func (f PostgreStorage) GetOne(key string) (*storage.Metrics, error) {
 
 func (f PostgreStorage) GetAll() (*[]storage.Metrics, error) {
 	var m []storage.Metrics
-	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
 	rows, err := f.PGXpool.Query(ctx, "select * from metrics")
 	if err != nil {
 		return nil, err
@@ -60,7 +62,8 @@ func (f PostgreStorage) GetAll() (*[]storage.Metrics, error) {
 
 func (f PostgreStorage) SetOne(metric storage.Metrics) (*storage.Metrics, error) {
 	var m storage.Metrics
-	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
 
 	sqlStatement := `
 		insert into mertics (name, type, value, delta, hash)
@@ -79,7 +82,8 @@ func (f PostgreStorage) SetOne(metric storage.Metrics) (*storage.Metrics, error)
 }
 
 func (f PostgreStorage) SetAll(metrics []storage.Metrics) (*[]storage.Metrics, error) {
-	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
 	valueStr := []string{}
 	valueArgs := []interface{}{}
 	tx, err := f.PGXpool.Begin(ctx)
@@ -100,7 +104,7 @@ func (f PostgreStorage) SetAll(metrics []storage.Metrics) (*[]storage.Metrics, e
 	sqlStatement := `insert into mertics (name, type, value, delta, hash) values`
 	sqlStatement = fmt.Sprintf(sqlStatement, strings.Join(valueStr, ","))
 
-	cTag, err := tx.Exec(ctx, sqlStatement)
+	cTag, err := tx.Exec(ctx, sqlStatement, valueArgs)
 	//_ , err = tx.Exec(ctx, sqlStatement)
 	if err != nil {
 		tx.Rollback(ctx)
@@ -120,7 +124,8 @@ func (f PostgreStorage) SetAll(metrics []storage.Metrics) (*[]storage.Metrics, e
 }
 
 func (f PostgreStorage) Close() error {
-	return f.Close()
+	f.PGXpool.Close()
+	return nil
 }
 
 func convert(m metrics) *storage.Metrics {
