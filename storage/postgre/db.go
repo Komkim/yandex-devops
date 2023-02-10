@@ -96,9 +96,9 @@ func (f PostgreStorage) SetAll(metrics []storage.Metrics) (*[]storage.Metrics, e
 	}
 
 	for _, m := range metrics {
-		valueStr = append(valueStr, "?, ?, ?, ?, ?, ?")
+		valueStr = append(valueStr, "(?, ?, ?, ?, ?)")
 
-		valueArgs = append(valueArgs, m.ID, m.MType, m.Value, m.Delta, m.Hash, time.Now())
+		valueArgs = append(valueArgs, m.ID, m.MType, m.Value, m.Delta, m.Hash)
 	}
 
 	sqlStatement := `insert into mertics (name, type, value, delta, hash) values`
