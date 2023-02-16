@@ -18,11 +18,11 @@ func NewStorageService(cfg *config.Server, r *storage.Storage, memoryService *Me
 	return &StorageService{cfg: cfg, repo: *r, memoryService: memoryService}
 }
 
-func (s *StorageService) GetAll() (*[]storage.Metrics, error) {
+func (s *StorageService) GetAll() ([]storage.Metrics, error) {
 	return s.repo.GetAll()
 }
 
-func (s *StorageService) SetAll(metrics []storage.Metrics) (*[]storage.Metrics, error) {
+func (s *StorageService) SetAll(metrics []storage.Metrics) ([]storage.Metrics, error) {
 	return s.repo.SetAll(metrics)
 }
 
@@ -39,7 +39,7 @@ func (s *StorageService) Restore() {
 		return
 	}
 
-	_, err = s.memoryService.SaveOrUpdateAll(*metrics)
+	_, err = s.memoryService.SaveOrUpdateAll(metrics)
 	if err != nil {
 		return
 	}
@@ -72,7 +72,7 @@ func (s *StorageService) record() error {
 	if err != nil {
 		return err
 	} else {
-		_, err := s.SetAll(*metrics)
+		_, err := s.SetAll(metrics)
 		if err != nil {
 			return err
 		}

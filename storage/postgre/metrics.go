@@ -6,7 +6,8 @@ import (
 )
 
 type metrics struct {
-	ID     string          `db:"name"`
+	ID     string          `db:"id"`
+	Name   string          `db:"name"`
 	MType  string          `db:"type"`
 	Delta  sql.NullInt64   `db:"delta"`
 	Value  sql.NullFloat64 `db:"value"`

@@ -12,7 +12,7 @@ import (
 const GAUGE = "gauge"
 const COUNTER = "counter"
 
-func convert(stats *runtime.MemStats, counter int64, rand float64) *[]myclient.Metrics {
+func convert(stats *runtime.MemStats, counter int64, rand float64) []myclient.Metrics {
 	metrics := make([]myclient.Metrics, 0, 29)
 
 	Alloc := float64(stats.Alloc)
@@ -216,15 +216,14 @@ func convert(stats *runtime.MemStats, counter int64, rand float64) *[]myclient.M
 		Value: &rand,
 	})
 
-	return &metrics
+	return metrics
 }
 
-func generateHas(key string, metrics *[]myclient.Metrics) *[]myclient.Metrics {
+func generateHas(key string, m []myclient.Metrics) []myclient.Metrics {
 	if len(key) <= 0 {
-		return metrics
+		return m
 	}
 
-	m := *metrics
 	for k, v := range m {
 		var data []byte
 		switch m[k].MType {
@@ -241,9 +240,9 @@ func generateHas(key string, metrics *[]myclient.Metrics) *[]myclient.Metrics {
 		m[k].Hash = hex.EncodeToString(dst)
 	}
 
-	return &m
+	return m
 }
 
-func ConvertRuntumeStatsToStorageMetrics(stats *runtime.MemStats, counter int64, rand float64, key string) *[]myclient.Metrics {
+func ConvertRuntumeStatsToStorageMetrics(stats *runtime.MemStats, counter int64, rand float64, key string) []myclient.Metrics {
 	return generateHas(key, convert(stats, counter, rand))
 }

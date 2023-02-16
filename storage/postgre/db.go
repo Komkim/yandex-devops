@@ -2,13 +2,13 @@ package postgresql
 
 import (
 	"context"
-	"errors"
-	"fmt"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"strings"
 	"time"
 	"yandex-devops/storage"
 )
+
+const DBTIMEOUT = 5
 
 type PostgreStorage struct {
 	PGXpool *pgxpool.Pool
@@ -24,9 +24,13 @@ func New(ctx context.Context, connString string) (*PostgreStorage, error) {
 
 func (f PostgreStorage) GetOne(key string) (*storage.Metrics, error) {
 	metric := metrics{}
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), DBTIMEOUT*time.Second)
 	defer cancel()
-	err := f.PGXpool.QueryRow(ctx, "select * from metrics where id = ?", key).Scan(metric)
+	err := f.PGXpool.QueryRow(ctx,
+		"select id, name, type, value, delta, hash, create_at from metrics where id = ?",
+		key,
+	).Scan(&metric.ID, &metric.Name, &metric.MType, &metric.Value, &metric.Delta, &metric.Hash, &metric.Create)
+
 	if err != nil {
 		return nil, err
 	}
@@ -34,18 +38,27 @@ func (f PostgreStorage) GetOne(key string) (*storage.Metrics, error) {
 	return convert(metric), nil
 }
 
-func (f PostgreStorage) GetAll() (*[]storage.Metrics, error) {
+func (f PostgreStorage) GetAll() ([]storage.Metrics, error) {
 	var m []storage.Metrics
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), DBTIMEOUT*time.Second)
 	defer cancel()
-	rows, err := f.PGXpool.Query(ctx, "select * from metrics")
+	rows, err := f.PGXpool.Query(ctx,
+		`with unic_name as (
+					select distinct name as n
+					from metrics
+				)
+				select id, name, type, value, delta, hash, create_at
+				from metrics,
+					 unic_name
+				where id in (select id from metrics where name = unic_name.n order by id desc limit 1);`,
+	)
 	if err != nil {
 		return nil, err
 	}
 
 	for rows.Next() {
 		metric := metrics{}
-		err := rows.Scan(metric)
+		err := rows.Scan(&metric.ID, &metric.Name, &metric.MType, &metric.Value, &metric.Delta, &metric.Hash, &metric.Create)
 		if err != nil {
 			return nil, err
 		}
@@ -57,16 +70,16 @@ func (f PostgreStorage) GetAll() (*[]storage.Metrics, error) {
 		return nil, err
 	}
 
-	return &m, nil
+	return m, nil
 }
 
 func (f PostgreStorage) SetOne(metric storage.Metrics) (*storage.Metrics, error) {
 	var m storage.Metrics
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), DBTIMEOUT*time.Second)
 	defer cancel()
 
 	sqlStatement := `
-		insert into mertics (name, type, value, delta, hash)
+		insert into metrics (name, type, value, delta, hash)
 		values ($1, $2, $3, $4, $5)
 		returning id `
 	var id int
@@ -81,11 +94,11 @@ func (f PostgreStorage) SetOne(metric storage.Metrics) (*storage.Metrics, error)
 	return &metric, nil
 }
 
-func (f PostgreStorage) SetAll(metrics []storage.Metrics) (*[]storage.Metrics, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+func (f PostgreStorage) SetAll(metrics []storage.Metrics) ([]storage.Metrics, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), DBTIMEOUT*time.Second)
 	defer cancel()
-	valueStr := []string{}
-	valueArgs := []interface{}{}
+
+	valueArgs := [][]interface{}{}
 	tx, err := f.PGXpool.Begin(ctx)
 	if err != nil {
 		return nil, err
@@ -96,31 +109,26 @@ func (f PostgreStorage) SetAll(metrics []storage.Metrics) (*[]storage.Metrics, e
 	}
 
 	for _, m := range metrics {
-		valueStr = append(valueStr, "(?, ?, ?, ?, ?)")
-
-		valueArgs = append(valueArgs, m.ID, m.MType, m.Value, m.Delta, m.Hash)
+		valueArgs = append(valueArgs, []interface{}{m.ID, m.MType, m.Value, m.Delta, m.Hash})
 	}
 
-	sqlStatement := `insert into mertics (name, type, value, delta, hash) values`
-	sqlStatement = fmt.Sprintf(sqlStatement, strings.Join(valueStr, ","))
+	_, err = tx.CopyFrom(
+		ctx,
+		pgx.Identifier{"metrics"},
+		[]string{"name", "type", "value", "delta", "hash"},
+		pgx.CopyFromRows(valueArgs),
+	)
 
-	cTag, err := tx.Exec(ctx, sqlStatement, valueArgs)
-	//_ , err = tx.Exec(ctx, sqlStatement)
 	if err != nil {
 		tx.Rollback(ctx)
 		return nil, err
-	}
-
-	if cTag.RowsAffected() != int64(len(metrics)) {
-		tx.Rollback(ctx)
-		return nil, errors.New("rows affected error")
 	}
 
 	err = tx.Commit(ctx)
 	if err != nil {
 		return nil, err
 	}
-	return &metrics, nil
+	return metrics, nil
 }
 
 func (f PostgreStorage) Close() error {
@@ -138,7 +146,7 @@ func convert(m metrics) *storage.Metrics {
 		delta = &m.Delta.Int64
 	}
 	return &storage.Metrics{
-		ID:    m.ID,
+		ID:    m.Name,
 		MType: m.MType,
 		Delta: delta,
 		Value: value,

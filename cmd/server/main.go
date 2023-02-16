@@ -8,7 +8,6 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
 	"yandex-devops/config"
 	router "yandex-devops/internal/server/http"
 	"yandex-devops/internal/server/server"
@@ -51,21 +50,19 @@ func main() {
 
 	<-quit
 
-	ctx2, cancel2 := context.WithTimeout(ctx, 5*time.Second)
-	defer cancel2()
-	if err := srv.GetServer().Shutdown(ctx2); err != nil {
+	if err := srv.GetServer().Shutdown(ctx); err != nil {
 		log.Fatal("Server forced to shutdown: ", err)
 	}
 
 	s.StorageService.Finish()
 
-	defer closeStorage(&myStorage)
+	defer closeStorage(myStorage)
 	defer cencel()
 }
 
-func closeStorage(storage *storage.Storage) {
+func closeStorage(storage storage.Storage) {
 	if storage != nil {
-		s := *storage
+		s := storage
 		err := s.Close()
 		if err != nil {
 			log.Println(err)
@@ -74,27 +71,27 @@ func closeStorage(storage *storage.Storage) {
 }
 
 func selectionStorage(ctx context.Context, cfg *config.Server) storage.Storage {
-	switch len(cfg.DatabaseDSN) > 0 {
-	case true:
-		dbStorage, err := postgresql.New(ctx, cfg.DatabaseDSN)
-		if err != nil {
-			log.Println(err)
-			return file.NewFileStorage(cfg)
-		}
-
-		db, err := sql.Open("pgx", cfg.DatabaseDSN)
-		if err != nil {
-			log.Println(err)
-			return file.NewFileStorage(cfg)
-		}
-
-		err = goose.Up(db, "/var")
-		if err != nil {
-			log.Println()
-			return file.NewFileStorage(cfg)
-		}
-
-		return dbStorage
+	if len(cfg.DatabaseDSN) <= 0 {
+		return file.NewFileStorage(cfg)
 	}
-	return file.NewFileStorage(cfg)
+
+	dbStorage, err := postgresql.New(ctx, cfg.DatabaseDSN)
+	if err != nil {
+		log.Println(err)
+		return file.NewFileStorage(cfg)
+	}
+
+	db, err := sql.Open("pgx", cfg.DatabaseDSN)
+	if err != nil {
+		log.Println(err)
+		return file.NewFileStorage(cfg)
+	}
+
+	err = goose.Up(db, "/var")
+	if err != nil {
+		log.Println()
+		return file.NewFileStorage(cfg)
+	}
+
+	return dbStorage
 }

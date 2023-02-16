@@ -32,7 +32,7 @@ func (m MemStorageService) SaveOrUpdateOne(metric storage.Metrics) (*storage.Met
 	return m.repo.SetOne(metric)
 }
 
-func (m MemStorageService) SaveOrUpdateAll(metrics []storage.Metrics) (*[]storage.Metrics, error) {
+func (m MemStorageService) SaveOrUpdateAll(metrics []storage.Metrics) ([]storage.Metrics, error) {
 	return m.repo.SetAll(metrics)
 }
 
@@ -40,7 +40,7 @@ func (m MemStorageService) GetByKey(metric storage.Metrics) (*storage.Metrics, e
 	return m.repo.GetOne(metric.ID)
 }
 
-func (m MemStorageService) GetAll() (*[]storage.Metrics, error) {
+func (m MemStorageService) GetAll() ([]storage.Metrics, error) {
 	return m.repo.GetAll()
 }
 

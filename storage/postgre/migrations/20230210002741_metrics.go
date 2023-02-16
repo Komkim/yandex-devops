@@ -16,6 +16,7 @@ func upMetrics(tx *sql.Tx) error {
 				id        serial primary key,
 				create_at timestamp with time zone default current_timestamp,
 				name      varchar(40) not null,
+				type 	  varchar(40) not null,
 				value     double precision,
 				delta     integer,
 				hash      varchar(100)

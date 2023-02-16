@@ -166,38 +166,24 @@ func (h *Router) Ping(c *gin.Context) {
 		return
 	}
 
-	//ctx := context.Background()
-	//conn, err := pgx.Connect(ctx, h.cfg.DatabaseDSN)
-	//if err != nil {
-	//	c.JSON(http.StatusInternalServerError, "Error connect database")
-	//	return
-	//}
-	//
-	//err = conn.Ping(ctx)
-	//if err != nil {
-	//	c.JSON(http.StatusInternalServerError, "Error connect database")
-	//	return
-	//}
-	//defer conn.Close(ctx)
-
 	c.JSON(http.StatusOK, "Pong")
 }
 
 func (h *Router) SetAll(c *gin.Context) {
-	metrics := &[]storage.Metrics{}
+	var metrics []storage.Metrics
 
 	if err := json.NewDecoder(c.Request.Body).Decode(&metrics); err != nil {
 		c.JSON(http.StatusBadRequest, err)
 		return
 	}
 
-	for _, m := range *metrics {
+	for _, m := range metrics {
 		if checkHas, err := h.services.Mss.CheckHash(m, h.cfg.Key); err != nil || !checkHas {
 			c.JSON(http.StatusBadRequest, err)
 			return
 		}
 	}
-	r, err := h.services.Mss.SaveOrUpdateAll(*metrics)
+	r, err := h.services.Mss.SaveOrUpdateAll(metrics)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err)
 		return
@@ -221,3 +207,30 @@ func (h *Router) gzipMiddleware(c *gin.Context) {
 	c.Writer.Header().Set("Content-Encoding", "gzip")
 	c.Next()
 }
+
+//func (h *Router) DbGetAll(c *gin.Context) {
+//	mm, err := h.services.StorageService.GetAll()
+//	if err != nil {
+//		c.JSON(http.StatusNotFound, "Bad key")
+//		return
+//	}
+//
+//	c.Writer.Header().Set("Content-Type", "text/html")
+//	c.JSON(http.StatusOK, mm)
+//}
+//
+//func (h *Router) DbSetAll(c *gin.Context) {
+//	metrics := &[]storage.Metrics{}
+//
+//	if err := json.NewDecoder(c.Request.Body).Decode(&metrics); err != nil {
+//		c.JSON(http.StatusBadRequest, err)
+//		return
+//	}
+//
+//	r, err := h.services.StorageService.SetAll(*metrics)
+//	if err != nil {
+//		c.JSON(http.StatusBadRequest, err)
+//		return
+//	}
+//	c.JSON(http.StatusOK, r)
+//}

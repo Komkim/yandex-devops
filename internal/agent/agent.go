@@ -12,10 +12,10 @@ import (
 
 type Agent struct {
 	cfg *config.Agent
-	sm  chan *[]myclient.Metrics
+	sm  chan []myclient.Metrics
 }
 
-func NewAgen(cfg *config.Agent, ch chan *[]myclient.Metrics) *Agent {
+func NewAgen(cfg *config.Agent, ch chan []myclient.Metrics) *Agent {
 	return &Agent{
 		cfg: cfg,
 		sm:  ch,
@@ -24,7 +24,7 @@ func NewAgen(cfg *config.Agent, ch chan *[]myclient.Metrics) *Agent {
 
 func (a *Agent) SendMetric(ctx context.Context, client *myclient.MyClient) {
 	ticker := time.NewTicker(a.cfg.Report)
-	var metrics *[]myclient.Metrics
+	var metrics []myclient.Metrics
 
 	for {
 		select {

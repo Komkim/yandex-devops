@@ -21,7 +21,7 @@ func main() {
 		panic(err)
 	}
 
-	ch := make(chan *[]myclient.Metrics)
+	ch := make(chan []myclient.Metrics)
 	client := myclient.New(&cfg.HTTP)
 
 	a := agent.NewAgen(&cfg.Agent, ch)

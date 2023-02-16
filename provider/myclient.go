@@ -31,8 +31,7 @@ func New(config *config.HTTP) MyClient {
 func (c MyClient) SendOneMetric(metric Metrics) error {
 	u := &url.URL{
 		Scheme: c.config.Scheme,
-		//Host:   c.config.Host + ":" + c.config.Port,
-		Host: c.config.Address,
+		Host:   c.config.Address,
 	}
 	u = u.JoinPath("update")
 
@@ -60,17 +59,7 @@ func (c MyClient) SendOneMetric(metric Metrics) error {
 	return nil
 }
 
-//func (c MyClient) SendAllMetric(metrics *[]Metrics) error {
-//	for _, m := range *metrics {
-//		if err := c.SendOneMetric(m); err != nil {
-//			return err
-//		}
-//	}
-//
-//	return nil
-//}
-
-func (c MyClient) SendAllMetric(metrics *[]Metrics) error {
+func (c MyClient) SendAllMetric(metrics []Metrics) error {
 	u := &url.URL{
 		Scheme: c.config.Scheme,
 		Host:   c.config.Address,

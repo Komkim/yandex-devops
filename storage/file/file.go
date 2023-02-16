@@ -40,7 +40,7 @@ func (f FileStorage) GetOne(key string) (*storage.Metrics, error) {
 	if err != nil {
 		return nil, err
 	}
-	for _, v := range *m {
+	for _, v := range m {
 		if v.ID == key {
 			return &v, nil
 		}
@@ -48,7 +48,7 @@ func (f FileStorage) GetOne(key string) (*storage.Metrics, error) {
 	return nil, nil
 }
 
-func (f FileStorage) GetAll() (*[]storage.Metrics, error) {
+func (f FileStorage) GetAll() ([]storage.Metrics, error) {
 	return f.consumer.Read()
 }
 
@@ -62,7 +62,7 @@ func (f FileStorage) SetOne(metric storage.Metrics) (*storage.Metrics, error) {
 
 }
 
-func (f FileStorage) SetAll(metrics []storage.Metrics) (*[]storage.Metrics, error) {
+func (f FileStorage) SetAll(metrics []storage.Metrics) ([]storage.Metrics, error) {
 	err := f.producer.Cleaning()
 	if err != nil {
 		return nil, err
@@ -72,7 +72,7 @@ func (f FileStorage) SetAll(metrics []storage.Metrics) (*[]storage.Metrics, erro
 	if err != nil {
 		return nil, err
 	}
-	return &metrics, nil
+	return metrics, nil
 }
 
 func (f *FileStorage) Close() error {
