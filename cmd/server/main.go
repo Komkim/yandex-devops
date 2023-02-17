@@ -27,18 +27,20 @@ func main() {
 		log.Println(err)
 	}
 
-	memoryStorage := memory.NewMemStorage()
-	if memoryStorage == nil {
-		log.Panic("memory storage error")
-		return
-	}
-
 	myStorage := selectionStorage(ctx, &cfg.Server)
 
-	s := service.NewServices(&cfg.Server, memoryStorage, myStorage)
+	s := service.NewServices(myStorage)
 
-	s.StorageService.Restore()
-	go s.StorageService.Start(ctx)
+	if len(cfg.Server.DatabaseDSN) < 0 {
+
+		fileStorage := file.NewFileStorage(&cfg.Server)
+		if fileStorage == nil {
+			log.Println("file storage error")
+
+		}
+		fileService := service.NewFileService(&cfg.Server, fileStorage, s.StorageService)
+		go fileService.Start(ctx)
+	}
 
 	r := router.NewRouter(&cfg.Server, s)
 	srv := server.NewServer(&cfg.HTTP, r.Init())
@@ -53,8 +55,6 @@ func main() {
 	if err := srv.GetServer().Shutdown(ctx); err != nil {
 		log.Fatal("Server forced to shutdown: ", err)
 	}
-
-	s.StorageService.Finish()
 
 	defer closeStorage(myStorage)
 	defer cencel()
@@ -72,25 +72,25 @@ func closeStorage(storage storage.Storage) {
 
 func selectionStorage(ctx context.Context, cfg *config.Server) storage.Storage {
 	if len(cfg.DatabaseDSN) <= 0 {
-		return file.NewFileStorage(cfg)
+		return memory.NewMemStorage()
 	}
 
 	dbStorage, err := postgresql.New(ctx, cfg.DatabaseDSN)
 	if err != nil {
 		log.Println(err)
-		return file.NewFileStorage(cfg)
+		return memory.NewMemStorage()
 	}
 
 	db, err := sql.Open("pgx", cfg.DatabaseDSN)
 	if err != nil {
 		log.Println(err)
-		return file.NewFileStorage(cfg)
+		return memory.NewMemStorage()
 	}
 
 	err = goose.Up(db, "/var")
 	if err != nil {
 		log.Println()
-		return file.NewFileStorage(cfg)
+		return memory.NewMemStorage()
 	}
 
 	return dbStorage

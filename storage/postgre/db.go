@@ -27,7 +27,15 @@ func (f PostgreStorage) GetOne(key string) (*storage.Metrics, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), DBTIMEOUT*time.Second)
 	defer cancel()
 	err := f.PGXpool.QueryRow(ctx,
-		"select id, name, type, value, delta, hash, create_at from metrics where id = ?",
+		`with unic_name as (
+					select distinct name as n
+					from metrics
+				)
+				select id, name, type, value, delta, hash, create_at
+				from metrics,
+					 unic_name
+				where id in (select id from metrics where name = unic_name.n order by id desc limit 1)
+					and name=$1;`,
 		key,
 	).Scan(&metric.ID, &metric.Name, &metric.MType, &metric.Value, &metric.Delta, &metric.Hash, &metric.Create)
 
@@ -73,8 +81,7 @@ func (f PostgreStorage) GetAll() ([]storage.Metrics, error) {
 	return m, nil
 }
 
-func (f PostgreStorage) SetOne(metric storage.Metrics) (*storage.Metrics, error) {
-	var m storage.Metrics
+func (f PostgreStorage) SetOne(m storage.Metrics) (*storage.Metrics, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), DBTIMEOUT*time.Second)
 	defer cancel()
 
@@ -91,7 +98,7 @@ func (f PostgreStorage) SetOne(metric storage.Metrics) (*storage.Metrics, error)
 	if id < 1 {
 		return nil, nil
 	}
-	return &metric, nil
+	return &m, nil
 }
 
 func (f PostgreStorage) SetAll(metrics []storage.Metrics) ([]storage.Metrics, error) {

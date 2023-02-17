@@ -24,12 +24,12 @@ func (h *Router) SaveOrUpdate(c *gin.Context) {
 		return
 	}
 
-	if checkHas, err := h.services.Mss.CheckHash(mtr, h.cfg.Key); err != nil || !checkHas {
+	if checkHas, err := h.services.StorageService.CheckHash(mtr, h.cfg.Key); err != nil || !checkHas {
 		c.JSON(http.StatusBadRequest, err)
 		return
 	}
 
-	r, err := h.services.Mss.SaveOrUpdateOne(mtr)
+	r, err := h.services.StorageService.SaveOrUpdateOne(mtr)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err)
 		return
@@ -67,7 +67,7 @@ func (h *Router) SaveOrUpdateOld(c *gin.Context) {
 		return
 	}
 
-	r, err := h.services.Mss.SaveOrUpdateOne(m)
+	r, err := h.services.StorageService.SaveOrUpdateOne(m)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err)
 		return
@@ -84,7 +84,7 @@ func (h *Router) GetByKey(c *gin.Context) {
 		return
 	}
 
-	str, err := h.services.Mss.GetByKey(mtr)
+	str, err := h.services.StorageService.GetByKey(mtr)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err)
 		return
@@ -95,7 +95,7 @@ func (h *Router) GetByKey(c *gin.Context) {
 	}
 
 	if len(h.cfg.Key) > 0 {
-		mtr.Hash = hex.EncodeToString(h.services.Mss.GenerageHash(mtr, h.cfg.Key))
+		mtr.Hash = hex.EncodeToString(h.services.StorageService.GenerageHash(mtr, h.cfg.Key))
 	}
 
 	c.Writer.Header().Set("Content-Type", "application/json")
@@ -108,7 +108,7 @@ func (h *Router) GetByKeyOld(c *gin.Context) {
 	n := c.Param("n")
 	t := c.Param("t")
 
-	mm, err := h.services.Mss.GetByKey(storage.Metrics{ID: n})
+	mm, err := h.services.StorageService.GetByKey(storage.Metrics{ID: n})
 	if err != nil {
 		c.JSON(http.StatusNotFound, "Bad key")
 		return
@@ -139,7 +139,7 @@ func (h *Router) GetByKeyOld(c *gin.Context) {
 
 func (h *Router) GetAll(c *gin.Context) {
 
-	mm, err := h.services.Mss.GetAll()
+	mm, err := h.services.StorageService.GetAll()
 	if err != nil {
 		c.JSON(http.StatusNotFound, "Bad key")
 		return
@@ -179,12 +179,12 @@ func (h *Router) SetAll(c *gin.Context) {
 	}
 
 	for _, m := range metrics {
-		if checkHas, err := h.services.Mss.CheckHash(m, h.cfg.Key); err != nil || !checkHas {
+		if checkHas, err := h.services.StorageService.CheckHash(m, h.cfg.Key); err != nil || !checkHas {
 			c.JSON(http.StatusBadRequest, err)
 			return
 		}
 	}
-	r, err := h.services.Mss.SaveOrUpdateAll(metrics)
+	r, err := h.services.StorageService.SaveOrUpdateAll(metrics)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err)
 		return
@@ -208,31 +208,3 @@ func (h *Router) gzipMiddleware(c *gin.Context) {
 	c.Writer.Header().Set("Content-Encoding", "gzip")
 	c.Next()
 }
-
-func (h *Router) DbGetAll(c *gin.Context) {
-	mm, err := h.services.StorageService.GetAll()
-	if err != nil {
-		c.JSON(http.StatusNotFound, "Bad key")
-		return
-	}
-
-	c.Writer.Header().Set("Content-Type", "application/json")
-	c.JSON(http.StatusOK, mm)
-}
-
-//
-//func (h *Router) DbSetAll(c *gin.Context) {
-//	metrics := &[]storage.Metrics{}
-//
-//	if err := json.NewDecoder(c.Request.Body).Decode(&metrics); err != nil {
-//		c.JSON(http.StatusBadRequest, err)
-//		return
-//	}
-//
-//	r, err := h.services.StorageService.SetAll(*metrics)
-//	if err != nil {
-//		c.JSON(http.StatusBadRequest, err)
-//		return
-//	}
-//	c.JSON(http.StatusOK, r)
-//}
