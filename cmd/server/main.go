@@ -31,7 +31,7 @@ func main() {
 
 	s := service.NewServices(myStorage)
 
-	if len(cfg.Server.DatabaseDSN) < 0 {
+	if len(cfg.Server.DatabaseDSN) <= 0 {
 
 		fileStorage := file.NewFileStorage(&cfg.Server)
 		if fileStorage == nil {
