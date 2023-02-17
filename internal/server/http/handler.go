@@ -98,6 +98,7 @@ func (h *Router) GetByKey(c *gin.Context) {
 		mtr.Hash = hex.EncodeToString(h.services.Mss.GenerageHash(mtr, h.cfg.Key))
 	}
 
+	c.Writer.Header().Set("Content-Type", "application/json")
 	c.JSON(http.StatusOK, str)
 }
 
