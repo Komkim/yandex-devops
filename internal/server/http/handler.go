@@ -209,16 +209,17 @@ func (h *Router) gzipMiddleware(c *gin.Context) {
 	c.Next()
 }
 
-//func (h *Router) DbGetAll(c *gin.Context) {
-//	mm, err := h.services.StorageService.GetAll()
-//	if err != nil {
-//		c.JSON(http.StatusNotFound, "Bad key")
-//		return
-//	}
-//
-//	c.Writer.Header().Set("Content-Type", "text/html")
-//	c.JSON(http.StatusOK, mm)
-//}
+func (h *Router) DbGetAll(c *gin.Context) {
+	mm, err := h.services.StorageService.GetAll()
+	if err != nil {
+		c.JSON(http.StatusNotFound, "Bad key")
+		return
+	}
+
+	c.Writer.Header().Set("Content-Type", "application/json")
+	c.JSON(http.StatusOK, mm)
+}
+
 //
 //func (h *Router) DbSetAll(c *gin.Context) {
 //	metrics := &[]storage.Metrics{}

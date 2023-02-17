@@ -63,9 +63,13 @@ func (m MemStorageService) GenerageHash(metric storage.Metrics, key string) []by
 	var data []byte
 	switch metric.MType {
 	case COUNTER:
-		data = []byte(fmt.Sprintf("%s:%s:%d", metric.ID, metric.MType, *metric.Delta))
+		if metric.Delta != nil && len(metric.ID) > 0 && len(metric.MType) > 0 {
+			data = []byte(fmt.Sprintf("%s:%s:%d", metric.ID, metric.MType, *metric.Delta))
+		}
 	case GAUGE:
-		data = []byte(fmt.Sprintf("%s:%s:%f", metric.ID, metric.MType, *metric.Value))
+		if metric.Value != nil && len(metric.ID) > 0 && len(metric.MType) > 0 {
+			data = []byte(fmt.Sprintf("%s:%s:%f", metric.ID, metric.MType, *metric.Value))
+		}
 	}
 
 	h := hmac.New(sha256.New, []byte(key))
