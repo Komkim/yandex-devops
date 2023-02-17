@@ -36,8 +36,5 @@ func (h *Router) Init() http.Handler {
 	mux.POST("/updates/", h.SetAll)
 	mux.POST("/value/", h.GetByKey)
 
-	mux.POST("/db/", h.DbGetAll)
-	//mux.POST("/db/update", h.DbSetAll)
-
 	return mux
 }
