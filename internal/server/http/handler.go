@@ -29,7 +29,7 @@ func (h *Router) SaveOrUpdate(c *gin.Context) {
 		return
 	}
 
-	r, err := h.services.StorageService.SaveOrUpdateOne(mtr)
+	r, err := h.services.StorageService.SaveOrUpdateOne(mtr, h.cfg.Key)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err)
 		return
@@ -67,7 +67,7 @@ func (h *Router) SaveOrUpdateOld(c *gin.Context) {
 		return
 	}
 
-	r, err := h.services.StorageService.SaveOrUpdateOne(m)
+	r, err := h.services.StorageService.SaveOrUpdateOne(m, h.cfg.Key)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err)
 		return

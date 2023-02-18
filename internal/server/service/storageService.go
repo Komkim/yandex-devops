@@ -16,7 +16,7 @@ func NewStorageService(r storage.Storage) *StorageService {
 	return &StorageService{r}
 }
 
-func (m StorageService) SaveOrUpdateOne(metric storage.Metrics) (*storage.Metrics, error) {
+func (m StorageService) SaveOrUpdateOne(metric storage.Metrics, key string) (*storage.Metrics, error) {
 	if metric.MType == COUNTER {
 		mtr, err := m.GetByKey(metric)
 		if err != nil {
@@ -26,6 +26,7 @@ func (m StorageService) SaveOrUpdateOne(metric storage.Metrics) (*storage.Metric
 
 			c := *mtr.Delta + *metric.Delta
 			metric.Delta = &c
+			metric.Hash = hex.EncodeToString(m.GenerageHash(metric, key))
 		}
 	}
 
