@@ -39,6 +39,10 @@ func (f PostgreStorage) GetOne(key string) (*storage.Metrics, error) {
 		key,
 	).Scan(&metric.ID, &metric.Name, &metric.MType, &metric.Value, &metric.Delta, &metric.Hash, &metric.Create)
 
+	if err == pgx.ErrNoRows {
+		return nil, nil
+	}
+
 	if err != nil {
 		return nil, err
 	}
