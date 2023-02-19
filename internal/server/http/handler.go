@@ -171,27 +171,27 @@ func (h *Router) Ping(c *gin.Context) {
 }
 
 func (h *Router) SetAll(c *gin.Context) {
-	c.JSON(http.StatusOK, "ok")
-	//var metrics []storage.Metrics
-	//
-	//if err := json.NewDecoder(c.Request.Body).Decode(&metrics); err != nil {
-	//	c.JSON(http.StatusBadRequest, err)
-	//	return
-	//}
-	//
-	//for _, m := range metrics {
-	//	if checkHas, err := h.services.StorageService.CheckHash(m, h.cfg.Key); err != nil || !checkHas {
-	//		c.JSON(http.StatusBadRequest, err)
-	//		return
-	//	}
-	//}
-	//r, err := h.services.StorageService.SaveOrUpdateAll(metrics, h.cfg.Key)
-	//if err != nil {
-	//	c.JSON(http.StatusBadRequest, err)
-	//	return
-	//}
-	////c.Writer.Header().Set("Content-Type", "application/json")
-	//c.JSON(http.StatusOK, r)
+	//c.JSON(http.StatusOK, "ok")
+	var metrics []storage.Metrics
+
+	if err := json.NewDecoder(c.Request.Body).Decode(&metrics); err != nil {
+		c.JSON(http.StatusBadRequest, err)
+		return
+	}
+
+	for _, m := range metrics {
+		if checkHas, err := h.services.StorageService.CheckHash(m, h.cfg.Key); err != nil || !checkHas {
+			c.JSON(http.StatusBadRequest, err)
+			return
+		}
+	}
+	r, err := h.services.StorageService.SaveOrUpdateAll(metrics, h.cfg.Key)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err)
+		return
+	}
+	//c.Writer.Header().Set("Content-Type", "application/json")
+	c.JSON(http.StatusOK, r)
 
 }
 
