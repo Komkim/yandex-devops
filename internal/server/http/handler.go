@@ -171,7 +171,6 @@ func (h *Router) Ping(c *gin.Context) {
 }
 
 func (h *Router) SetAll(c *gin.Context) {
-	//c.JSON(http.StatusOK, "ok")
 	var metrics []storage.Metrics
 
 	if err := json.NewDecoder(c.Request.Body).Decode(&metrics); err != nil {
@@ -190,8 +189,13 @@ func (h *Router) SetAll(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, err)
 		return
 	}
-	//c.Writer.Header().Set("Content-Type", "application/json")
-	c.JSON(http.StatusOK, r)
+
+	err = json.NewEncoder(c.Writer).Encode(r)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err)
+		return
+	}
+	c.JSON(http.StatusOK, "ok")
 
 }
 
