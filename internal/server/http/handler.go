@@ -184,12 +184,14 @@ func (h *Router) SetAll(c *gin.Context) {
 			return
 		}
 	}
-	r, err := h.services.StorageService.SaveOrUpdateAll(metrics, h.cfg.Key)
+	_, err := h.services.StorageService.SaveOrUpdateAll(metrics, h.cfg.Key)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err)
 		return
 	}
-	c.JSON(http.StatusOK, r)
+	c.Writer.Header().Set("Content-Type", "application/json")
+	c.JSON(http.StatusOK, "ok")
+	//c.JSON(http.StatusOK, "ok")
 
 }
 
