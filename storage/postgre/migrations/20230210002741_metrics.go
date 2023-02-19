@@ -18,7 +18,7 @@ func upMetrics(tx *sql.Tx) error {
 				name      varchar(40) not null,
 				type 	  varchar(40) not null,
 				value     double precision,
-				delta     integer,
+				delta     bigint,
 				hash      varchar(100)
 			);
 	`)

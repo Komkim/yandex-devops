@@ -39,7 +39,7 @@ func (s *FileService) restore() {
 		return
 	}
 
-	_, err = s.storageService.SaveOrUpdateAll(metrics)
+	_, err = s.storageService.SaveOrUpdateAll(metrics, s.cfg.Key)
 	if err != nil {
 		return
 	}

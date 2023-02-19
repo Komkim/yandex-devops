@@ -17,24 +17,24 @@ func NewStorageService(r storage.Storage) *StorageService {
 }
 
 func (m StorageService) SaveOrUpdateOne(metric storage.Metrics, key string) (*storage.Metrics, error) {
-	if metric.MType == COUNTER {
-		mtr, err := m.GetByKey(metric)
-		if err != nil {
-			return nil, err
-		}
-		if mtr != nil {
-
-			c := *mtr.Delta + *metric.Delta
-			metric.Delta = &c
-			metric.Hash = hex.EncodeToString(m.GenerageHash(metric, key))
-		}
+	metric, err := m.checkCounter(metric, key)
+	if err != nil {
+		return nil, err
 	}
 
 	return m.repo.SetOne(metric)
 }
 
-func (m StorageService) SaveOrUpdateAll(metrics []storage.Metrics) ([]storage.Metrics, error) {
-	return m.repo.SetAll(metrics)
+func (m StorageService) SaveOrUpdateAll(metrics []storage.Metrics, key string) ([]storage.Metrics, error) {
+	result := make([]storage.Metrics, 0, len(metrics))
+	for _, mtr := range metrics {
+		temp, err := m.SaveOrUpdateOne(mtr, key)
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, *temp)
+	}
+	return result, nil
 }
 
 func (m StorageService) GetByKey(metric storage.Metrics) (*storage.Metrics, error) {
@@ -76,4 +76,19 @@ func (m StorageService) GenerageHash(metric storage.Metrics, key string) []byte 
 	h := hmac.New(sha256.New, []byte(key))
 	h.Write(data)
 	return h.Sum(nil)
+}
+
+func (m StorageService) checkCounter(metric storage.Metrics, key string) (storage.Metrics, error) {
+	if metric.MType == COUNTER {
+		mtr, err := m.GetByKey(metric)
+		if err != nil {
+			return metric, err
+		}
+		if mtr != nil {
+			c := *mtr.Delta + *metric.Delta
+			metric.Delta = &c
+			metric.Hash = hex.EncodeToString(m.GenerageHash(metric, key))
+		}
+	}
+	return metric, nil
 }
