@@ -99,7 +99,12 @@ func (h *Router) GetByKey(c *gin.Context) {
 	//}
 
 	log.Println(str)
-	log.Println(*str.Delta)
+	if str.Delta != nil {
+		log.Println(*str.Delta)
+	}
+	if str.Value != nil {
+		log.Println(*str.Value)
+	}
 	log.Println(h.cfg.Key)
 
 	c.Writer.Header().Set("Content-Type", "application/json")
