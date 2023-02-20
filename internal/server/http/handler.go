@@ -96,7 +96,7 @@ func (h *Router) GetByKey(c *gin.Context) {
 
 	//log.Println(hex.EncodeToString(h.services.StorageService.GenerageHash(mtr, h.cfg.Key)))
 	if len(h.cfg.Key) >= 0 {
-		str.Hash = hex.EncodeToString(h.services.StorageService.GenerageHash(mtr, h.cfg.Key))
+		str.Hash = hex.EncodeToString(h.services.StorageService.GenerageHash(*str, h.cfg.Key))
 	}
 
 	//log.Println(str)
