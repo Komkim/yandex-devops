@@ -37,8 +37,14 @@ func (m StorageService) SaveOrUpdateAll(metrics []storage.Metrics, key string) (
 	return result, nil
 }
 
-func (m StorageService) GetByKey(metric storage.Metrics) (*storage.Metrics, error) {
+func (m StorageService) GetByKey(metric storage.Metrics, key string) (*storage.Metrics, error) {
+
 	return m.repo.GetOne(metric.ID)
+	//mtr, err := m.checkCounter(metric, key)
+	//if err != nil {
+	//	return nil, err
+	//}
+	//return &mtr, err
 }
 
 func (m StorageService) GetAll() ([]storage.Metrics, error) {
@@ -80,11 +86,12 @@ func (m StorageService) GenerageHash(metric storage.Metrics, key string) []byte 
 
 func (m StorageService) checkCounter(metric storage.Metrics, key string) (storage.Metrics, error) {
 	if metric.MType == COUNTER {
-		mtr, err := m.GetByKey(metric)
+		//mtr, err := m.GetByKey(metric)
+		mtr, err := m.repo.GetOne(metric.ID)
 		if err != nil {
 			return metric, err
 		}
-		if mtr != nil {
+		if mtr != nil && mtr.Delta != nil && metric.Delta != nil {
 			c := *mtr.Delta + *metric.Delta
 			metric.Delta = &c
 			metric.Hash = hex.EncodeToString(m.GenerageHash(metric, key))
