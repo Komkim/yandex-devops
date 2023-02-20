@@ -10,7 +10,6 @@ import (
 	"github.com/gin-gonic/gin"
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"io"
-	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -95,21 +94,21 @@ func (h *Router) GetByKey(c *gin.Context) {
 		return
 	}
 
-	log.Println(hex.EncodeToString(h.services.StorageService.GenerageHash(mtr, h.cfg.Key)))
+	//log.Println(hex.EncodeToString(h.services.StorageService.GenerageHash(mtr, h.cfg.Key)))
 	if len(h.cfg.Key) >= 0 {
-		mtr.Hash = hex.EncodeToString(h.services.StorageService.GenerageHash(mtr, h.cfg.Key))
+		str.Hash = hex.EncodeToString(h.services.StorageService.GenerageHash(mtr, h.cfg.Key))
 	}
 
-	log.Println(str)
-	if str.Delta != nil {
-		log.Println(*str.Delta)
-	}
-	if str.Value != nil {
-		log.Println(*str.Value)
-	}
-	log.Println(h.cfg.Key)
-
-	log.Println(mtr.Hash)
+	//log.Println(str)
+	//if str.Delta != nil {
+	//	log.Println(*str.Delta)
+	//}
+	//if str.Value != nil {
+	//	log.Println(*str.Value)
+	//}
+	//log.Println(h.cfg.Key)
+	//
+	//log.Println(mtr.Hash)
 
 	c.Writer.Header().Set("Content-Type", "application/json")
 	c.JSON(http.StatusOK, str)
