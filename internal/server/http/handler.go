@@ -99,6 +99,8 @@ func (h *Router) GetByKey(c *gin.Context) {
 	//}
 
 	log.Println(str)
+	log.Println(*str.Delta)
+	log.Println(h.cfg.Key)
 
 	c.Writer.Header().Set("Content-Type", "application/json")
 	c.JSON(http.StatusOK, str)
