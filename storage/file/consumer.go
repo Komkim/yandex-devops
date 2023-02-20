@@ -21,18 +21,12 @@ func NewConsumer(fileName string) (*consumer, error) {
 		decoder: json.NewDecoder(file),
 	}, nil
 }
-func (c *consumer) Read() (*[]storage.Metrics, error) {
-	mm := []storage.Metrics{}
-	metrics := storage.Metrics{}
-	for c.decoder.More() {
-		if err := c.decoder.Decode(&metrics); err != nil {
-			return nil, err
-		} else {
-			mm = append(mm, metrics)
-		}
+func (c *consumer) Read() ([]storage.Metrics, error) {
+	metrics := &[]storage.Metrics{}
+	if err := c.decoder.Decode(&metrics); err != nil {
+		return nil, err
 	}
-	c.decoder.UseNumber()
-	return &mm, nil
+	return *metrics, nil
 }
 func (c *consumer) Close() error {
 	return c.file.Close()
