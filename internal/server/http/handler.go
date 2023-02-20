@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"io"
+	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -96,6 +97,8 @@ func (h *Router) GetByKey(c *gin.Context) {
 	//if len(h.cfg.Key) >= 0 {
 	//	mtr.Hash = hex.EncodeToString(h.services.StorageService.GenerageHash(mtr, h.cfg.Key))
 	//}
+
+	log.Println(str)
 
 	c.Writer.Header().Set("Content-Type", "application/json")
 	c.JSON(http.StatusOK, str)
