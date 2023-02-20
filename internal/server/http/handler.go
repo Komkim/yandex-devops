@@ -84,7 +84,7 @@ func (h *Router) GetByKey(c *gin.Context) {
 		return
 	}
 
-	str, err := h.services.StorageService.GetByKey(mtr, h.cfg.Key)
+	str, err := h.services.StorageService.GetByKey(mtr)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err)
 		return
@@ -94,7 +94,7 @@ func (h *Router) GetByKey(c *gin.Context) {
 		return
 	}
 
-	if len(h.cfg.Key) > 0 {
+	if len(h.cfg.Key) >= 0 {
 		mtr.Hash = hex.EncodeToString(h.services.StorageService.GenerageHash(mtr, h.cfg.Key))
 	}
 
@@ -108,7 +108,7 @@ func (h *Router) GetByKeyOld(c *gin.Context) {
 	n := c.Param("n")
 	t := c.Param("t")
 
-	mm, err := h.services.StorageService.GetByKey(storage.Metrics{ID: n}, h.cfg.Key)
+	mm, err := h.services.StorageService.GetByKey(storage.Metrics{ID: n})
 	if err != nil {
 		c.JSON(http.StatusNotFound, "Bad key")
 		return

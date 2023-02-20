@@ -37,14 +37,8 @@ func (m StorageService) SaveOrUpdateAll(metrics []storage.Metrics, key string) (
 	return result, nil
 }
 
-func (m StorageService) GetByKey(metric storage.Metrics, key string) (*storage.Metrics, error) {
-
+func (m StorageService) GetByKey(metric storage.Metrics) (*storage.Metrics, error) {
 	return m.repo.GetOne(metric.ID)
-	//mtr, err := m.checkCounter(metric, key)
-	//if err != nil {
-	//	return nil, err
-	//}
-	//return &mtr, err
 }
 
 func (m StorageService) GetAll() ([]storage.Metrics, error) {
