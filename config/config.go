@@ -7,15 +7,16 @@ import (
 )
 
 const (
-	defaultHTTPScheme   = "http"
-	defaultHTTPPort     = ":8080"
-	defaultHTTPHost     = "127.0.0.1"
-	defaultHTTPAddress  = "127.0.0.1:8080"
-	defaultAgentPoll    = 2 * time.Second
-	defaultAgentReport  = 10 * time.Second
-	defaultFileInterval = 300 * time.Second
-	defaultFilePath     = "/tmp/devops-metrics-db.json"
-	defaultFileRestore  = true
+	defaultHTTPScheme     = "http"
+	defaultHTTPPort       = ":8080"
+	defaultHTTPHost       = "127.0.0.1"
+	defaultHTTPAddress    = "127.0.0.1:8080"
+	defaultAgentPoll      = 2 * time.Second
+	defaultAgentReport    = 10 * time.Second
+	defaultAgentRateLimit = 1
+	defaultFileInterval   = 300 * time.Second
+	defaultFilePath       = "/tmp/devops-metrics-db.json"
+	defaultFileRestore    = true
 )
 
 type HTTP struct {
@@ -26,9 +27,10 @@ type HTTP struct {
 }
 
 type Agent struct {
-	Poll   time.Duration `env:"POLL_INTERVAL" mapstructure:"poll"`
-	Report time.Duration `env:"REPORT_INTERVAL" mapstructure:"report"`
-	Key    string        `env:"KEY" mapstructure:"key"`
+	Poll      time.Duration `env:"POLL_INTERVAL" mapstructure:"poll"`
+	Report    time.Duration `env:"REPORT_INTERVAL" mapstructure:"report"`
+	Key       string        `env:"KEY" mapstructure:"key"`
+	RateLimit int           `env:"RATE_LIMIT" mapstructure:"rate"`
 }
 
 type Server struct {
@@ -83,6 +85,7 @@ func defaultFlag(cfg *Config) {
 
 	cfg.Agent.Poll = defaultAgentPoll
 	cfg.Agent.Report = defaultAgentReport
+	cfg.Agent.RateLimit = defaultAgentRateLimit
 
 	cfg.Server.FileInterval = defaultFileInterval
 	cfg.Server.FilePath = defaultFilePath
@@ -105,5 +108,6 @@ func initFlagAgent(cfg *Config) {
 	pflag.DurationVarP(&cfg.Agent.Poll, "agent.poll", "p", 2*time.Second, "agent poll interval")
 	pflag.DurationVarP(&cfg.Agent.Report, "agent.report", "r", 10*time.Second, "agent report interval")
 	pflag.StringVarP(&cfg.Agent.Key, "agent.key", "k", "", "hash key")
+	pflag.IntVarP(&cfg.Agent.RateLimit, "agent.rate_pull", "l", 1, "agent rate limit")
 	pflag.Parse()
 }

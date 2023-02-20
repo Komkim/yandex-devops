@@ -26,7 +26,10 @@ func main() {
 	a := agent.NewAgen(&cfg.Agent, ch)
 
 	go a.UpdateMetric(ctx)
-	go a.SendMetric(ctx, &client)
+	go a.UpdateVirtualMemory(ctx)
+	for i := 0; i < cfg.Agent.RateLimit; i++ {
+		go a.SendMetric(ctx, &client)
+	}
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)

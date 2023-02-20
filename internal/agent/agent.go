@@ -2,6 +2,7 @@ package agent
 
 import (
 	"context"
+	"github.com/shirou/gopsutil/v3/mem"
 	"log"
 	"math/rand"
 	"runtime"
@@ -61,4 +62,25 @@ func (a *Agent) UpdateMetric(ctx context.Context) {
 			return
 		}
 	}
+}
+
+func (a *Agent) UpdateVirtualMemory(ctx context.Context) {
+	ticker := time.NewTicker(a.cfg.Poll)
+
+f:
+	for {
+		select {
+
+		case <-ticker.C:
+			virtualMemory, err := mem.VirtualMemory()
+			if err != nil {
+				log.Println(err)
+				continue f
+			}
+			a.sm <- ConvertVirtualMemoryToStorageMertics(virtualMemory, a.cfg.Key)
+		case <-ctx.Done():
+			return
+		}
+	}
+
 }
