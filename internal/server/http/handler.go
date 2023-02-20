@@ -4,7 +4,6 @@ import (
 	"compress/gzip"
 	"context"
 	"database/sql"
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
@@ -93,10 +92,10 @@ func (h *Router) GetByKey(c *gin.Context) {
 		c.JSON(http.StatusNotFound, "Bad key")
 		return
 	}
-
-	if len(h.cfg.Key) >= 0 {
-		mtr.Hash = hex.EncodeToString(h.services.StorageService.GenerageHash(mtr, h.cfg.Key))
-	}
+	//
+	//if len(h.cfg.Key) >= 0 {
+	//	mtr.Hash = hex.EncodeToString(h.services.StorageService.GenerageHash(mtr, h.cfg.Key))
+	//}
 
 	c.Writer.Header().Set("Content-Type", "application/json")
 	c.JSON(http.StatusOK, str)
