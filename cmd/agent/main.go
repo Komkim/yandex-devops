@@ -21,13 +21,12 @@ func main() {
 		log.Panic(err)
 	}
 
-	ch := make(chan []myclient.Metrics, 10)
+	ch := make(chan []myclient.Metrics)
 	client := myclient.New(&cfg.HTTP)
 
 	a := agent.NewAgen(&cfg.Agent, ch)
 
 	go a.UpdateVirtualMemory(ctx)
-	time.Sleep(1 * time.Second)
 	go a.UpdateMetric(ctx)
 
 	for i := 0; i < cfg.Agent.RateLimit; i++ {
