@@ -178,12 +178,12 @@ func (h *Router) SetAll(c *gin.Context) {
 		return
 	}
 
-	for _, m := range metrics {
-		if checkHas, err := h.services.StorageService.CheckHash(m, h.cfg.Key); err != nil || !checkHas {
-			c.JSON(http.StatusBadRequest, err)
-			return
-		}
-	}
+	//for _, m := range metrics {
+	//	if checkHas, err := h.services.StorageService.CheckHash(m, h.cfg.Key); err != nil || !checkHas {
+	//		c.JSON(http.StatusBadRequest, err)
+	//		return
+	//	}
+	//}
 	r, err := h.services.StorageService.SaveOrUpdateAll(metrics, h.cfg.Key)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err)
