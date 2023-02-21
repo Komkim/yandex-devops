@@ -6,7 +6,6 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
 	"yandex-devops/config"
 	"yandex-devops/internal/agent"
 	myclient "yandex-devops/provider"
