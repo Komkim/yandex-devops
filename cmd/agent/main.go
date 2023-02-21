@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 	"yandex-devops/config"
 	"yandex-devops/internal/agent"
 	myclient "yandex-devops/provider"
@@ -25,8 +26,10 @@ func main() {
 
 	a := agent.NewAgen(&cfg.Agent, ch)
 
-	go a.UpdateMetric(ctx)
 	go a.UpdateVirtualMemory(ctx)
+	time.Sleep(1 * time.Second)
+	go a.UpdateMetric(ctx)
+
 	for i := 0; i < cfg.Agent.RateLimit; i++ {
 		go a.SendMetric(ctx, &client)
 	}
