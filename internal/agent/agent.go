@@ -59,8 +59,6 @@ func (a *Agent) sendMetric(limitWorker int, client *myclient.MyClient) {
 			for {
 				metric, ok := <-sChan
 				if ok {
-					log.Println("agent send metric")
-					log.Println(metric)
 					err := client.SendOneMetric(metric)
 					if err != nil {
 						log.Println(err)

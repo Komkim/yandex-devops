@@ -10,7 +10,6 @@ import (
 	"github.com/gin-gonic/gin"
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"io"
-	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -29,9 +28,6 @@ func (h *Router) SaveOrUpdate(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, err)
 		return
 	}
-
-	log.Println("server update metric")
-	log.Println(mtr)
 
 	r, err := h.services.StorageService.SaveOrUpdateOne(mtr, h.cfg.Key)
 	if err != nil {
@@ -101,9 +97,6 @@ func (h *Router) GetByKey(c *gin.Context) {
 	if len(h.cfg.Key) >= 0 {
 		str.Hash = hex.EncodeToString(h.services.StorageService.GenerageHash(*str, h.cfg.Key))
 	}
-
-	log.Println("server value metric")
-	log.Println(str)
 
 	c.Writer.Header().Set("Content-Type", "application/json")
 	c.JSON(http.StatusOK, str)
