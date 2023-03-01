@@ -5,6 +5,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
+	"github.com/shirou/gopsutil/v3/mem"
 	"runtime"
 	myclient "yandex-devops/provider"
 )
@@ -12,7 +13,7 @@ import (
 const GAUGE = "gauge"
 const COUNTER = "counter"
 
-func convert(stats *runtime.MemStats, counter int64, rand float64) []myclient.Metrics {
+func convertRuntimeMemory(stats *runtime.MemStats, counter int64, rand float64) []myclient.Metrics {
 	metrics := make([]myclient.Metrics, 0, 29)
 
 	Alloc := float64(stats.Alloc)
@@ -244,5 +245,36 @@ func generateHas(key string, m []myclient.Metrics) []myclient.Metrics {
 }
 
 func ConvertRuntumeStatsToStorageMetrics(stats *runtime.MemStats, counter int64, rand float64, key string) []myclient.Metrics {
-	return generateHas(key, convert(stats, counter, rand))
+	return generateHas(key, convertRuntimeMemory(stats, counter, rand))
+}
+
+func ConvertVirtualMemoryToStorageMertics(stats *mem.VirtualMemoryStat, key string) []myclient.Metrics {
+	return generateHas(key, convertVirtualMemory(stats))
+}
+
+func convertVirtualMemory(stats *mem.VirtualMemoryStat) []myclient.Metrics {
+	metrics := make([]myclient.Metrics, 0, 3)
+
+	Total := float64(stats.Total)
+	metrics = append(metrics, myclient.Metrics{
+		ID:    "TotalMemory",
+		MType: GAUGE,
+		Value: &Total,
+	})
+
+	Free := float64(stats.Free)
+	metrics = append(metrics, myclient.Metrics{
+		ID:    "FreeMemory",
+		MType: GAUGE,
+		Value: &Free,
+	})
+
+	Percent := stats.UsedPercent
+	metrics = append(metrics, myclient.Metrics{
+		ID:    "CPUutilization1",
+		MType: GAUGE,
+		Value: &Percent,
+	})
+
+	return metrics
 }

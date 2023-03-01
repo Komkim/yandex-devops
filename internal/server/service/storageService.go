@@ -50,6 +50,10 @@ func (m StorageService) CheckHash(metric storage.Metrics, key string) (bool, err
 		return true, nil
 	}
 
+	if len(metric.Hash) <= 0 {
+		return true, nil
+	}
+
 	h1, err := hex.DecodeString(metric.Hash)
 	if err != nil {
 		return false, err
@@ -90,6 +94,9 @@ func (m StorageService) checkCounter(metric storage.Metrics, key string) (storag
 			metric.Delta = &c
 			metric.Hash = hex.EncodeToString(m.GenerageHash(metric, key))
 		}
+	}
+	if len(metric.Hash) <= 0 && len(key) > 0 {
+		metric.Hash = hex.EncodeToString(m.GenerageHash(metric, key))
 	}
 	return metric, nil
 }

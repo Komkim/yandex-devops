@@ -20,13 +20,17 @@ func main() {
 		log.Panic(err)
 	}
 
-	ch := make(chan []myclient.Metrics)
+	updateRuntimeChan := make(chan []myclient.Metrics)
+	updateVirtMemoryChan := make(chan []myclient.Metrics)
+	sendChan := make(chan myclient.Metrics)
 	client := myclient.New(&cfg.HTTP)
 
-	a := agent.NewAgen(&cfg.Agent, ch)
+	a := agent.NewAgen(&cfg.Agent, updateRuntimeChan, updateVirtMemoryChan, sendChan)
 
+	go a.UpdateVirtualMemory(ctx)
 	go a.UpdateMetric(ctx)
-	go a.SendMetric(ctx, &client)
+
+	go a.SendMetric(ctx, &cfg.Agent, &client)
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
