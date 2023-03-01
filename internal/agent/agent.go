@@ -12,33 +12,40 @@ import (
 )
 
 type Agent struct {
-	cfg        *config.Agent
-	updateChan chan []myclient.Metrics
-	sendChan   chan myclient.Metrics
+	cfg                  *config.Agent
+	updateRuntimeChan    chan []myclient.Metrics
+	updateVirtMemoryChan chan []myclient.Metrics
+	sendChan             chan myclient.Metrics
 }
 
-func NewAgen(cfg *config.Agent, updateChan chan []myclient.Metrics, sendChan chan myclient.Metrics) *Agent {
+func NewAgen(cfg *config.Agent, updateRuntimeChan chan []myclient.Metrics, updateVirtMemoryChan chan []myclient.Metrics, sendChan chan myclient.Metrics) *Agent {
 	return &Agent{
-		cfg:        cfg,
-		updateChan: updateChan,
-		sendChan:   sendChan,
+		cfg:                  cfg,
+		updateRuntimeChan:    updateRuntimeChan,
+		updateVirtMemoryChan: updateVirtMemoryChan,
+		sendChan:             sendChan,
 	}
 }
 
 func (a *Agent) SendMetric(ctx context.Context, cfg *config.Agent, client *myclient.MyClient) {
 	ticker := time.NewTicker(a.cfg.Report)
-	var metrics []myclient.Metrics
+	var metricsRuntime []myclient.Metrics
+	var metricsVirtMemory []myclient.Metrics
 	go a.sendMetric(cfg.RateLimit, client)
 
 	for {
 		select {
 
 		case <-ticker.C:
-			for _, m := range metrics {
+			for _, m := range metricsRuntime {
+				a.sendChan <- m
+			}
+			for _, m := range metricsVirtMemory {
 				a.sendChan <- m
 			}
 
-		case metrics = <-a.updateChan:
+		case metricsRuntime = <-a.updateRuntimeChan:
+		case metricsVirtMemory = <-a.updateVirtMemoryChan:
 
 		case <-ctx.Done():
 			return
@@ -77,7 +84,7 @@ func (a *Agent) UpdateMetric(ctx context.Context) {
 			rnd := rand.Float64()
 			counter++
 			runtime.ReadMemStats(&runtimeStats)
-			a.updateChan <- ConvertRuntumeStatsToStorageMetrics(&runtimeStats, counter, rnd, a.cfg.Key)
+			a.updateRuntimeChan <- ConvertRuntumeStatsToStorageMetrics(&runtimeStats, counter, rnd, a.cfg.Key)
 		case <-ctx.Done():
 			return
 		}
@@ -97,7 +104,7 @@ f:
 				log.Println(err)
 				continue f
 			}
-			a.updateChan <- ConvertVirtualMemoryToStorageMertics(virtualMemory, a.cfg.Key)
+			a.updateVirtMemoryChan <- ConvertVirtualMemoryToStorageMertics(virtualMemory, a.cfg.Key)
 		case <-ctx.Done():
 			return
 		}
