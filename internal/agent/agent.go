@@ -23,17 +23,18 @@ func NewAgen(cfg *config.Agent, ch chan []myclient.Metrics) *Agent {
 	}
 }
 
-func (a *Agent) SendMetric(ctx context.Context, client *myclient.MyClient) {
+func (a *Agent) SendMetric(ctx context.Context, cfg *config.Agent, client *myclient.MyClient) {
 	ticker := time.NewTicker(a.cfg.Report)
 	var metrics []myclient.Metrics
+	sendChan := make(chan myclient.Metrics)
+	go a.sendMetric(cfg.RateLimit, sendChan, client)
 
 	for {
 		select {
 
 		case <-ticker.C:
-			err := client.SendAllMetric(metrics)
-			if err != nil {
-				log.Println(err)
+			for _, m := range metrics {
+				sendChan <- m
 			}
 
 		case metrics = <-a.sm:
@@ -41,6 +42,22 @@ func (a *Agent) SendMetric(ctx context.Context, client *myclient.MyClient) {
 		case <-ctx.Done():
 			return
 		}
+	}
+}
+
+func (a *Agent) sendMetric(limitWorker int, sendChan <-chan myclient.Metrics, client *myclient.MyClient) {
+	for i := 0; i < limitWorker; i++ {
+		go func(ch <-chan myclient.Metrics) {
+			for {
+				metric, ok := <-ch
+				if ok {
+					err := client.SendOneMetric(metric)
+					if err != nil {
+						log.Println(err)
+					}
+				}
+			}
+		}(sendChan)
 	}
 }
 
