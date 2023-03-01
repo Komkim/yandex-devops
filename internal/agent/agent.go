@@ -12,32 +12,33 @@ import (
 )
 
 type Agent struct {
-	cfg *config.Agent
-	sm  chan []myclient.Metrics
+	cfg        *config.Agent
+	updateChan chan []myclient.Metrics
+	sendChan   chan myclient.Metrics
 }
 
-func NewAgen(cfg *config.Agent, ch chan []myclient.Metrics) *Agent {
+func NewAgen(cfg *config.Agent, updateChan chan []myclient.Metrics, sendChan chan myclient.Metrics) *Agent {
 	return &Agent{
-		cfg: cfg,
-		sm:  ch,
+		cfg:        cfg,
+		updateChan: updateChan,
+		sendChan:   sendChan,
 	}
 }
 
 func (a *Agent) SendMetric(ctx context.Context, cfg *config.Agent, client *myclient.MyClient) {
 	ticker := time.NewTicker(a.cfg.Report)
 	var metrics []myclient.Metrics
-	sendChan := make(chan myclient.Metrics)
-	go a.sendMetric(cfg.RateLimit, sendChan, client)
+	go a.sendMetric(cfg.RateLimit, client)
 
 	for {
 		select {
 
 		case <-ticker.C:
 			for _, m := range metrics {
-				sendChan <- m
+				a.sendChan <- m
 			}
 
-		case metrics = <-a.sm:
+		case metrics = <-a.updateChan:
 
 		case <-ctx.Done():
 			return
@@ -45,19 +46,21 @@ func (a *Agent) SendMetric(ctx context.Context, cfg *config.Agent, client *mycli
 	}
 }
 
-func (a *Agent) sendMetric(limitWorker int, sendChan <-chan myclient.Metrics, client *myclient.MyClient) {
+func (a *Agent) sendMetric(limitWorker int, client *myclient.MyClient) {
 	for i := 0; i < limitWorker; i++ {
-		go func(ch <-chan myclient.Metrics) {
+		go func(sChan <-chan myclient.Metrics) {
 			for {
-				metric, ok := <-ch
+				metric, ok := <-sChan
 				if ok {
+					log.Println("agent send metric")
+					log.Println(metric)
 					err := client.SendOneMetric(metric)
 					if err != nil {
 						log.Println(err)
 					}
 				}
 			}
-		}(sendChan)
+		}(a.sendChan)
 	}
 }
 
@@ -74,7 +77,7 @@ func (a *Agent) UpdateMetric(ctx context.Context) {
 			rnd := rand.Float64()
 			counter++
 			runtime.ReadMemStats(&runtimeStats)
-			a.sm <- ConvertRuntumeStatsToStorageMetrics(&runtimeStats, counter, rnd, a.cfg.Key)
+			a.updateChan <- ConvertRuntumeStatsToStorageMetrics(&runtimeStats, counter, rnd, a.cfg.Key)
 		case <-ctx.Done():
 			return
 		}
@@ -94,7 +97,7 @@ f:
 				log.Println(err)
 				continue f
 			}
-			a.sm <- ConvertVirtualMemoryToStorageMertics(virtualMemory, a.cfg.Key)
+			a.updateChan <- ConvertVirtualMemoryToStorageMertics(virtualMemory, a.cfg.Key)
 		case <-ctx.Done():
 			return
 		}

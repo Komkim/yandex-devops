@@ -20,12 +20,13 @@ func main() {
 		log.Panic(err)
 	}
 
-	ch := make(chan []myclient.Metrics)
+	updateChan := make(chan []myclient.Metrics)
+	sendChan := make(chan myclient.Metrics)
 	client := myclient.New(&cfg.HTTP)
 
-	a := agent.NewAgen(&cfg.Agent, ch)
+	a := agent.NewAgen(&cfg.Agent, updateChan, sendChan)
 
-	go a.UpdateVirtualMemory(ctx)
+	//go a.UpdateVirtualMemory(ctx)
 	go a.UpdateMetric(ctx)
 
 	go a.SendMetric(ctx, &cfg.Agent, &client)
