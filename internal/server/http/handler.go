@@ -196,6 +196,7 @@ func (h *Router) SetAll(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, err)
 		return
 	}
+	c.Writer.Header().Set("Content-Type", "application/json")
 	c.JSON(http.StatusOK, "ok")
 
 }
