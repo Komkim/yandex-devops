@@ -35,6 +35,7 @@ func (h *Router) SaveOrUpdate(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, err)
 		return
 	}
+	c.Writer.Header().Set("Content-Type", "application/json")
 	c.JSON(http.StatusOK, r)
 }
 
