@@ -197,7 +197,7 @@ func (h *Router) SetAll(c *gin.Context) {
 		return
 	}
 	c.Writer.Header().Set("Content-Type", "application/json")
-	c.JSON(http.StatusOK, "ok")
+	c.JSON(http.StatusOK, "{}")
 
 }
 
