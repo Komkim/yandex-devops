@@ -5,9 +5,10 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
-	"github.com/shirou/gopsutil/v3/mem"
 	"runtime"
 	myclient "yandex-devops/provider"
+
+	"github.com/shirou/gopsutil/v3/mem"
 )
 
 const GAUGE = "gauge"

@@ -2,13 +2,14 @@ package agent
 
 import (
 	"context"
-	"github.com/shirou/gopsutil/v3/mem"
 	"log"
 	"math/rand"
 	"runtime"
 	"time"
 	"yandex-devops/config"
 	myclient "yandex-devops/provider"
+
+	"github.com/shirou/gopsutil/v3/mem"
 )
 
 type Agent struct {

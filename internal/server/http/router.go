@@ -1,11 +1,12 @@
 package router
 
 import (
-	"github.com/gin-contrib/gzip"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"yandex-devops/config"
 	"yandex-devops/internal/server/service"
+
+	"github.com/gin-contrib/gzip"
+	"github.com/gin-gonic/gin"
 )
 
 type Router struct {

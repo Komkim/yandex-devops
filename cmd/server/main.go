@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"database/sql"
-	"github.com/pressly/goose/v3"
 	"log"
 	"os"
 	"os/signal"
@@ -17,6 +16,8 @@ import (
 	"yandex-devops/storage/memory"
 	postgresql "yandex-devops/storage/postgre"
 	_ "yandex-devops/storage/postgre/migrations"
+
+	"github.com/pressly/goose/v3"
 )
 
 func main() {
