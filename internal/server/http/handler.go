@@ -1,16 +1,12 @@
 package router
 
 import (
-	"compress/gzip"
 	"context"
 	"database/sql"
 	"encoding/hex"
 	"encoding/json"
-	"fmt"
-	"io"
 	"net/http"
 	"strconv"
-	"strings"
 	"yandex-devops/storage"
 
 	"github.com/gin-gonic/gin"
@@ -156,7 +152,6 @@ func (h *Router) Ping(c *gin.Context) {
 	ctx := context.Background()
 	db, err := sql.Open("pgx", h.cfg.DatabaseDSN)
 	if err != nil {
-		fmt.Println(err)
 		c.JSON(http.StatusInternalServerError, "Error connect database")
 		return
 	}
@@ -164,7 +159,6 @@ func (h *Router) Ping(c *gin.Context) {
 
 	err = db.PingContext(ctx)
 	if err != nil {
-		fmt.Println(err)
 		c.JSON(http.StatusInternalServerError, "Error connect database")
 		return
 	}
@@ -192,28 +186,13 @@ func (h *Router) SetAll(c *gin.Context) {
 		return
 	}
 
+	c.Header("Content-Type", "application/json")
 	err = json.NewEncoder(c.Writer).Encode(r)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err)
 		return
 	}
-	c.Writer.Header().Set("Content-Type", "application/json")
+
 	c.JSON(http.StatusOK, "{}")
 
-}
-
-func (h *Router) gzipMiddleware(c *gin.Context) {
-	if !strings.Contains(c.Request.Header.Get("Accept-Encoding"), "qzip") {
-		c.Next()
-		return
-	}
-	gz, err := gzip.NewWriterLevel(c.Writer, gzip.BestSpeed)
-	if err != nil {
-		io.WriteString(c.Writer, err.Error())
-		return
-	}
-	defer gz.Close()
-
-	c.Writer.Header().Set("Content-Encoding", "gzip")
-	c.Next()
 }
