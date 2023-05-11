@@ -5,10 +5,9 @@ go 1.19
 require (
 	github.com/caarlos0/env/v6 v6.10.1
 	github.com/gin-contrib/gzip v0.0.6
+	github.com/gin-contrib/pprof v1.4.0
 	github.com/gin-gonic/gin v1.8.2
 	github.com/jackc/pgx/v5 v5.2.0
-	github.com/mitchellh/go-ps v1.0.0
-	github.com/pbnjay/memory v0.0.0-20210728143218-7b4eea64cf58
 	github.com/pressly/goose/v3 v3.9.0
 	github.com/shirou/gopsutil/v3 v3.23.1
 	github.com/spf13/pflag v1.0.5

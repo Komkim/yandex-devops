@@ -41,9 +41,12 @@ func (s *MemStorage) GetAll() ([]storage.Metrics, error) {
 }
 
 func (s *MemStorage) SetOne(metric storage.Metrics) (*storage.Metrics, error) {
-	s.mutex.RLock()
-	defer s.mutex.RUnlock()
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
 
+	//m := metric
+
+	//s.storage[metric.ID] = m
 	s.storage[metric.ID] = metric
 	r := s.storage[metric.ID]
 

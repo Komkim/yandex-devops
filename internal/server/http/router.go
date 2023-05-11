@@ -6,6 +6,7 @@ import (
 	"yandex-devops/internal/server/service"
 
 	"github.com/gin-contrib/gzip"
+	"github.com/gin-contrib/pprof"
 	"github.com/gin-gonic/gin"
 )
 
@@ -21,6 +22,7 @@ func NewRouter(cfg *config.Server, s *service.Services) *Router {
 func (h *Router) Init() http.Handler {
 
 	mux := gin.Default()
+	pprof.Register(mux, "debug/pprof")
 
 	//mux.Use(gin.Recovery())
 
