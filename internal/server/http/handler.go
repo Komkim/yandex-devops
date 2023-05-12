@@ -187,12 +187,6 @@ func (h *Router) SetAll(c *gin.Context) {
 	}
 
 	c.Header("Content-Type", "application/json")
-	err = json.NewEncoder(c.Writer).Encode(r)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, err)
-		return
-	}
-
-	c.JSON(http.StatusOK, "{}")
+	c.JSON(http.StatusOK, r)
 
 }
