@@ -1,3 +1,4 @@
+// Внетренние сервисы сервера
 package service
 
 import (
@@ -8,24 +9,32 @@ import (
 	"yandex-devops/storage"
 )
 
+// FileService - сервис для работы с файлами
 type FileService struct {
-	repo           storage.Storage
-	cfg            *config.Server
+	//repo - внутренний репозиторий сервиса
+	repo storage.Storage
+	//cfg - конфиг
+	cfg *config.Server
+	//storageService - репозиторий для работы с базой
 	storageService *StorageService
 }
 
+// NewFileService - создание нового сервиса для работы с файлами
 func NewFileService(cfg *config.Server, r storage.Storage, storageService *StorageService) *FileService {
 	return &FileService{cfg: cfg, repo: r, storageService: storageService}
 }
 
+// GetAll - получение всех метрик из файла
 func (s *FileService) GetAll() ([]storage.Metrics, error) {
 	return s.repo.GetAll()
 }
 
+// SetAll - запись нескольких метрик в файл
 func (s *FileService) SetAll(metrics []storage.Metrics) ([]storage.Metrics, error) {
 	return s.repo.SetAll(metrics)
 }
 
+// restore - восстановление записей из файла
 func (s *FileService) restore() {
 	if !s.cfg.FileRestore {
 		return
@@ -45,6 +54,7 @@ func (s *FileService) restore() {
 	}
 }
 
+// Start - запуск сервиса для работы с файлами
 func (s *FileService) Start(ctx context.Context) {
 	s.restore()
 
@@ -65,12 +75,14 @@ n:
 	defer s.finish()
 }
 
+// finish - завершение работы
 func (s *FileService) finish() {
 	if err := s.record(); err != nil {
 		log.Println(err)
 	}
 }
 
+// record - запись метрик в файл
 func (s *FileService) record() error {
 	metrics, err := s.storageService.GetAll()
 

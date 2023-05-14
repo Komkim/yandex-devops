@@ -1,3 +1,4 @@
+// Модуль миграций
 package migrations
 
 import (
@@ -6,10 +7,12 @@ import (
 	"github.com/pressly/goose/v3"
 )
 
+// init - инициализация методов миграций
 func init() {
 	goose.AddMigration(upMetrics, downMetrics)
 }
 
+// upMetrics - запуск миграции
 func upMetrics(tx *sql.Tx) error {
 	_, err := tx.Exec(`
 			create table metrics
@@ -26,6 +29,7 @@ func upMetrics(tx *sql.Tx) error {
 	return err
 }
 
+// downMetrics - откат миграции
 func downMetrics(tx *sql.Tx) error {
 	_, err := tx.Exec("drop table metrics")
 	return err

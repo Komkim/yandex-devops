@@ -1,3 +1,4 @@
+// Работа с базой PostgreSQL
 package postgresql
 
 import (
@@ -9,12 +10,16 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
+// DBTIMEOUT - ограничение времени запроса
 const DBTIMEOUT = 5
 
+// PostgreStorage - хранилище базы
 type PostgreStorage struct {
+	//PGXpool - пул коннектов к базе
 	PGXpool *pgxpool.Pool
 }
 
+// New - создание нового соединения
 func New(ctx context.Context, connString string) (*PostgreStorage, error) {
 	pool, err := pgxpool.New(ctx, connString)
 	if err != nil {
@@ -23,6 +28,7 @@ func New(ctx context.Context, connString string) (*PostgreStorage, error) {
 	return &PostgreStorage{pool}, nil
 }
 
+// GetOne - получение метрики
 func (f PostgreStorage) GetOne(key string) (*storage.Metrics, error) {
 	metric := metrics{}
 	ctx, cancel := context.WithTimeout(context.Background(), DBTIMEOUT*time.Second)
@@ -51,6 +57,7 @@ func (f PostgreStorage) GetOne(key string) (*storage.Metrics, error) {
 	return convert(metric), nil
 }
 
+// GetAll - получение всех метрик
 func (f PostgreStorage) GetAll() ([]storage.Metrics, error) {
 	var m []storage.Metrics
 	ctx, cancel := context.WithTimeout(context.Background(), DBTIMEOUT*time.Second)
@@ -86,6 +93,7 @@ func (f PostgreStorage) GetAll() ([]storage.Metrics, error) {
 	return m, nil
 }
 
+// SetOne - запись метрики
 func (f PostgreStorage) SetOne(m storage.Metrics) (*storage.Metrics, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), DBTIMEOUT*time.Second)
 	defer cancel()
@@ -106,6 +114,7 @@ func (f PostgreStorage) SetOne(m storage.Metrics) (*storage.Metrics, error) {
 	return &m, nil
 }
 
+// SetAll - запись нескольких метрик
 func (f PostgreStorage) SetAll(metrics []storage.Metrics) ([]storage.Metrics, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), DBTIMEOUT*time.Second)
 	defer cancel()
@@ -143,11 +152,13 @@ func (f PostgreStorage) SetAll(metrics []storage.Metrics) ([]storage.Metrics, er
 	return metrics, nil
 }
 
+// Close - завершение работы с хранилищем
 func (f PostgreStorage) Close() error {
 	f.PGXpool.Close()
 	return nil
 }
 
+// convert - адаптация входящих метрик под требования базы
 func convert(m metrics) *storage.Metrics {
 	var value *float64
 	var delta *int64

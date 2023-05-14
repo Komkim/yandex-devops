@@ -1,3 +1,4 @@
+// Маршрутизатор и внешние точки взаимодействия с сервером
 package router
 
 import (
@@ -13,6 +14,7 @@ import (
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
+// SaveOrUpdate - обновление метрик
 func (h *Router) SaveOrUpdate(c *gin.Context) {
 	var mtr storage.Metrics
 
@@ -36,6 +38,9 @@ func (h *Router) SaveOrUpdate(c *gin.Context) {
 }
 
 // Deprecated: Old version api
+//
+// SaveOrUpdateOld - обновление метрик, старая версия.
+// Нужен чтобы проходили тесты по прошедшим инкрементам
 func (h *Router) SaveOrUpdateOld(c *gin.Context) {
 
 	t := c.Param("t")
@@ -74,6 +79,7 @@ func (h *Router) SaveOrUpdateOld(c *gin.Context) {
 	c.JSON(http.StatusOK, r)
 }
 
+// GetByKey - получение метрики по ключу
 func (h *Router) GetByKey(c *gin.Context) {
 	var mtr storage.Metrics
 
@@ -101,6 +107,9 @@ func (h *Router) GetByKey(c *gin.Context) {
 }
 
 // Deprecated: Old version Api
+//
+// GetByKeyOld - получение метрки по ключу, старая версия.
+// Нужен чтобы проходили тесты по прошедшим инкрементам
 func (h *Router) GetByKeyOld(c *gin.Context) {
 
 	n := c.Param("n")
@@ -135,6 +144,7 @@ func (h *Router) GetByKeyOld(c *gin.Context) {
 	}
 }
 
+// GetAll - получение всех метрик
 func (h *Router) GetAll(c *gin.Context) {
 
 	mm, err := h.services.StorageService.GetAll()
@@ -147,6 +157,7 @@ func (h *Router) GetAll(c *gin.Context) {
 	c.JSON(http.StatusOK, mm)
 }
 
+// Ping - проверка соединеия с базой
 func (h *Router) Ping(c *gin.Context) {
 
 	ctx := context.Background()
@@ -166,6 +177,7 @@ func (h *Router) Ping(c *gin.Context) {
 	c.JSON(http.StatusOK, "Pong")
 }
 
+// SetAll - запись нескольких метрик
 func (h *Router) SetAll(c *gin.Context) {
 	var metrics []storage.Metrics
 

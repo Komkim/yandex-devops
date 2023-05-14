@@ -10,15 +10,20 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// Router - маршрутизатор точек взаимодействия с сервером
 type Router struct {
+	//services - внутренние сервисы сервера для работы с внешними точками взаимоействия сервера
 	services *service.Services
-	cfg      *config.Server
+	//cfg - конфиги сервера
+	cfg *config.Server
 }
 
+// NewRouter - создание нового матшрутизатора
 func NewRouter(cfg *config.Server, s *service.Services) *Router {
 	return &Router{cfg: cfg, services: s}
 }
 
+// Init - инициализация точек взаимодействия с сервером
 func (h *Router) Init() http.Handler {
 
 	mux := gin.Default()

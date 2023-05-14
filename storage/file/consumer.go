@@ -1,3 +1,4 @@
+// Работа с файлохранилищем
 package file
 
 import (
@@ -6,11 +7,15 @@ import (
 	"yandex-devops/storage"
 )
 
+// consumer - потребитель для работы с файлом
 type consumer struct {
-	file    *os.File
+	//file - файл
+	file *os.File
+	//decoder - дешифратор
 	decoder *json.Decoder
 }
 
+// NewConsumer - созднаие нового потребителя
 func NewConsumer(fileName string) (*consumer, error) {
 	file, err := os.OpenFile(fileName, os.O_RDONLY|os.O_CREATE, 0777)
 	if err != nil {
@@ -21,6 +26,8 @@ func NewConsumer(fileName string) (*consumer, error) {
 		decoder: json.NewDecoder(file),
 	}, nil
 }
+
+// Read - получение метрик из файла
 func (c *consumer) Read() ([]storage.Metrics, error) {
 	metrics := &[]storage.Metrics{}
 	if err := c.decoder.Decode(&metrics); err != nil {
@@ -28,6 +35,8 @@ func (c *consumer) Read() ([]storage.Metrics, error) {
 	}
 	return *metrics, nil
 }
+
+// Close - конец работы с файлом
 func (c *consumer) Close() error {
 	return c.file.Close()
 }

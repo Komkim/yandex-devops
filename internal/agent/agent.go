@@ -1,3 +1,4 @@
+// Модуль для сбора и отправки метрик
 package agent
 
 import (
@@ -12,14 +13,20 @@ import (
 	"github.com/shirou/gopsutil/v3/mem"
 )
 
+// Agent - агент для сбора и отправки метрик
 type Agent struct {
-	cfg                  *config.Agent
-	updateRuntimeChan    chan []myclient.Metrics
+	//cfg - параметры агенты
+	cfg *config.Agent
+	//updateRuntimeChan - канал для обновления основных метрик
+	updateRuntimeChan chan []myclient.Metrics
+	//updateVirtMemoryChan - канал для обновления метрик памяти
 	updateVirtMemoryChan chan []myclient.Metrics
-	sendChan             chan myclient.Metrics
+	//sendChan - канал для отправки метрик
+	sendChan chan myclient.Metrics
 }
 
-func NewAgen(cfg *config.Agent, updateRuntimeChan chan []myclient.Metrics, updateVirtMemoryChan chan []myclient.Metrics, sendChan chan myclient.Metrics) *Agent {
+// NewAgent - создание нового агента
+func NewAgent(cfg *config.Agent, updateRuntimeChan chan []myclient.Metrics, updateVirtMemoryChan chan []myclient.Metrics, sendChan chan myclient.Metrics) *Agent {
 	return &Agent{
 		cfg:                  cfg,
 		updateRuntimeChan:    updateRuntimeChan,
@@ -28,6 +35,7 @@ func NewAgen(cfg *config.Agent, updateRuntimeChan chan []myclient.Metrics, updat
 	}
 }
 
+// SendMetric - отправка метрик на сервер
 func (a *Agent) SendMetric(ctx context.Context, cfg *config.Agent, client *myclient.MyClient) {
 	ticker := time.NewTicker(a.cfg.Report)
 	var metricsRuntime []myclient.Metrics
@@ -54,6 +62,7 @@ func (a *Agent) SendMetric(ctx context.Context, cfg *config.Agent, client *mycli
 	}
 }
 
+// sendMetric - запуск необходимого колличества воркеров для отправки метрик на сервер
 func (a *Agent) sendMetric(limitWorker int, client *myclient.MyClient) {
 	for i := 0; i < limitWorker; i++ {
 		go func(sChan <-chan myclient.Metrics) {
@@ -70,6 +79,7 @@ func (a *Agent) sendMetric(limitWorker int, client *myclient.MyClient) {
 	}
 }
 
+// UpdateMetric - обновление основных метрик
 func (a *Agent) UpdateMetric(ctx context.Context) {
 	var runtimeStats runtime.MemStats
 	ticker := time.NewTicker(a.cfg.Poll)
@@ -90,6 +100,7 @@ func (a *Agent) UpdateMetric(ctx context.Context) {
 	}
 }
 
+// UpdateVirtualMemory - обновление метрик памяти
 func (a *Agent) UpdateVirtualMemory(ctx context.Context) {
 	ticker := time.NewTicker(a.cfg.Poll)
 

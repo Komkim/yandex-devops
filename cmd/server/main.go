@@ -1,3 +1,4 @@
+// server - модуль для обработки и хранения метрик
 package main
 
 import (

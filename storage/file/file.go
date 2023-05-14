@@ -7,16 +7,23 @@ import (
 	"yandex-devops/storage"
 )
 
+// FileStorage - хранилище файлов
 type FileStorage struct {
-	mutex    *sync.RWMutex
+	//mutex - мьютекс для работы с файлом
+	mutex *sync.RWMutex
+	//producer - производитель
 	producer *producer
+	//consumer - потребитель
 	consumer *consumer
 }
 
+// FileMetrics - адаптированные метрики под файл
 type FileMetrics struct {
+	//Metrics - метрики
 	Metrics []storage.Metrics `json:"metrics_nodes"`
 }
 
+// NewFileStorage - подключение к файлу
 func NewFileStorage(cfg *config.Server) *FileStorage {
 	p, err := NewProducer(cfg.FilePath, cfg.FileInterval)
 	if err != nil {
@@ -35,6 +42,7 @@ func NewFileStorage(cfg *config.Server) *FileStorage {
 	}
 }
 
+// GetOne - получение метрики
 func (f FileStorage) GetOne(key string) (*storage.Metrics, error) {
 	m, err := f.consumer.Read()
 	if err != nil {
@@ -48,10 +56,12 @@ func (f FileStorage) GetOne(key string) (*storage.Metrics, error) {
 	return nil, nil
 }
 
+// GetAll - получение всех метрик
 func (f FileStorage) GetAll() ([]storage.Metrics, error) {
 	return f.consumer.Read()
 }
 
+// SetOne - запись метрики
 func (f FileStorage) SetOne(metric storage.Metrics) (*storage.Metrics, error) {
 	metrics := []storage.Metrics{metric}
 	err := f.producer.Write(metrics)
@@ -62,6 +72,7 @@ func (f FileStorage) SetOne(metric storage.Metrics) (*storage.Metrics, error) {
 
 }
 
+// SetAll - запись нескольких метрик
 func (f FileStorage) SetAll(metrics []storage.Metrics) ([]storage.Metrics, error) {
 	err := f.producer.Cleaning()
 	if err != nil {
@@ -75,6 +86,7 @@ func (f FileStorage) SetAll(metrics []storage.Metrics) ([]storage.Metrics, error
 	return metrics, nil
 }
 
+// Close - завершение работы с файлохранилищем
 func (f *FileStorage) Close() error {
 	err := f.producer.Close()
 	if err != nil {

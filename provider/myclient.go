@@ -1,3 +1,4 @@
+// Модуль отправки метрик по указанному адресу
 package myclient
 
 import (
@@ -8,19 +9,29 @@ import (
 	"yandex-devops/config"
 )
 
+// Metrics - метрики
 type Metrics struct {
-	ID    string   `json:"id"`              // имя метрики
-	MType string   `json:"type"`            // параметр, принимающий значение gauge или counter
-	Delta *int64   `json:"delta,omitempty"` // значение метрики в случае передачи counter
+	//ID - имя метрики
+	ID string `json:"id"` // имя метрики
+	//MType - тим метрики
+	MType string `json:"type"` // параметр, принимающий значение gauge или counter
+	//Delta - значение метрики в случае передачи счетчика
+	Delta *int64 `json:"delta,omitempty"` // значение метрики в случае передачи counter
+	//Value - значение метрики в случае передачи числа с плавающей точкой
 	Value *float64 `json:"value,omitempty"` // значение метрики в случае передачи gauge
-	Hash  string   `json:"hash,omitempty"`  // значение хеш-функции
+	//Hash - значение хэш-функции
+	Hash string `json:"hash,omitempty"` // значение хеш-функции
 }
 
+// MyClient - клиент передачи метрик
 type MyClient struct {
+	//client - сам клиент
 	client *http.Client
+	//config - параметры клиента
 	config *config.HTTP
 }
 
+// New - создание нового клиента
 func New(config *config.HTTP) MyClient {
 	return MyClient{
 		client: &http.Client{},
@@ -28,6 +39,7 @@ func New(config *config.HTTP) MyClient {
 	}
 }
 
+// SendOneMetric - отправка одной метрики
 func (c MyClient) SendOneMetric(metric Metrics) error {
 	u := &url.URL{
 		Scheme: c.config.Scheme,
@@ -59,6 +71,7 @@ func (c MyClient) SendOneMetric(metric Metrics) error {
 	return nil
 }
 
+// SendAllMetric - отправка нескольких метрик
 func (c MyClient) SendAllMetric(metrics []Metrics) error {
 	u := &url.URL{
 		Scheme: c.config.Scheme,
