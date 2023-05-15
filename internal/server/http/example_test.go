@@ -22,6 +22,8 @@ func ExampleRouter_SaveOrUpdate() {
 	}
 	u = u.JoinPath("update")
 
+	log.Println(u.String())
+
 	data := []byte(`{
 		"id": "HeapIdle",
 		"type": "gauge",
