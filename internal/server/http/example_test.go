@@ -16,6 +16,8 @@ func ExampleRouter_SaveOrUpdate() {
 		log.Fatal(err)
 	}
 
+	log.Println(cfg)
+
 	u := &url.URL{
 		Scheme: "http",
 		Host:   cfg.HTTP.Address,
