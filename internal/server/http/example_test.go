@@ -11,10 +11,13 @@ import (
 )
 
 func ExampleRouter_SaveOrUpdate() {
-	cfg := config.GetLocalServerCfg()
+	cfg, err := config.InitFlagServer()
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	u := &url.URL{
-		Scheme: cfg.HTTP.Scheme,
+		Scheme: "http",
 		Host:   cfg.HTTP.Address,
 	}
 	u = u.JoinPath("update")
@@ -52,10 +55,13 @@ func ExampleRouter_SaveOrUpdate() {
 }
 
 func ExampleRouter_SaveOrUpdateOld() {
-	cfg := config.GetLocalServerCfg()
+	cfg, err := config.InitFlagServer()
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	u := &url.URL{
-		Scheme: cfg.HTTP.Scheme,
+		Scheme: "http",
 		Host:   cfg.HTTP.Address,
 	}
 	u = u.JoinPath("update/gauge/HeapIdle/5")
@@ -84,10 +90,13 @@ func ExampleRouter_SaveOrUpdateOld() {
 }
 
 func ExampleRouter_Ping() {
-	cfg := config.GetLocalServerCfg()
+	cfg, err := config.InitFlagServer()
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	u := &url.URL{
-		Scheme: cfg.HTTP.Scheme,
+		Scheme: "http",
 		Host:   cfg.HTTP.Address,
 	}
 	u = u.JoinPath("ping")
@@ -141,10 +150,13 @@ func ExampleRouter_SetAll() {
   }
 ]`)
 
-	cfg := config.GetLocalServerCfg()
+	cfg, err := config.InitFlagServer()
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	u := &url.URL{
-		Scheme: cfg.HTTP.Scheme,
+		Scheme: "http",
 		Host:   cfg.HTTP.Address,
 	}
 	u = u.JoinPath("updates")
@@ -174,10 +186,13 @@ func ExampleRouter_SetAll() {
 }
 
 func ExampleRouter_GetAll() {
-	cfg := config.GetLocalServerCfg()
+	cfg, err := config.InitFlagServer()
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	u := &url.URL{
-		Scheme: cfg.HTTP.Scheme,
+		Scheme: "http",
 		Host:   cfg.HTTP.Address,
 	}
 	u = u.JoinPath("")
@@ -211,10 +226,13 @@ func ExampleRouter_GetByKey() {
 		"type": "gauge"
 	}`)
 
-	cfg := config.GetLocalServerCfg()
+	cfg, err := config.InitFlagServer()
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	u := &url.URL{
-		Scheme: cfg.HTTP.Scheme,
+		Scheme: "http",
 		Host:   cfg.HTTP.Address,
 	}
 	u = u.JoinPath("value")
@@ -243,10 +261,13 @@ func ExampleRouter_GetByKey() {
 }
 
 func ExampleRouter_GetByKeyOld() {
-	cfg := config.GetLocalServerCfg()
+	cfg, err := config.InitFlagServer()
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	u := &url.URL{
-		Scheme: cfg.HTTP.Scheme,
+		Scheme: "http",
 		Host:   cfg.HTTP.Address,
 	}
 	u = u.JoinPath("value/gauge/HeapIdle")

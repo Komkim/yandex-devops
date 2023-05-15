@@ -29,6 +29,8 @@ func main() {
 		log.Println(err)
 	}
 
+	log.Println(cfg)
+
 	myStorage := selectionStorage(ctx, &cfg.Server)
 
 	s := service.NewServices(myStorage)
