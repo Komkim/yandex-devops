@@ -49,8 +49,8 @@ func (s *MemStorage) GetAll() ([]storage.Metrics, error) {
 
 // SetOne - запись одной метрики
 func (s *MemStorage) SetOne(metric storage.Metrics) (*storage.Metrics, error) {
-	s.mutex.RLock()
-	defer s.mutex.RUnlock()
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
 
 	//m := metric
 
@@ -78,4 +78,14 @@ func (s *MemStorage) SetAll(metric []storage.Metrics) ([]storage.Metrics, error)
 // Close - завершение работы с хранилищем
 func (s *MemStorage) Close() error {
 	return nil
+}
+
+// Cleaning - очистка памяти
+func (s *MemStorage) Cleaning() {
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
+
+	for k := range s.storage {
+		delete(s.storage, k)
+	}
 }
