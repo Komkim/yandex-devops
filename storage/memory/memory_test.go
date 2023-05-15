@@ -143,5 +143,5 @@ func TestMemStorage_SetAll(t *testing.T) {
 		}
 	}
 
-	t.Run("insert type gauge", test(metrics))
+	t.Run("select all", test(metrics))
 }
