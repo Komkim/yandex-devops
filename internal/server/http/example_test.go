@@ -67,7 +67,7 @@ func ExampleRouter_SaveOrUpdate() {
 	}
 	fmt.Println(string(b))
 	// Output:
-	// {"id":"HeapIdle","type":"gauge","value":5,"hash":"1efc9ae7e7af8fae3397be7449c1dc389a63b2df3c29a76423870638a216909d"}
+	// {"id":"HeapIdle","type":"gauge","value":5}
 }
 
 //func ExampleRouter_SaveOrUpdateOld() {
