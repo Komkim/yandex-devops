@@ -11,3 +11,9 @@ migrate-up:
 .PHONY: migrate-down
 migrate-down:
 	$(GOPATH)/bin/goose -dir $(MIGRATION_DIR) create $(name) down
+
+generate: mock-gen
+
+mock-gen:
+	@rm -rf ./test/mocks/packages
+	@go generate ./...

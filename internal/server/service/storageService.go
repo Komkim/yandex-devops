@@ -8,14 +8,18 @@ import (
 	"yandex-devops/storage"
 )
 
+// StorageService - сервис для работы с хранилищем
 type StorageService struct {
+	//repo - хранилище
 	repo storage.Storage
 }
 
+// NewStorageService - создание нового сервиса
 func NewStorageService(r storage.Storage) *StorageService {
 	return &StorageService{r}
 }
 
+// SaveOrUpdateOne - запись новой метрики
 func (m StorageService) SaveOrUpdateOne(metric storage.Metrics, key string) (*storage.Metrics, error) {
 	metric, err := m.checkCounter(metric, key)
 	if err != nil {
@@ -25,6 +29,7 @@ func (m StorageService) SaveOrUpdateOne(metric storage.Metrics, key string) (*st
 	return m.repo.SetOne(metric)
 }
 
+// SaveOrUpdateAll - запмсь нескольких метрик
 func (m StorageService) SaveOrUpdateAll(metrics []storage.Metrics, key string) ([]storage.Metrics, error) {
 	result := make([]storage.Metrics, 0, len(metrics))
 	for _, mtr := range metrics {
@@ -37,14 +42,17 @@ func (m StorageService) SaveOrUpdateAll(metrics []storage.Metrics, key string) (
 	return result, nil
 }
 
+// GetByKey - получение одноий метрики
 func (m StorageService) GetByKey(metric storage.Metrics) (*storage.Metrics, error) {
 	return m.repo.GetOne(metric.ID)
 }
 
+// GetAll - получение всех метрик
 func (m StorageService) GetAll() ([]storage.Metrics, error) {
 	return m.repo.GetAll()
 }
 
+// CheckHash - проверка хэша
 func (m StorageService) CheckHash(metric storage.Metrics, key string) (bool, error) {
 	if len(key) <= 0 {
 		return true, nil
@@ -64,6 +72,7 @@ func (m StorageService) CheckHash(metric storage.Metrics, key string) (bool, err
 	return hmac.Equal(h1, h2), nil
 }
 
+// GenerageHash - генерация хэша
 func (m StorageService) GenerageHash(metric storage.Metrics, key string) []byte {
 	var data []byte
 	switch metric.MType {
@@ -82,9 +91,9 @@ func (m StorageService) GenerageHash(metric storage.Metrics, key string) []byte 
 	return h.Sum(nil)
 }
 
+// checkCounter - проверка счетчика
 func (m StorageService) checkCounter(metric storage.Metrics, key string) (storage.Metrics, error) {
 	if metric.MType == COUNTER {
-		//mtr, err := m.GetByKey(metric)
 		mtr, err := m.repo.GetOne(metric.ID)
 		if err != nil {
 			return metric, err

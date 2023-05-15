@@ -5,14 +5,21 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
-	"github.com/shirou/gopsutil/v3/mem"
 	"runtime"
 	myclient "yandex-devops/provider"
+
+	"github.com/shirou/gopsutil/v3/mem"
 )
 
-const GAUGE = "gauge"
-const COUNTER = "counter"
+// типы метрик
+const (
+	//GAUGE - число с плавающей точкой
+	GAUGE = "gauge"
+	//COUNTER - счетчик
+	COUNTER = "counter"
+)
 
+// convertRuntimeMemory - адаптация основных метрик под приложение
 func convertRuntimeMemory(stats *runtime.MemStats, counter int64, rand float64) []myclient.Metrics {
 	metrics := make([]myclient.Metrics, 0, 29)
 
@@ -220,6 +227,7 @@ func convertRuntimeMemory(stats *runtime.MemStats, counter int64, rand float64) 
 	return metrics
 }
 
+// generateHas - генерирует хэш
 func generateHas(key string, m []myclient.Metrics) []myclient.Metrics {
 	if len(key) <= 0 {
 		return m
@@ -244,14 +252,17 @@ func generateHas(key string, m []myclient.Metrics) []myclient.Metrics {
 	return m
 }
 
+// ConvertRuntumeStatsToStorageMetrics - адаптация основных метрик под приложение и генерация хэша
 func ConvertRuntumeStatsToStorageMetrics(stats *runtime.MemStats, counter int64, rand float64, key string) []myclient.Metrics {
 	return generateHas(key, convertRuntimeMemory(stats, counter, rand))
 }
 
+// ConvertVirtualMemoryToStorageMertics - адаптация метрик памяти под приложение и генерация хэша
 func ConvertVirtualMemoryToStorageMertics(stats *mem.VirtualMemoryStat, key string) []myclient.Metrics {
 	return generateHas(key, convertVirtualMemory(stats))
 }
 
+// convertVirtualMemory - адаптация метрик памяти под приложение
 func convertVirtualMemory(stats *mem.VirtualMemoryStat) []myclient.Metrics {
 	metrics := make([]myclient.Metrics, 0, 3)
 

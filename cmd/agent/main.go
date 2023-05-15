@@ -1,3 +1,4 @@
+// Agent - модуль для сбора и отправки метрик на серве
 package main
 
 import (
@@ -25,7 +26,7 @@ func main() {
 	sendChan := make(chan myclient.Metrics)
 	client := myclient.New(&cfg.HTTP)
 
-	a := agent.NewAgen(&cfg.Agent, updateRuntimeChan, updateVirtMemoryChan, sendChan)
+	a := agent.NewAgent(&cfg.Agent, updateRuntimeChan, updateVirtMemoryChan, sendChan)
 
 	go a.UpdateVirtualMemory(ctx)
 	go a.UpdateMetric(ctx)

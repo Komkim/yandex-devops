@@ -1,13 +1,14 @@
 package router_test
 
 import (
-	"github.com/stretchr/testify/require"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 	"yandex-devops/config"
 	router "yandex-devops/internal/server/http"
 	"yandex-devops/internal/server/service"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestNewRouter(t *testing.T) {

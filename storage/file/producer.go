@@ -8,11 +8,15 @@ import (
 	"yandex-devops/storage"
 )
 
+// producer - потребитель для работы с файлом
 type producer struct {
-	file    *os.File
+	//file - файл
+	file *os.File
+	//encoder - кодировщик
 	encoder *json.Encoder
 }
 
+// NewProducer - создание нового потребителя
 func NewProducer(filename string, stream time.Duration) (*producer, error) {
 	if stream == 0 {
 		file, err := os.OpenFile(filename, os.O_WRONLY|os.O_CREATE|os.O_SYNC, 0777)
@@ -34,13 +38,18 @@ func NewProducer(filename string, stream time.Duration) (*producer, error) {
 		}, nil
 	}
 }
+
+// Write - запись метрики в файл
 func (p *producer) Write(metric []storage.Metrics) error {
 	return p.encoder.Encode(metric)
 }
+
+// Close - завершение работы с файлом
 func (p *producer) Close() error {
 	return p.file.Close()
 }
 
+// Cleaning - очистка файла
 func (p *producer) Cleaning() error {
 	_, err := p.file.Seek(0, io.SeekStart)
 	if err != nil {
