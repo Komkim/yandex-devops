@@ -321,7 +321,7 @@ func ExampleRouter_GetAll() {
 	//}
 	fmt.Println(string(b))
 	// Output:
-	// [{"id":"FreeMemory","type":"gauge","value":11954253824,"hash":"fd7fdec8f8cb7e4e44ef913f39b2c9801b12a07f80fb2872668f1c15c9aebd2f"},{"id":"HeapIdle","type":"gauge","value":5,"hash":"1efc9ae7e7af8fae3397be7449c1dc389a63b2df3c29a76423870638a216909d"},{"id":"HeapSys","type":"gauge","value":3702784,"hash":"e3ec1cae0b022f109fada933959833ee75a54c58900c6fe6eca8d70195df13e5"},{"id":"MCacheSys","type":"gauge","value":15600,"hash":"80244ed7058cae7f186824230a2c197540b33e838b71fa23f60ec72a71b83666"},{"id":"StackSys","type":"gauge","value":491520,"hash":"aeb7b92dc149f025e97a27a0bee5997a55975a943a7171f7dc592b3d3f1c7350"}]
+	// [{"id":"StackSys","type":"gauge","value":491520,"hash":"aeb7b92dc149f025e97a27a0bee5997a55975a943a7171f7dc592b3d3f1c7350"},{"id":"FreeMemory","type":"gauge","value":11954253824,"hash":"fd7fdec8f8cb7e4e44ef913f39b2c9801b12a07f80fb2872668f1c15c9aebd2f"},{"id":"HeapIdle","type":"gauge","value":5},{"id":"HeapSys","type":"gauge","value":3702784,"hash":"e3ec1cae0b022f109fada933959833ee75a54c58900c6fe6eca8d70195df13e5"},{"id":"MCacheSys","type":"gauge","value":15600,"hash":"80244ed7058cae7f186824230a2c197540b33e838b71fa23f60ec72a71b83666"}]
 }
 
 func ExampleRouter_GetByKey() {
@@ -370,7 +370,7 @@ func ExampleRouter_GetByKey() {
 	//}
 	fmt.Println(string(b))
 	// Output:
-	// {"id":"HeapIdle","type":"gauge","value":5,"hash":"1efc9ae7e7af8fae3397be7449c1dc389a63b2df3c29a76423870638a216909d"}
+	// {"id":"HeapIdle","type":"gauge","value":5,"hash":"80a5f460b1ed201c1155e1fad7ace28ff6b2482cc50e11a9fbfa56e422e09cda"}
 }
 
 func ExampleRouter_GetByKeyOld() {
