@@ -251,7 +251,7 @@ func ExampleRouter_GetAll() {
 	//fmt.Println(string(b))
 	fmt.Println(p)
 	// Output:
-	// [{"id":"HeapIdle","type":"gauge","value":5},{"id":"HeapSys","type":"gauge","value":3702784,"hash":"e3ec1cae0b022f109fada933959833ee75a54c58900c6fe6eca8d70195df13e5"},{"id":"MCacheSys","type":"gauge","value":15600,"hash":"80244ed7058cae7f186824230a2c197540b33e838b71fa23f60ec72a71b83666"},{"id":"StackSys","type":"gauge","value":491520,"hash":"aeb7b92dc149f025e97a27a0bee5997a55975a943a7171f7dc592b3d3f1c7350"},{"id":"FreeMemory","type":"gauge","value":11954253824,"hash":"fd7fdec8f8cb7e4e44ef913f39b2c9801b12a07f80fb2872668f1c15c9aebd2f"}]
+	// [{FreeMemory gauge <nil> 0xc00049b140 fd7fdec8f8cb7e4e44ef913f39b2c9801b12a07f80fb2872668f1c15c9aebd2f} {HeapIdle gauge <nil> 0xc00049b168 } {HeapSys gauge <nil> 0xc00049b180 e3ec1cae0b022f109fada933959833ee75a54c58900c6fe6eca8d70195df13e5} {MCacheSys gauge <nil> 0xc00049b100 80244ed7058cae7f186824230a2c197540b33e838b71fa23f60ec72a71b83666} {StackSys gauge <nil> 0xc00049b120 aeb7b92dc149f025e97a27a0bee5997a55975a943a7171f7dc592b3d3f1c7350}]
 }
 
 func ExampleRouter_GetByKey() {
