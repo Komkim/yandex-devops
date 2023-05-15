@@ -235,7 +235,7 @@ func ExampleRouter_GetAll() {
 	//	log.Fatalln(err)
 	//}
 
-	ExampleRouter_SetAll()
+	//ExampleRouter_SetAll()
 
 	var p []storage.Metrics
 
