@@ -2,6 +2,7 @@ package router
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"io"
 	"log"
@@ -56,9 +57,12 @@ func ExampleRouter_SaveOrUpdate() {
 	if err != nil {
 		log.Fatalln(err)
 	}
+	if err := srv.GetServer().Shutdown(context.Background()); err != nil {
+		log.Fatal("Server forced to shutdown: ", err)
+	}
 	fmt.Println(string(b))
 	// Output:
-	// {"id":"HeapIdle","type":"gauge","value":5}
+	// {"id":"HeapIdle","type":"gauge","value":5,"hash":"1efc9ae7e7af8fae3397be7449c1dc389a63b2df3c29a76423870638a216909d"}
 }
 
 func ExampleRouter_SaveOrUpdateOld() {
@@ -94,6 +98,9 @@ func ExampleRouter_SaveOrUpdateOld() {
 	b, err := io.ReadAll(res.Body)
 	if err != nil {
 		log.Fatalln(err)
+	}
+	if err := srv.GetServer().Shutdown(context.Background()); err != nil {
+		log.Fatal("Server forced to shutdown: ", err)
 	}
 	fmt.Println(string(b))
 	// Output:
@@ -131,6 +138,9 @@ func ExampleRouter_Ping() {
 	b, err := io.ReadAll(res.Body)
 	if err != nil {
 		log.Fatalln(err)
+	}
+	if err := srv.GetServer().Shutdown(context.Background()); err != nil {
+		log.Fatal("Server forced to shutdown: ", err)
 	}
 	fmt.Println(string(b))
 	// Output:
@@ -199,6 +209,9 @@ func ExampleRouter_SetAll() {
 	if err != nil {
 		log.Fatalln(err)
 	}
+	if err := srv.GetServer().Shutdown(context.Background()); err != nil {
+		log.Fatal("Server forced to shutdown: ", err)
+	}
 	fmt.Println(string(b))
 	// Output:
 	// [{"id":"HeapSys","type":"gauge","value":3702784,"hash":"e3ec1cae0b022f109fada933959833ee75a54c58900c6fe6eca8d70195df13e5"},{"id":"MCacheSys","type":"gauge","value":15600,"hash":"80244ed7058cae7f186824230a2c197540b33e838b71fa23f60ec72a71b83666"},{"id":"StackSys","type":"gauge","value":491520,"hash":"aeb7b92dc149f025e97a27a0bee5997a55975a943a7171f7dc592b3d3f1c7350"},{"id":"FreeMemory","type":"gauge","value":11954253824,"hash":"fd7fdec8f8cb7e4e44ef913f39b2c9801b12a07f80fb2872668f1c15c9aebd2f"}]
@@ -237,6 +250,9 @@ func ExampleRouter_GetAll() {
 	b, err := io.ReadAll(res.Body)
 	if err != nil {
 		log.Fatalln(err)
+	}
+	if err := srv.GetServer().Shutdown(context.Background()); err != nil {
+		log.Fatal("Server forced to shutdown: ", err)
 	}
 	fmt.Println(string(b))
 	// Output:
@@ -282,6 +298,9 @@ func ExampleRouter_GetByKey() {
 	if err != nil {
 		log.Fatalln(err)
 	}
+	if err := srv.GetServer().Shutdown(context.Background()); err != nil {
+		log.Fatal("Server forced to shutdown: ", err)
+	}
 	fmt.Println(string(b))
 	// Output:
 	// {"id":"HeapIdle","type":"gauge","value":5,"hash":"1efc9ae7e7af8fae3397be7449c1dc389a63b2df3c29a76423870638a216909d"}
@@ -320,6 +339,9 @@ func ExampleRouter_GetByKeyOld() {
 	b, err := io.ReadAll(res.Body)
 	if err != nil {
 		log.Fatalln(err)
+	}
+	if err := srv.GetServer().Shutdown(context.Background()); err != nil {
+		log.Fatal("Server forced to shutdown: ", err)
 	}
 	fmt.Println(string(b))
 	// Output:
