@@ -21,7 +21,7 @@ func ExampleRouter_SaveOrUpdate() {
 	}
 
 	r.Header.Add("Content-Type", "application/json")
-	r.Header.Add("Accept-Encoding", "gzip")
+	//r.Header.Add("Accept-Encoding", "gzip")
 
 	client := &http.Client{}
 	res, err := client.Do(r)
@@ -87,11 +87,31 @@ func ExampleRouter_Ping() {
 
 func ExampleRouter_SetAll() {
 	data := []byte(`[
-			{"id":"CounterBatchZip100","type":"counter","delta":1668386813,"hash":"9870bcb98440f80b8a47f7b34c3ea9ca17fa5825c9c2b314047c0369f46259c4"},
-			{"id":"GaugeBatchZip55","type":"gauge","value":185171.31281115007,"hash":"15a62829863b2a0e91051028ebf28d9732f0e691544a0ca998f1186bf1108551"},
-			{"id":"CounterBatchZip100","type":"counter","delta":3050210323,"hash":"ec63d8f9dd4796a4bd7e6eb75660773dbb69bc89e96197a5f3bb3666b909b60f"},
-			{"id":"GaugeBatchZip55","type":"gauge","value":927891.479000164,"hash":"7d2496649719506de1d124680f1e88ce32fc992834c503a710a8b2bca02328c2"}
-		]`)
+    {
+        "id": "HeapSys",
+        "type": "gauge",
+        "value": 3702784,
+        "hash": "e3ec1cae0b022f109fada933959833ee75a54c58900c6fe6eca8d70195df13e5"
+    },
+    {
+        "id": "MCacheSys",
+        "type": "gauge",
+        "value": 15600,
+        "hash": "80244ed7058cae7f186824230a2c197540b33e838b71fa23f60ec72a71b83666"
+    },
+    {
+        "id": "StackSys",
+        "type": "gauge",
+        "value": 491520,
+        "hash": "aeb7b92dc149f025e97a27a0bee5997a55975a943a7171f7dc592b3d3f1c7350"
+    },
+    {
+        "id": "FreeMemory",
+        "type": "gauge",
+        "value": 11954253824,
+        "hash": "fd7fdec8f8cb7e4e44ef913f39b2c9801b12a07f80fb2872668f1c15c9aebd2f"
+    }
+]`)
 
 	r, err := http.NewRequest("POST", "http://localhost:8080/updates/", bytes.NewBuffer(data))
 	if err != nil {
@@ -99,7 +119,7 @@ func ExampleRouter_SetAll() {
 	}
 
 	r.Header.Add("Content-Type", "application/json")
-	r.Header.Add("Accept-Encoding", "gzip")
+	//r.Header.Add("Accept-Encoding", "gzip")
 
 	client := &http.Client{}
 	res, err := client.Do(r)
@@ -114,34 +134,7 @@ func ExampleRouter_SetAll() {
 	}
 	fmt.Println(string(b))
 	// Output:
-	// [
-	//
-	//	{
-	//	    "id": "CounterBatchZip100",
-	//	    "type": "counter",
-	//	    "delta": 1668386813,
-	//	    "hash": "9870bcb98440f80b8a47f7b34c3ea9ca17fa5825c9c2b314047c0369f46259c4"
-	//	},
-	//	{
-	//	    "id": "GaugeBatchZip55",
-	//	    "type": "gauge",
-	//	    "value": 185171.31281115007,
-	//	    "hash": "15a62829863b2a0e91051028ebf28d9732f0e691544a0ca998f1186bf1108551"
-	//	},
-	//	{
-	//	    "id": "CounterBatchZip100",
-	//	    "type": "counter",
-	//	    "delta": 4718597136,
-	//	    "hash": "2ca8d0d9c8ca2ddc494f41879a7bcd1d9a790d7bee5721f38fd57471f7d2f78c"
-	//	},
-	//	{
-	//	    "id": "GaugeBatchZip55",
-	//	    "type": "gauge",
-	//	    "value": 927891.479000164,
-	//	    "hash": "7d2496649719506de1d124680f1e88ce32fc992834c503a710a8b2bca02328c2"
-	//	}
-	//
-	// ]
+	// [{"id":"HeapSys","type":"gauge","value":3702784,"hash":"e3ec1cae0b022f109fada933959833ee75a54c58900c6fe6eca8d70195df13e5"},{"id":"MCacheSys","type":"gauge","value":15600,"hash":"80244ed7058cae7f186824230a2c197540b33e838b71fa23f60ec72a71b83666"},{"id":"StackSys","type":"gauge","value":491520,"hash":"aeb7b92dc149f025e97a27a0bee5997a55975a943a7171f7dc592b3d3f1c7350"},{"id":"FreeMemory","type":"gauge","value":11954253824,"hash":"fd7fdec8f8cb7e4e44ef913f39b2c9801b12a07f80fb2872668f1c15c9aebd2f"}]
 }
 
 func ExampleRouter_GetAll() {
