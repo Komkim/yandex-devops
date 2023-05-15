@@ -1,6 +1,7 @@
 package agent
 
 import (
+	"github.com/shirou/gopsutil/v3/mem"
 	"github.com/stretchr/testify/require"
 	"runtime"
 	"testing"
@@ -171,4 +172,68 @@ func TestConvertRuntimeMemory(t *testing.T) {
 		}
 	}
 	t.Run("test convert runtime memory", test(stats, counter, rand))
+}
+
+func TestConvertVirtualMemory(t *testing.T) {
+	req := require.New(t)
+	stats := mem.VirtualMemoryStat{
+		Total:          25109962752,
+		Available:      0,
+		Used:           0,
+		UsedPercent:    31.939565722219992,
+		Free:           9575333888,
+		Active:         0,
+		Inactive:       0,
+		Wired:          0,
+		Laundry:        0,
+		Buffers:        0,
+		Cached:         0,
+		WriteBack:      0,
+		Dirty:          0,
+		WriteBackTmp:   0,
+		Shared:         0,
+		Slab:           0,
+		Sreclaimable:   0,
+		Sunreclaim:     0,
+		PageTables:     0,
+		SwapCached:     0,
+		CommitLimit:    0,
+		CommittedAS:    0,
+		HighTotal:      0,
+		HighFree:       0,
+		LowTotal:       0,
+		LowFree:        0,
+		SwapTotal:      0,
+		SwapFree:       0,
+		Mapped:         0,
+		VmallocTotal:   0,
+		VmallocUsed:    0,
+		VmallocChunk:   0,
+		HugePagesTotal: 0,
+		HugePagesFree:  0,
+		HugePagesRsvd:  0,
+		HugePagesSurp:  0,
+		HugePageSize:   0,
+	}
+
+	resultValue := []float64{25109962752, 9575333888, 31.939565722219992}
+
+	result := []myclient.Metrics{
+		{ID: "TotalMemory", MType: "gauge", Delta: nil, Value: &resultValue[0], Hash: ""},
+		{ID: "FreeMemory", MType: "gauge", Delta: nil, Value: &resultValue[1], Hash: ""},
+		{ID: "CPUutilization1", MType: "gauge", Delta: nil, Value: &resultValue[2], Hash: ""},
+	}
+
+	test := func(s *mem.VirtualMemoryStat) func(t *testing.T) {
+		return func(t *testing.T) {
+			r := convertVirtualMemory(s)
+
+			req.Equal(result, r)
+		}
+	}
+	t.Run("test convert runtime memory", test(&stats))
+}
+
+func TestConvertVirtualMemoryToStorageMertics(t *testing.T) {
+
 }
