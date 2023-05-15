@@ -27,6 +27,8 @@ const (
 	defaultFileRestore = true
 )
 
+var localServerCfg *Config
+
 // HTTP - хранит параметры соединения агента и сервера
 type HTTP struct {
 	//Scheme - Схема соединения агента к серверу
@@ -86,6 +88,8 @@ func InitFlagServer() (*Config, error) {
 		return nil, err
 	}
 
+	localServerCfg = cfg
+
 	return cfg, nil
 }
 
@@ -141,4 +145,8 @@ func initFlagAgent(cfg *Config) {
 	pflag.StringVarP(&cfg.Agent.Key, "agent.key", "k", "", "hash key")
 	pflag.IntVarP(&cfg.Agent.RateLimit, "agent.rate_pull", "l", 1, "agent rate limit")
 	pflag.Parse()
+}
+
+func GetLocalServerCfg() Config {
+	return *localServerCfg
 }
