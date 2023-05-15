@@ -147,6 +147,6 @@ func initFlagAgent(cfg *Config) {
 	pflag.Parse()
 }
 
-func GetLocalServerCfg() *Config {
-	return localServerCfg
+func GetLocalServerCfg() Config {
+	return *localServerCfg
 }
