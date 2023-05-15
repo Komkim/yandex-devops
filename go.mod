@@ -7,6 +7,7 @@ require (
 	github.com/gin-contrib/gzip v0.0.6
 	github.com/gin-contrib/pprof v1.4.0
 	github.com/gin-gonic/gin v1.8.2
+	github.com/golang/mock v1.6.0
 	github.com/jackc/pgx/v5 v5.2.0
 	github.com/pressly/goose/v3 v3.9.0
 	github.com/shirou/gopsutil/v3 v3.23.1
