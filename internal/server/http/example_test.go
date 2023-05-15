@@ -235,7 +235,7 @@ func ExampleRouter_GetAll() {
 	//	log.Fatalln(err)
 	//}
 
-	//ExampleRouter_SetAll()
+	ExampleRouter_SetAll()
 
 	var p []storage.Metrics
 
@@ -248,8 +248,12 @@ func ExampleRouter_GetAll() {
 		return p[i].ID < p[j].ID
 	})
 
+	out, err := json.Marshal(p)
+	if err != nil {
+		log.Fatal(err)
+	}
 	//fmt.Println(string(b))
-	fmt.Println(p)
+	fmt.Println(string(out))
 	// Output:
 	// [{FreeMemory gauge <nil> 0xc00049b140 fd7fdec8f8cb7e4e44ef913f39b2c9801b12a07f80fb2872668f1c15c9aebd2f} {HeapIdle gauge <nil> 0xc00049b168 } {HeapSys gauge <nil> 0xc00049b180 e3ec1cae0b022f109fada933959833ee75a54c58900c6fe6eca8d70195df13e5} {MCacheSys gauge <nil> 0xc00049b100 80244ed7058cae7f186824230a2c197540b33e838b71fa23f60ec72a71b83666} {StackSys gauge <nil> 0xc00049b120 aeb7b92dc149f025e97a27a0bee5997a55975a943a7171f7dc592b3d3f1c7350}]
 }
