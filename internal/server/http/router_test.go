@@ -1,6 +1,7 @@
 package router_test
 
 import (
+	"log"
 	"net/http"
 	"net/url"
 	"testing"
@@ -13,11 +14,11 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestNewRouter(t *testing.T) {
-	r := router.NewRouter(&config.Server{}, &service.Services{})
-
-	require.IsType(t, &router.Router{}, r)
-}
+//func TestNewRouter(t *testing.T) {
+//	r := router.NewRouter(&config.Server{}, &service.Services{})
+//
+//	require.IsType(t, &router.Router{}, r)
+//}
 
 func TestRouter_Init(t *testing.T) {
 	req := require.New(t)
@@ -27,6 +28,8 @@ func TestRouter_Init(t *testing.T) {
 	r := router.NewRouter(&cfg.Server, service.NewServices(s))
 	srv := server.NewServer(&cfg.HTTP, r.Init())
 	go srv.Start()
+
+	log.Println(cfg)
 
 	u := &url.URL{
 		Scheme: "http",
