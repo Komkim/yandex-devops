@@ -127,8 +127,8 @@ func TestMemStorage_SetAll(t *testing.T) {
 	memory.Cleaning()
 
 	metrics := []storage.Metrics{
-		{ID: "HeapSys", MType: "gauge", Value: &value, Hash: "e3ec1cae0b022f109fada933959833ee75a54c58900c6fe6eca8d70195df13e5"},
 		{ID: "PollCount", MType: "counter", Delta: &delta, Hash: "f2b586d3bd28e23820ebd4c0149104791821d5e25b96b2d241c383fd1e5b0668"},
+		{ID: "HeapSys", MType: "gauge", Value: &value, Hash: "e3ec1cae0b022f109fada933959833ee75a54c58900c6fe6eca8d70195df13e5"},
 	}
 
 	test := func(m []storage.Metrics) func(t *testing.T) {
