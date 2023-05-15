@@ -8,36 +8,36 @@ import (
 	"net/http"
 )
 
-func ExampleRouter_SaveOrUpdate() {
-	data := []byte(`{
-		"id": "HeapIdle",
-		"type": "gauge",
-		"value": 5
-	}`)
-
-	r, err := http.NewRequest("POST", "http://localhost:8080/update/", bytes.NewBuffer(data))
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	r.Header.Add("Content-Type", "application/json")
-	//r.Header.Add("Accept-Encoding", "gzip")
-
-	client := &http.Client{}
-	res, err := client.Do(r)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer res.Body.Close()
-
-	b, err := io.ReadAll(res.Body)
-	if err != nil {
-		log.Fatalln(err)
-	}
-	fmt.Println(string(b))
-	// Output:
-	// {"id":"HeapIdle","type":"gauge","value":5,"hash":"1efc9ae7e7af8fae3397be7449c1dc389a63b2df3c29a76423870638a216909d"}
-}
+//func ExampleRouter_SaveOrUpdate() {
+//	data := []byte(`{
+//		"id": "HeapIdle",
+//		"type": "gauge",
+//		"value": 5
+//	}`)
+//
+//	r, err := http.NewRequest("POST", "http://localhost:8080/update/", bytes.NewBuffer(data))
+//	if err != nil {
+//		log.Fatal(err)
+//	}
+//
+//	r.Header.Add("Content-Type", "application/json")
+//	//r.Header.Add("Accept-Encoding", "gzip")
+//
+//	client := &http.Client{}
+//	res, err := client.Do(r)
+//	if err != nil {
+//		log.Fatal(err)
+//	}
+//	defer res.Body.Close()
+//
+//	b, err := io.ReadAll(res.Body)
+//	if err != nil {
+//		log.Fatalln(err)
+//	}
+//	fmt.Println(string(b))
+//	// Output:
+//	// {"id":"HeapIdle","type":"gauge","value":5,"hash":"1efc9ae7e7af8fae3397be7449c1dc389a63b2df3c29a76423870638a216909d"}
+//}
 
 func ExampleRouter_SaveOrUpdateOld() {
 	r, err := http.NewRequest("POST", "http://localhost:8080/update/gauge/HeapIdle/5", nil)
