@@ -1,30 +1,31 @@
 package staticlint
 
-import (
-	"go/ast"
-	"golang.org/x/tools/go/analysis"
-)
-
-var ErrCheckAnalyzer = &analysis.Analyzer{
-	Name: "mainexit",
-	Doc:  "check for in main no os.exit",
-	Run:  run,
-}
-
-func run(pass *analysis.Pass) (interface{}, error) {
-	for _, file := range pass.Files {
-		ast.Inspect(file, func(n ast.Node) bool {
-			if file.Name.Name == "main" {
-				//for _, f := range file.Decls{
-				//if f.
-				//}
-			}
-			return true
-		})
-
-	}
-	return nil, nil
-}
+//
+//import (
+//	"go/ast"
+//	"golang.org/x/tools/go/analysis"
+//)
+//
+//var ErrCheckAnalyzer = &analysis.Analyzer{
+//	Name: "mainexit",
+//	Doc:  "check for in main no os.exit",
+//	Run:  run,
+//}
+//
+//func run(pass *analysis.Pass) (interface{}, error) {
+//	for _, file := range pass.Files {
+//		ast.Inspect(file, func(n ast.Node) bool {
+//			if file.Name.Name == "main" {
+//				//for _, f := range file.Decls{
+//				//if f.
+//				//}
+//			}
+//			return true
+//		})
+//
+//	}
+//	return nil, nil
+//}
 
 //var errorType = types.Universe.Lookup("error").Type().Underlying().(*types.Interface)
 //
