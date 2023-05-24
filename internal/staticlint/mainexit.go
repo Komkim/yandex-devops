@@ -2,7 +2,6 @@ package staticlint
 
 import (
 	"go/ast"
-	"go/types"
 	"golang.org/x/tools/go/analysis"
 )
 
@@ -22,7 +21,9 @@ func run(pass *analysis.Pass) (interface{}, error) {
 			}
 			return true
 		})
+
 	}
+	return nil, nil
 }
 
 //var errorType = types.Universe.Lookup("error").Type().Underlying().(*types.Interface)
