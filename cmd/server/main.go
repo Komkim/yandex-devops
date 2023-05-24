@@ -4,6 +4,7 @@ package main
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"log"
 	"os"
 	"os/signal"
@@ -21,7 +22,25 @@ import (
 	"github.com/pressly/goose/v3"
 )
 
+var (
+	buildVersion = "N/A"
+	buildDate    = "N/A"
+	buildCommit  = "N/A"
+)
+
 func main() {
+	fmt.Printf("Build version: %s", buildVersion)
+	fmt.Println()
+	fmt.Printf("Build date: %s", buildDate)
+	fmt.Println()
+	fmt.Printf("Build commit: %s", buildCommit)
+	fmt.Println()
+
+	//b, _ := debug.ReadBuildInfo()
+	//
+	//fmt.Println(b)
+	//fmt.Fprintln(os.Stdout, "")
+
 	ctx, cencel := context.WithCancel(context.Background())
 
 	cfg, err := config.InitFlagServer()
