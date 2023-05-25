@@ -133,7 +133,7 @@
 //    bodyclose    bodyclose checks whether HTTP response body is closed successfully
 //    bools        check for common mistakes involving boolean operators
 //    buildssa     build SSA-form IR for later passes
-//    buildtag     check that +build tags are well-formed and correctly located
+//    buildtag     check that build tags are well-formed and correctly located
 //    cgocall      detect some violations of the cgo pointer passing rules
 //    composites   check for unkeyed composite literals
 //    copylocks    check for locks erroneously passed by value
