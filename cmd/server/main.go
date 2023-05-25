@@ -36,11 +36,6 @@ func main() {
 	fmt.Printf("Build commit: %s", buildCommit)
 	fmt.Println()
 
-	//b, _ := debug.ReadBuildInfo()
-	//
-	//fmt.Println(b)
-	//fmt.Fprintln(os.Stdout, "")
-
 	ctx, cencel := context.WithCancel(context.Background())
 
 	cfg, err := config.InitFlagServer()

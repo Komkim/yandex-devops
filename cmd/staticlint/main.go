@@ -11,5 +11,4 @@ func main() {
 	multichecker.Main(
 		checks...,
 	)
-
 }

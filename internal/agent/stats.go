@@ -19,6 +19,31 @@ const (
 	COUNTER = "counter"
 )
 
+// generateHas - генерирует хэш
+func generateHas(key string, m []myclient.Metrics) []myclient.Metrics {
+	if len(key) <= 0 {
+		return m
+	}
+
+	for k, v := range m {
+		var data []byte
+		switch m[k].MType {
+		case COUNTER:
+			data = []byte(fmt.Sprintf("%s:%s:%d", v.ID, v.MType, *v.Delta))
+		case GAUGE:
+			data = []byte(fmt.Sprintf("%s:%s:%f", v.ID, v.MType, *v.Value))
+		}
+
+		h := hmac.New(sha256.New, []byte(key))
+		h.Write(data)
+		dst := h.Sum(nil)
+
+		m[k].Hash = hex.EncodeToString(dst)
+	}
+
+	return m
+}
+
 // convertRuntimeMemory - адаптация основных метрик под приложение
 func convertRuntimeMemory(stats *runtime.MemStats, counter int64, rand float64) []myclient.Metrics {
 	metrics := make([]myclient.Metrics, 0, 29)
@@ -225,31 +250,6 @@ func convertRuntimeMemory(stats *runtime.MemStats, counter int64, rand float64) 
 	})
 
 	return metrics
-}
-
-// generateHas - генерирует хэш
-func generateHas(key string, m []myclient.Metrics) []myclient.Metrics {
-	if len(key) <= 0 {
-		return m
-	}
-
-	for k, v := range m {
-		var data []byte
-		switch m[k].MType {
-		case COUNTER:
-			data = []byte(fmt.Sprintf("%s:%s:%d", v.ID, v.MType, *v.Delta))
-		case GAUGE:
-			data = []byte(fmt.Sprintf("%s:%s:%f", v.ID, v.MType, *v.Value))
-		}
-
-		h := hmac.New(sha256.New, []byte(key))
-		h.Write(data)
-		dst := h.Sum(nil)
-
-		m[k].Hash = hex.EncodeToString(dst)
-	}
-
-	return m
 }
 
 // ConvertRuntumeStatsToStorageMetrics - адаптация основных метрик под приложение и генерация хэша

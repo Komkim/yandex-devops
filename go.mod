@@ -9,10 +9,12 @@ require (
 	github.com/gin-gonic/gin v1.8.2
 	github.com/golang/mock v1.6.0
 	github.com/jackc/pgx/v5 v5.2.0
+	github.com/jingyugao/rowserrcheck v1.1.1
 	github.com/pressly/goose/v3 v3.9.0
 	github.com/shirou/gopsutil/v3 v3.23.1
 	github.com/spf13/pflag v1.0.5
 	github.com/stretchr/testify v1.8.1
+	github.com/timakin/bodyclose v0.0.0-20230421092635-574207250966
 	golang.org/x/tools v0.5.0
 	honnef.co/go/tools v0.4.3
 )
@@ -25,6 +27,8 @@ require (
 	github.com/go-playground/universal-translator v0.18.0 // indirect
 	github.com/go-playground/validator/v10 v10.11.1 // indirect
 	github.com/goccy/go-json v0.9.11 // indirect
+	github.com/gostaticanalysis/analysisutil v0.7.1 // indirect
+	github.com/gostaticanalysis/comment v1.4.2 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect
 	github.com/jackc/puddle/v2 v2.1.2 // indirect

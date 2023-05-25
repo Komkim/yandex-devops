@@ -1,6 +1,8 @@
 package staticlint
 
 import (
+	"github.com/jingyugao/rowserrcheck/passes/rowserr"
+	"github.com/timakin/bodyclose/passes/bodyclose"
 	"golang.org/x/tools/go/analysis"
 	"golang.org/x/tools/go/analysis/passes/asmdecl"
 	"golang.org/x/tools/go/analysis/passes/assign"
@@ -43,9 +45,11 @@ import (
 	"golang.org/x/tools/go/analysis/passes/unusedresult"
 	"golang.org/x/tools/go/analysis/passes/unusedwrite"
 	"golang.org/x/tools/go/analysis/passes/usesgenerics"
+	"honnef.co/go/tools/simple"
 	"honnef.co/go/tools/staticcheck"
 )
 
+// Создает линтер и добавляет все необходимые проверки
 func NewAnalyzer() []*analysis.Analyzer {
 
 	checks := map[string]bool{
@@ -147,6 +151,11 @@ func NewAnalyzer() []*analysis.Analyzer {
 		"SA9007": true,
 
 		"SA9008": true,
+
+		"ST1000": true,
+		"ST1020": true,
+		"ST1021": true,
+		"ST1022": true,
 	}
 
 	mychecks := []*analysis.Analyzer{
@@ -192,7 +201,16 @@ func NewAnalyzer() []*analysis.Analyzer {
 		unusedwrite.Analyzer,
 		usesgenerics.Analyzer,
 
+		bodyclose.Analyzer,
+		rowserr.NewAnalyzer(
+			"github.com/jmoiron/sqlx",
+		),
+
 		ErrCheckAnalyzer,
+	}
+
+	for _, v := range simple.Analyzers {
+		mychecks = append(mychecks, v.Analyzer)
 	}
 
 	for _, v := range staticcheck.Analyzers {
