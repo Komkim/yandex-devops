@@ -52,7 +52,7 @@ type Agent struct {
 // Server параметры сервера
 type Server struct {
 	//FileInterval - интервал записи метрик в файл
-	FileInterval time.Duration `env:"STORE_INTERVAL" mapstructure:"interval"`
+	FileInterval time.Duration `env:"DSN_FILEINTERVAL" mapstructure:"interval"`
 	//FilePath - путь до файла для записи метрик
 	FilePath string `env:"STORE_FILE" mapstructure:"path"`
 	//FileRestore - нужно ли сохранять метрики в файл
