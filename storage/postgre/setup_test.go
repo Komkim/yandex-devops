@@ -12,7 +12,7 @@ func getStorageRepo(req *require.Assertions) PostgreStorage {
 	ctx := context.Background()
 
 	type Config struct {
-		DSN string `env:"DATABASE_URI" mapstructure:"databasedsn"`
+		DSN string `env:"DSN_DATABASE" mapstructure:"databasedsn"`
 	}
 	type cfg struct {
 		c *Config
@@ -21,6 +21,7 @@ func getStorageRepo(req *require.Assertions) PostgreStorage {
 	var cc cfg
 	err := envconfig.Init(&cc)
 	req.NoError(err)
+
 	repo, err := New(ctx, cc.c.DSN)
 
 	req.NoError(err)
