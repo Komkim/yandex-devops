@@ -15,6 +15,7 @@ require (
 	github.com/spf13/pflag v1.0.5
 	github.com/stretchr/testify v1.8.1
 	github.com/timakin/bodyclose v0.0.0-20230421092635-574207250966
+	github.com/vrischmann/envconfig v1.3.0
 	golang.org/x/tools v0.5.0
 	honnef.co/go/tools v0.4.3
 )
