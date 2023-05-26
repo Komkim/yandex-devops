@@ -12,7 +12,7 @@ func getStorageRepo(req *require.Assertions) PostgreStorage {
 	ctx := context.Background()
 
 	type Config struct {
-		DatabaseDSN string `env:"DSN_DATABASEDSN" mapstructure:"databasedsn"`
+		DatabaseDSN string `env:"DATABASE_URI" mapstructure:"databasedsn"`
 	}
 	type cfg struct {
 		Dsn *Config
