@@ -1,0 +1,5 @@
+package noexit
+
+func main() {
+
+}
