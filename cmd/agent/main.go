@@ -3,6 +3,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 	"os/signal"
@@ -12,7 +13,20 @@ import (
 	myclient "yandex-devops/provider"
 )
 
+var (
+	buildVersion = "N/A"
+	buildDate    = "N/A"
+	buildCommit  = "N/A"
+)
+
 func main() {
+	fmt.Printf("Build version: %s", buildVersion)
+	fmt.Println()
+	fmt.Printf("Build date: %s", buildDate)
+	fmt.Println()
+	fmt.Printf("Build commit: %s", buildCommit)
+	fmt.Println()
+
 	ctx, cencel := context.WithCancel(context.Background())
 	defer cencel()
 
