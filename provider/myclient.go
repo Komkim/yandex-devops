@@ -37,6 +37,9 @@ type MyClient struct {
 // New - создание нового клиента
 func New(config *config.Agent) MyClient {
 	caCert, err := os.ReadFile("certificat/local.crt")
+	if err != nil {
+		panic(err)
+	}
 	caCertPool, err := x509.SystemCertPool()
 	if err != nil {
 		panic(err)

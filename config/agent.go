@@ -80,10 +80,12 @@ func defaultParamAgent() *Agent {
 }
 
 // loadFileAgent - загружает значения для конфига из файла
-func loadFileAgent(path string) (*Agent, error) {
-	a := &Agent{}
+func loadFileAgent(path string) (a *Agent, err error) {
+	a = &Agent{}
 	configFile, err := os.Open(path)
-	defer configFile.Close()
+	defer func() {
+		err = configFile.Close()
+	}()
 	if err != nil {
 		return nil, err
 	}

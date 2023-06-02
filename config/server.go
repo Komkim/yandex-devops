@@ -106,10 +106,12 @@ func defaultParamServer() *Server {
 }
 
 // loadFileServer - загружает значения для конфига из файла
-func loadFileServer(path string) (*Server, error) {
-	s := &Server{}
+func loadFileServer(path string) (s *Server, err error) {
+	s = &Server{}
 	configFile, err := os.Open(path)
-	defer configFile.Close()
+	defer func() {
+		err = configFile.Close()
+	}()
 	if err != nil {
 		return nil, err
 	}
