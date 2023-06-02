@@ -5,6 +5,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"golang.org/x/sync/errgroup"
 	"log"
 	"os"
 	"os/signal"
@@ -36,44 +37,56 @@ func main() {
 	fmt.Printf("Build commit: %s", buildCommit)
 	fmt.Println()
 
-	ctx, cencel := context.WithCancel(context.Background())
+	ctx, cancel := context.WithCancel(context.Background())
+	g, gCtx := errgroup.WithContext(ctx)
+
+	go func() {
+
+		quit := make(chan os.Signal, 1)
+		signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT, syscall.SIGQUIT)
+
+		<-quit
+		cancel()
+	}()
 
 	cfg, err := config.InitFlagServer()
 	if err != nil {
 		log.Println(err)
 	}
 
-	myStorage := selectionStorage(ctx, &cfg.Server)
+	myStorage := selectionStorage(ctx, cfg)
 
 	s := service.NewServices(myStorage)
 
-	if len(cfg.Server.DatabaseDSN) <= 0 {
+	if len(cfg.DatabaseDSN) <= 0 {
 
-		fileStorage := file.NewFileStorage(&cfg.Server)
+		fileStorage := file.NewFileStorage(cfg)
 		if fileStorage == nil {
 			log.Println("file storage error")
 
 		}
-		fileService := service.NewFileService(&cfg.Server, fileStorage, s.StorageService)
+		fileService := service.NewFileService(cfg, fileStorage, s.StorageService)
 		go fileService.Start(ctx)
 	}
 
-	r := router.NewRouter(&cfg.Server, s)
-	srv := server.NewServer(&cfg.HTTP, r.Init())
+	r := router.NewRouter(cfg, s)
+	srv := server.NewServer(cfg, r.Init())
 
-	go srv.Start()
+	g.Go(func() error {
+		return srv.Start()
+	})
 
-	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
+	g.Go(func() error {
+		<-gCtx.Done()
+		return srv.GetServer().Shutdown(context.Background())
+	})
 
-	<-quit
-
-	if err := srv.GetServer().Shutdown(ctx); err != nil {
-		log.Fatal("Server forced to shutdown: ", err)
+	if err := g.Wait(); err != nil {
+		fmt.Printf("exit reason: %s \n", err)
 	}
 
 	defer closeStorage(myStorage)
-	defer cencel()
+	defer cancel()
 }
 
 func closeStorage(storage storage.Storage) {

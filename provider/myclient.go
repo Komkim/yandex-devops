@@ -3,9 +3,12 @@ package myclient
 
 import (
 	"bytes"
+	"crypto/tls"
+	"crypto/x509"
 	"encoding/json"
 	"net/http"
 	"net/url"
+	"os"
 	"yandex-devops/config"
 )
 
@@ -28,13 +31,29 @@ type MyClient struct {
 	//client - сам клиент
 	client *http.Client
 	//config - параметры клиента
-	config *config.HTTP
+	config *config.Agent
 }
 
 // New - создание нового клиента
-func New(config *config.HTTP) MyClient {
+func New(config *config.Agent) MyClient {
+	caCert, err := os.ReadFile("certificat/local.crt")
+	caCertPool, err := x509.SystemCertPool()
+	if err != nil {
+		panic(err)
+	}
+	caCertPool.AppendCertsFromPEM(caCert)
+	var client = http.Client{
+		Transport: &http.Transport{
+			MaxConnsPerHost: 1,
+			TLSClientConfig: &tls.Config{
+				RootCAs: caCertPool,
+				//InsecureSkipVerify: true,
+			},
+			ForceAttemptHTTP2: true,
+		},
+	}
 	return MyClient{
-		client: &http.Client{},
+		client: &client,
 		config: config,
 	}
 }

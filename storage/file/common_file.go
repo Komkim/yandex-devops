@@ -8,7 +8,7 @@ import (
 func getTestFileRepo() *FileStorage {
 	cfg := config.Server{
 		FilePath:     "/tmp/devops-metrics-db.json",
-		FileInterval: 300 * time.Second,
+		FileInterval: config.Duration{300 * time.Second},
 		FileRestore:  true,
 		Key:          "123",
 	}

@@ -19,7 +19,7 @@ import (
 
 type Example struct {
 	Server server.Server
-	Config config.Config
+	Config config.Server
 }
 
 var example *Example
