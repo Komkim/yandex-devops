@@ -34,8 +34,8 @@ func getExampleServer() *Example {
 		example.Config = *cfg
 
 		s := memory.NewMemStorage()
-		rt := NewRouter(&cfg.Server, service.NewServices(s))
-		srv := server.NewServer(&cfg.HTTP, rt.Init())
+		rt := NewRouter(cfg, service.NewServices(s))
+		srv := server.NewServer(cfg, rt.Init())
 		example.Server = *srv
 
 		go example.Server.Start()
@@ -51,7 +51,7 @@ func ExampleRouter_SaveOrUpdate() {
 
 	u := &url.URL{
 		Scheme: "http",
-		Host:   e.Config.HTTP.Address,
+		Host:   e.Config.Address,
 	}
 	u = u.JoinPath("update")
 
@@ -91,7 +91,7 @@ func ExampleRouter_SaveOrUpdateOld() {
 
 	u := &url.URL{
 		Scheme: "http",
-		Host:   e.Config.HTTP.Address,
+		Host:   e.Config.Address,
 	}
 
 	u = u.JoinPath("update/gauge/HeapIdle/5")
@@ -124,7 +124,7 @@ func ExampleRouter_Ping() {
 
 	u := &url.URL{
 		Scheme: "http",
-		Host:   e.Config.HTTP.Address,
+		Host:   e.Config.Address,
 	}
 	u = u.JoinPath("ping")
 
@@ -180,7 +180,7 @@ func ExampleRouter_SetAll() {
 
 	u := &url.URL{
 		Scheme: "http",
-		Host:   e.Config.HTTP.Address,
+		Host:   e.Config.Address,
 	}
 	u = u.JoinPath("updates")
 
@@ -212,7 +212,7 @@ func ExampleRouter_GetAll() {
 
 	u := &url.URL{
 		Scheme: "http",
-		Host:   e.Config.HTTP.Address,
+		Host:   e.Config.Address,
 	}
 	u = u.JoinPath("")
 
@@ -267,7 +267,7 @@ func ExampleRouter_GetByKey() {
 
 	u := &url.URL{
 		Scheme: "http",
-		Host:   e.Config.HTTP.Address,
+		Host:   e.Config.Address,
 	}
 	u = u.JoinPath("value")
 
