@@ -4,7 +4,6 @@ package server
 import (
 	"context"
 	"crypto/tls"
-	"log"
 	"net/http"
 	_ "net/http/pprof"
 	"yandex-devops/config"
@@ -18,11 +17,14 @@ type Server struct {
 	cfg *config.Server
 }
 
+const certFile = "certificat/certificate.crt"
+
 // NewServer - создание нового сервера
 func NewServer(cfg *config.Server, handler http.Handler) *Server {
-	cer, err := tls.LoadX509KeyPair("certificat/local.crt", cfg.CryptoKey)
+
+	cer, err := tls.LoadX509KeyPair(certFile, cfg.CryptoKey)
 	if err != nil {
-		log.Println(err)
+		//log.Println(err)
 		panic(err)
 	}
 
@@ -33,6 +35,7 @@ func NewServer(cfg *config.Server, handler http.Handler) *Server {
 			Addr:      cfg.Address,
 			Handler:   handler,
 			TLSConfig: tlsConfig,
+			//TLSConfig: &tls.Config{ServerName: cfg.Address},
 		},
 		cfg: cfg,
 	}
@@ -40,7 +43,10 @@ func NewServer(cfg *config.Server, handler http.Handler) *Server {
 
 // Start - запуск сервера
 func (s *Server) Start() error {
-	return s.httpServer.ListenAndServeTLS("certificat/local.crt", s.cfg.CryptoKey)
+	if len(s.cfg.CryptoKey) > 0 {
+		return s.httpServer.ListenAndServeTLS(certFile, s.cfg.CryptoKey)
+	}
+	return s.httpServer.ListenAndServe()
 }
 
 // Stop - остановка сервера

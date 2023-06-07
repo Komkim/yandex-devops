@@ -9,8 +9,11 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"time"
 	"yandex-devops/config"
 )
+
+const certFile = "certificat/certificate.crt"
 
 // Metrics - метрики
 type Metrics struct {
@@ -34,31 +37,117 @@ type MyClient struct {
 	config *config.Agent
 }
 
+//func (crypto RsaCrypto) Encrypt(plainText string, publicKeyJson string) (string, error) {
+//	// create a new aes cipher using key
+//	var rsaPublicKeyParameters RsaPublicKeyParameters
+//	jsonBytes := []byte(publicKeyJson)
+//	err := json.Unmarshal(jsonBytes, &rsaPublicKeyParameters)
+//	publicKey, err := rsaPublicKeyParameters.toRsaPublicKey()
+//	if err != nil {
+//		return "", err
+//	}
+//
+//	hash := sha256.New()
+//	plainTextBytes := []byte(plainText)
+//	ciphertext, err := rsa.EncryptOAEP(hash, rand.Reader, publicKey, plainTextBytes, nil)
+//	if err != nil {
+//		return "", err
+//	}
+//
+//	return base64.StdEncoding.EncodeToString(ciphertext), nil
+//}
+
 // New - создание нового клиента
 func New(config *config.Agent) MyClient {
-	caCert, err := os.ReadFile("certificat/local.crt")
-	if err != nil {
-		panic(err)
-	}
-	caCertPool, err := x509.SystemCertPool()
-	if err != nil {
-		panic(err)
-	}
-	caCertPool.AppendCertsFromPEM(caCert)
-	var client = http.Client{
-		Transport: &http.Transport{
-			MaxConnsPerHost: 1,
+	//caCert, err := os.ReadFile("certificat/certificat.csr")
+	//if err != nil {
+	//	panic(err)
+	//}
+	//caCertPool, err := x509.SystemCertPool()
+	//if err != nil {
+	//	panic(err)
+	//}
+	//caCertPool.AppendCertsFromPEM(caCert)
+	//var client = http.Client{
+	//	Transport: &http.Transport{
+	//		MaxConnsPerHost: 1,
+	//		TLSClientConfig: &tls.Config{
+	//			RootCAs: caCertPool,
+	//			//InsecureSkipVerify: true,
+	//		},
+	//		ForceAttemptHTTP2: true,
+	//	},
+	//}
+
+	//var cert tls.Certificate
+	//var err error
+	//if *clientCertFile != "" && *clientKeyFile != "" {
+	//	cert, err = tls.LoadX509KeyPair(*clientCertFile, *clientKeyFile)
+	//	if err != nil {
+	//		log.Fatalf("Error creating x509 keypair from client cert file %s and client key file %s", *clientCertFile, *clientKeyFile)
+	//	}
+	//}
+	//
+	//log.Printf("CAFile: %s", *caCertFile)
+	//caCert, err := ioutil.ReadFile(*caCertFile)
+	//if err != nil {
+	//	log.Fatalf("Error opening cert file %s, Error: %s", *caCertFile, err)
+	//}
+	//caCertPool := x509.NewCertPool()
+	//caCertPool.AppendCertsFromPEM(caCert)
+	//
+	//t := &http.Transport{
+	//	TLSClientConfig: &tls.Config{
+	//		Certificates: []tls.Certificate{cert},
+	//		RootCAs:      caCertPool,
+	//	},
+	//}
+	//
+	//client := http.Client{Transport: t, Timeout: 15 * time.Second}
+	//return MyClient{
+	//	//client: &client,
+	//	client: &http.Client{},
+	//	config: config,
+	//}
+
+	//var cert tls.Certificate
+	//var err error
+	if config.CryptoKey != "" {
+		//cert, err = tls.LoadX509KeyPair(certFile, config.CryptoKey)
+		//if err != nil {
+		//	panic(err)
+		//}
+
+		caCert, err := os.ReadFile(certFile)
+		if err != nil {
+			panic(err)
+		}
+		//caCertPool := x509.NewCertPool()
+		//caCertPool.AppendCertsFromPEM(caCert)
+		caCertPool, err := x509.SystemCertPool()
+		if err != nil {
+			panic(err)
+		}
+		caCertPool.AppendCertsFromPEM(caCert)
+
+		t := &http.Transport{
 			TLSClientConfig: &tls.Config{
+				//Certificates: []tls.Certificate{cert},
 				RootCAs: caCertPool,
-				//InsecureSkipVerify: true,
 			},
-			ForceAttemptHTTP2: true,
-		},
+		}
+
+		client := http.Client{Transport: t, Timeout: 15 * time.Second}
+		return MyClient{
+			client: &client,
+			config: config,
+		}
 	}
 	return MyClient{
-		client: &client,
+		client: &http.Client{},
 		config: config,
 	}
+
 }
 
 // SendOneMetric - отправка одной метрики
