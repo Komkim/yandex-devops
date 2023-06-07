@@ -6,7 +6,6 @@ import (
 	"log"
 	"math/rand"
 	"runtime"
-	"sync"
 	"time"
 	"yandex-devops/config"
 	myclient "yandex-devops/provider"
@@ -37,8 +36,9 @@ func NewAgent(cfg *config.Agent, updateRuntimeChan chan []myclient.Metrics, upda
 }
 
 // SendMetric - отправка метрик на сервер
-func (a *Agent) SendMetric(ctx context.Context, wg *sync.WaitGroup, cfg *config.Agent, client *myclient.MyClient) {
-	defer wg.Done()
+func (a *Agent) SendMetric(ctx context.Context, cfg *config.Agent, client *myclient.MyClient) {
+	//func (a *Agent) SendMetric(ctx context.Context, wg *sync.WaitGroup, cfg *config.Agent, client *myclient.MyClient) {
+	//	defer wg.Done()
 	ticker := time.NewTicker(a.cfg.Report.Duration)
 	var metricsRuntime []myclient.Metrics
 	var metricsVirtMemory []myclient.Metrics
@@ -82,8 +82,9 @@ func (a *Agent) sendMetric(limitWorker int, client *myclient.MyClient) {
 }
 
 // UpdateMetric - обновление основных метрик
-func (a *Agent) UpdateMetric(ctx context.Context, wg *sync.WaitGroup) {
-	defer wg.Done()
+func (a *Agent) UpdateMetric(ctx context.Context) {
+	//func (a *Agent) UpdateMetric(ctx context.Context, wg *sync.WaitGroup) {
+	//	defer wg.Done()
 	var runtimeStats runtime.MemStats
 	ticker := time.NewTicker(a.cfg.Poll.Duration)
 	rand.Seed(time.Now().UnixNano())
@@ -104,8 +105,9 @@ func (a *Agent) UpdateMetric(ctx context.Context, wg *sync.WaitGroup) {
 }
 
 // UpdateVirtualMemory - обновление метрик памяти
-func (a *Agent) UpdateVirtualMemory(ctx context.Context, wg *sync.WaitGroup) {
-	defer wg.Done()
+func (a *Agent) UpdateVirtualMemory(ctx context.Context) {
+	//func (a *Agent) UpdateVirtualMemory(ctx context.Context, wg *sync.WaitGroup) {
+	//	defer wg.Done()
 	ticker := time.NewTicker(a.cfg.Poll.Duration)
 
 f:
