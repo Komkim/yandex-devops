@@ -1,8 +1,8 @@
 {
-  "address": "https://localhost:8080",
+  "address": "",
   "restore": true,
-  "store_interval": "1s",
-  "store_file": "/path/to/file.db",
+  "store_interval": "",
+  "store_file": "",
   "database_dsn": "",
   "crypto_key": ""
 }
