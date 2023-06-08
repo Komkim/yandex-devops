@@ -43,24 +43,6 @@ type Agent struct {
 	FileConfig string `env:"CONFIG" json:"file_config,omitempty"`
 }
 
-type agent struct {
-	Poll time.Duration `env:"POLL_INTERVAL" mapstructure:"poll" json:"poll_interval"`
-	//Report - период отправки метрик на сервер
-	Report time.Duration `env:"REPORT_INTERVAL" mapstructure:"report" json:"report_interval"`
-	//Key - ключ для работы с хешем
-	Key string `env:"KEY" mapstructure:"key" json:"key,omitempty"`
-	//RateLimit - колличество воркеров
-	RateLimit int `env:"RATE_LIMIT" mapstructure:"rate" json:"rate_limit,omitempty"`
-	//Scheme - Схема соединения агента к серверу
-	Scheme string `env:"SCHEME" mapstructure:"scheme" json:"scheme,omitempty"`
-	//Address - адрес подключения агента к серверу
-	Address string `env:"ADDRESS" mapstructure:"address" json:"address"`
-	//CryptoKey - путь до файла с приватным ключом
-	CryptoKey string `env:"CRYPTO_KEY" json:"crypto_key"`
-	//FileConfig - имя файла конфигурации
-	FileConfig string `env:"CONFIG" json:"file_config,omitempty"`
-}
-
 // InitFlagAgent - инициализация параметров агента
 func InitFlagAgent() (*Agent, error) {
 	cfg := new(Agent)
