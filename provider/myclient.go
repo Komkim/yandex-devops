@@ -3,6 +3,7 @@ package myclient
 
 import (
 	"bytes"
+
 	"crypto/tls"
 	"crypto/x509"
 	"encoding/json"
@@ -35,6 +36,7 @@ type MyClient struct {
 	client *http.Client
 	//config - параметры клиента
 	config *config.Agent
+	url    *url.URL
 }
 
 //func (crypto RsaCrypto) Encrypt(plainText string, publicKeyJson string) (string, error) {
@@ -141,22 +143,27 @@ func New(config *config.Agent) MyClient {
 		return MyClient{
 			client: &client,
 			config: config,
+			url: &url.URL{
+				Scheme: "https",
+				Host:   config.Address,
+			},
 		}
 	}
 	return MyClient{
 		client: &http.Client{},
 		config: config,
+		url: &url.URL{
+			Scheme: "http",
+			Host:   config.Address,
+		},
 	}
 
 }
 
 // SendOneMetric - отправка одной метрики
 func (c MyClient) SendOneMetric(metric Metrics) error {
-	u := &url.URL{
-		Scheme: c.config.Scheme,
-		Host:   c.config.Address,
-	}
-	u = u.JoinPath("update")
+
+	u := c.url.JoinPath("update")
 
 	data, err := json.Marshal(metric)
 	if err != nil {
@@ -213,3 +220,29 @@ func (c MyClient) SendAllMetric(metrics []Metrics) error {
 	defer resp.Body.Close()
 	return nil
 }
+
+//func generateCertificate() {
+//	cert := &x509.Certificate{
+//		SerialNumber: big.NewInt(1658),
+//		Subject: pkix.Name{
+//			Organization: []string{"Yandex.Praktikum"},
+//			Country:      []string{"RU"},
+//		},
+//		IPAddresses: []net.IP{net.IPv4(127, 0, 0, 1), net.IPv6loopback},
+//		NotBefore: time.Now(),
+//		NotAfter:     time.Now().AddDate(10, 0, 0),
+//		SubjectKeyId: []byte{1, 2, 3, 4, 6},
+//		ExtKeyUsage: []x509.ExtKeyUsage{x509.ExtKeyUsageClientAuth, x509.ExtKeyUsageServerAuth},
+//		KeyUsage:    x509.KeyUsageDigitalSignature,
+//	}
+//
+//	privateKey, err := rsa.GenerateKey(rand.Reader, 4096)
+//	if err != nil {
+//		log.Fatal(err)
+//	}
+//
+//	certBytes, err := x509.CreateCertificate(rand.Reader, cert, cert, &privateKey.PublicKey, privateKey)
+//	if err != nil {
+//		log.Fatal(err)
+//	}
+//}
