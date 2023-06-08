@@ -54,7 +54,7 @@ func main() {
 		log.Println(err)
 	}
 
-	myStorage := selectionStorage(ctx, cfg)
+	myStorage := selectionStorage(gCtx, cfg)
 
 	s := service.NewServices(myStorage)
 
@@ -66,7 +66,7 @@ func main() {
 
 		}
 		fileService := service.NewFileService(cfg, fileStorage, s.StorageService)
-		go fileService.Start(ctx)
+		go fileService.Start(gCtx)
 	}
 
 	r := router.NewRouter(cfg, s)

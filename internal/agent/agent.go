@@ -36,7 +36,7 @@ func NewAgent(cfg *config.Agent, updateRuntimeChan chan []myclient.Metrics, upda
 }
 
 // SendMetric - отправка метрик на сервер
-func (a *Agent) SendMetric(ctx context.Context, cfg *config.Agent, client *myclient.MyClient) {
+func (a *Agent) SendMetric(ctx context.Context, cfg *config.Agent, client *myclient.MyClient) error {
 	//func (a *Agent) SendMetric(ctx context.Context, wg *sync.WaitGroup, cfg *config.Agent, client *myclient.MyClient) {
 	//	defer wg.Done()
 	ticker := time.NewTicker(a.cfg.Report.Duration)
@@ -59,7 +59,7 @@ func (a *Agent) SendMetric(ctx context.Context, cfg *config.Agent, client *mycli
 		case metricsVirtMemory = <-a.updateVirtMemoryChan:
 
 		case <-ctx.Done():
-			return
+			return nil
 		}
 	}
 }
@@ -82,7 +82,7 @@ func (a *Agent) sendMetric(limitWorker int, client *myclient.MyClient) {
 }
 
 // UpdateMetric - обновление основных метрик
-func (a *Agent) UpdateMetric(ctx context.Context) {
+func (a *Agent) UpdateMetric(ctx context.Context) error {
 	//func (a *Agent) UpdateMetric(ctx context.Context, wg *sync.WaitGroup) {
 	//	defer wg.Done()
 	var runtimeStats runtime.MemStats
@@ -99,13 +99,13 @@ func (a *Agent) UpdateMetric(ctx context.Context) {
 			runtime.ReadMemStats(&runtimeStats)
 			a.updateRuntimeChan <- ConvertRuntumeStatsToStorageMetrics(&runtimeStats, counter, rnd, a.cfg.Key)
 		case <-ctx.Done():
-			return
+			return nil
 		}
 	}
 }
 
 // UpdateVirtualMemory - обновление метрик памяти
-func (a *Agent) UpdateVirtualMemory(ctx context.Context) {
+func (a *Agent) UpdateVirtualMemory(ctx context.Context) error {
 	//func (a *Agent) UpdateVirtualMemory(ctx context.Context, wg *sync.WaitGroup) {
 	//	defer wg.Done()
 	ticker := time.NewTicker(a.cfg.Poll.Duration)
@@ -122,7 +122,7 @@ f:
 			}
 			a.updateVirtMemoryChan <- ConvertVirtualMemoryToStorageMertics(virtualMemory, a.cfg.Key)
 		case <-ctx.Done():
-			return
+			return nil
 		}
 	}
 

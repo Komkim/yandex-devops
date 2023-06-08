@@ -4,6 +4,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"golang.org/x/sync/errgroup"
 	"log"
 	"os"
 	"os/signal"
@@ -27,8 +28,19 @@ func main() {
 	fmt.Printf("Build commit: %s", buildCommit)
 	fmt.Println()
 
-	ctx, cencel := context.WithCancel(context.Background())
-	defer cencel()
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	g, gCtx := errgroup.WithContext(ctx)
+
+	go func() {
+
+		quit := make(chan os.Signal, 1)
+		signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT, syscall.SIGQUIT)
+
+		<-quit
+		cancel()
+	}()
 
 	//ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGTERM, syscall.SIGINT, syscall.SIGQUIT)
 	//defer stop()
@@ -47,15 +59,22 @@ func main() {
 
 	a := agent.NewAgent(cfg, updateRuntimeChan, updateVirtMemoryChan, sendChan)
 
-	go a.UpdateVirtualMemory(ctx)
+	g.Go(func() error {
+		return a.UpdateVirtualMemory(gCtx)
+	})
 
-	go a.UpdateMetric(ctx)
+	g.Go(func() error {
+		return a.UpdateMetric(gCtx)
+	})
 
-	go a.SendMetric(ctx, cfg, &client)
-	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
+	g.Go(func() error {
+		return a.SendMetric(gCtx, cfg, &client)
+	})
 
-	<-quit
+	//quit := make(chan os.Signal, 1)
+	//signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
+	//
+	//<-quit
 
 	//wg.Add(1)
 	//go a.UpdateVirtualMemory(ctx, &wg)
@@ -65,5 +84,9 @@ func main() {
 	//go a.SendMetric(ctx, &wg, cfg, &client)
 	//
 	//wg.Wait()
+
+	if err := g.Wait(); err != nil {
+		fmt.Printf("exit reason: %s \n", err)
+	}
 	fmt.Println("Agent done")
 }
