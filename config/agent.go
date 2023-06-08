@@ -81,14 +81,6 @@ func InitFlagAgent() (*Agent, error) {
 	if err != nil {
 		return nil, err
 	}
-	//a := new(agent)
-	//err := env.Parse(a)
-	//if err != nil {
-	//	return nil, err
-	//}
-	//
-	//cfg = compareEnvConfigAgent(a, cfg)
-
 	return cfg, nil
 }
 
@@ -162,53 +154,6 @@ func compareAgentConfig(first, second *Agent) *Agent {
 		result.Scheme = first.Scheme
 	} else if len(second.Scheme) > 0 {
 		result.Scheme = second.Scheme
-	}
-
-	return result
-}
-
-func compareEnvConfigAgent(env *agent, cfg *Agent) *Agent {
-	result := &Agent{}
-
-	if len(env.Address) > 0 {
-		result.Address = env.Address
-	} else if len(cfg.Address) > 0 {
-		result.Address = cfg.Address
-	}
-	if env.Poll > 0 {
-		result.Poll.Duration = env.Poll
-	} else if cfg.Poll.Duration > 0 {
-		result.Poll = cfg.Poll
-	}
-	if env.Report > 0 {
-		result.Report.Duration = env.Report
-	} else if cfg.Report.Duration > 0 {
-		result.Report = cfg.Report
-	}
-	if len(env.Key) > 0 {
-		result.Key = env.Key
-	} else if len(cfg.Key) > 0 {
-		result.Key = cfg.Key
-	}
-	if env.RateLimit > 0 {
-		result.RateLimit = env.RateLimit
-	} else if cfg.RateLimit > 0 {
-		result.RateLimit = cfg.RateLimit
-	}
-	if len(env.CryptoKey) > 0 {
-		result.CryptoKey = env.CryptoKey
-	} else if len(cfg.CryptoKey) > 0 {
-		result.CryptoKey = cfg.CryptoKey
-	}
-	if len(env.FileConfig) > 0 {
-		result.FileConfig = env.FileConfig
-	} else if len(cfg.FileConfig) > 0 {
-		result.FileConfig = cfg.FileConfig
-	}
-	if len(env.Scheme) > 0 {
-		result.Scheme = env.Scheme
-	} else if len(cfg.Scheme) > 0 {
-		result.Scheme = cfg.Scheme
 	}
 
 	return result
