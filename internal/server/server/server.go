@@ -21,21 +21,30 @@ const certFile = "certificat/certificate.crt"
 
 // NewServer - создание нового сервера
 func NewServer(cfg *config.Server, handler http.Handler) *Server {
+	if len(cfg.CryptoKey) > 0 {
 
-	cer, err := tls.LoadX509KeyPair(certFile, cfg.CryptoKey)
-	if err != nil {
-		//log.Println(err)
-		panic(err)
+		cer, err := tls.LoadX509KeyPair(certFile, cfg.CryptoKey)
+		if err != nil {
+			//log.Println(err)
+			panic(err)
+		}
+
+		tlsConfig := &tls.Config{Certificates: []tls.Certificate{cer}}
+
+		return &Server{
+			httpServer: &http.Server{
+				Addr:      cfg.Address,
+				Handler:   handler,
+				TLSConfig: tlsConfig,
+				//TLSConfig: &tls.Config{ServerName: cfg.Address},
+			},
+			cfg: cfg,
+		}
 	}
-
-	tlsConfig := &tls.Config{Certificates: []tls.Certificate{cer}}
-
 	return &Server{
 		httpServer: &http.Server{
-			Addr:      cfg.Address,
-			Handler:   handler,
-			TLSConfig: tlsConfig,
-			//TLSConfig: &tls.Config{ServerName: cfg.Address},
+			Addr:    cfg.Address,
+			Handler: handler,
 		},
 		cfg: cfg,
 	}
