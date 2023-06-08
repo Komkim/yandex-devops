@@ -50,24 +50,12 @@ func (d *Duration) UnmarshalJSON(b []byte) error {
 }
 
 func (d *Duration) UnmarshalText(b []byte) error {
-	var v interface{}
-	if err := json.Unmarshal(b, &v); err != nil {
+	dr, err := time.ParseDuration(string(b))
+	if err != nil {
 		return err
 	}
-	switch value := v.(type) {
-	case float64:
-		d.Duration = time.Duration(value)
-		return nil
-	case string:
-		var err error
-		d.Duration, err = time.ParseDuration(value)
-		if err != nil {
-			return err
-		}
-		return nil
-	default:
-		return errors.New("invalid duration")
-	}
+	d.Duration = dr
+	return nil
 }
 
 // Server параметры сервера
