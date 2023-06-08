@@ -20,7 +20,7 @@ const (
 	//defaultAgentRateLimit - значение по умолчанию запуск воркеров
 	defaultAgentRateLimit = 1
 	//defaultCryptoKeyAgent - значение ключа шифрования для агента
-	defaultCryptoKeyAgent = "certificat/public.key"
+	defaultCryptoKeyAgent = ""
 )
 
 // Agent параметры агента
@@ -149,7 +149,7 @@ func (a *Agent) parseFlag() {
 	pflag.DurationVarP(&a.Report.Duration, "report", "r", 10*time.Second, "agent report interval")
 	pflag.StringVarP(&a.Key, "key", "k", "", "hash key")
 	pflag.IntVarP(&a.RateLimit, "rate-limit", "l", 1, "agent rate limit")
-	pflag.StringVar(&a.CryptoKey, "crypto-key", "certificat/public.key", "crypto key")
+	pflag.StringVar(&a.CryptoKey, "crypto-key", "", "crypto key")
 	pflag.StringVarP(&a.FileConfig, "config", "c", "", "path file config")
 	pflag.Parse()
 }
