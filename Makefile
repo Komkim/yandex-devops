@@ -27,9 +27,9 @@ certificat-gen:
 #	@openssl rsa -in certificat/private.key -outform PEM -pubout -out certificat/public.key
 #	@openssl req -new -key certificat/private.key -out certificat/certificate.crt
 
-	@openssl genrsa -out certificat/local.key 2048
-	@openssl rsa -in certificat/local.key -outform PEM -pubout -out certificat/public.key
-	@openssl req -new -x509 -sha256 -key certificat/local.key -out certificat/certificate.crt -subj "/CN=localhost" -addext "subjectAltName=DNS:localhost,IP:127.0.0.1" -days 3650
+	@openssl genrsa -out certificat/private.key 2048
+	@openssl rsa -in certificat/private.key -outform PEM -pubout -out certificat/public.key
+	@openssl req -new -x509 -sha256 -key certificat/private.key -out certificat/certificate.crt -subj "/CN=localhost" -addext "subjectAltName=DNS:localhost,IP:127.0.0.1" -days 3650
 
 	@#openssl req -x509 -nodes -newkey rsa:2048 -keyout private.key -out certificat.crt -days 3650
 
