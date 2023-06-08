@@ -111,6 +111,8 @@ func InitFlagServer() (*Server, error) {
 		return nil, err
 	}
 
+	cfg = compareEnvConfigServer(s, cfg)
+
 	return cfg, nil
 }
 
@@ -185,6 +187,55 @@ func compareServerConfig(first, second *Server) *Server {
 		result.FileInterval = first.FileInterval
 	} else if second.FileInterval.Duration > 0 {
 		result.FileInterval = second.FileInterval
+	}
+
+	return result
+}
+
+func compareEnvConfigServer(env *sever, cfg *Server) *Server {
+	result := &Server{}
+	result.FileRestore = cfg.FileRestore
+
+	if len(env.Address) > 0 {
+		result.Address = env.Address
+	} else if len(cfg.Address) > 0 {
+		result.Address = cfg.Address
+	}
+
+	if len(env.FileConfig) > 0 {
+		result.FileConfig = env.FileConfig
+	} else if len(cfg.FileConfig) > 0 {
+		result.FileConfig = cfg.FileConfig
+	}
+
+	if len(env.CryptoKey) > 0 {
+		result.CryptoKey = env.CryptoKey
+	} else if len(cfg.CryptoKey) > 0 {
+		result.CryptoKey = cfg.CryptoKey
+	}
+
+	if len(env.DatabaseDSN) > 0 {
+		result.DatabaseDSN = env.DatabaseDSN
+	} else if len(cfg.DatabaseDSN) > 0 {
+		result.DatabaseDSN = cfg.DatabaseDSN
+	}
+
+	if len(env.Key) > 0 {
+		result.Key = env.Key
+	} else if len(cfg.Key) > 0 {
+		result.Key = cfg.Key
+	}
+
+	if len(env.FilePath) > 0 {
+		result.FilePath = env.FilePath
+	} else if len(cfg.FilePath) > 0 {
+		result.FilePath = cfg.FilePath
+	}
+
+	if env.FileInterval > 0 {
+		result.FileInterval.Duration = env.FileInterval
+	} else if cfg.FileInterval.Duration > 0 {
+		result.FileInterval = cfg.FileInterval
 	}
 
 	return result
