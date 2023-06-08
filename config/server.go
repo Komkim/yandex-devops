@@ -69,6 +69,25 @@ type Server struct {
 	FileConfig string `env:"CONFIG" json:"file_config,omitempty"`
 }
 
+type sever struct {
+	//FileInterval - интервал записи метрик в файл
+	FileInterval time.Duration `env:"DSN_FILEINTERVAL" mapstructure:"interval" json:"store_interval"`
+	//FilePath - путь до файла для записи метрик
+	FilePath string `env:"STORE_FILE" mapstructure:"path" json:"store_file"`
+	//FileRestore - нужно ли сохранять метрики в файл
+	FileRestore bool `env:"RESTORE" mapstructure:"restore" json:"restore"`
+	//Key - ключ для работы с хешем
+	Key string `env:"KEY" mapstructure:"key" json:"key,omitempty"`
+	//DatabaseDSN - параметры работы с базой
+	DatabaseDSN string `env:"DATABASE_DSN" mapstructure:"databasedsn" json:"database_dsn"`
+	//Address - адрес подключения агента к серверу
+	Address string `env:"ADDRESS" mapstructure:"address" json:"address"`
+	//CryptoKey - путь до файла с приватным ключом
+	CryptoKey string `env:"CRYPTO_KEY" json:"crypto_key"`
+	//FileConfig - имя файла конфигурации
+	FileConfig string `env:"CONFIG" json:"file_config,omitempty"`
+}
+
 // InitFlagServer - инициализация параметров сервера
 func InitFlagServer() (*Server, error) {
 	cfg := new(Server)
@@ -86,7 +105,8 @@ func InitFlagServer() (*Server, error) {
 	cfgDefault := defaultParamServer()
 	cfg = compareServerConfig(cfg, cfgDefault)
 
-	err := env.Parse(cfg)
+	s := new(sever)
+	err := env.Parse(s)
 	if err != nil {
 		return nil, err
 	}
