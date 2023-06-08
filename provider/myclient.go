@@ -112,7 +112,7 @@ func New(config *config.Agent) MyClient {
 
 	//var cert tls.Certificate
 	//var err error
-	if config.CryptoKey != "" {
+	if len(config.CryptoKey) > 0 {
 		//cert, err = tls.LoadX509KeyPair(certFile, config.CryptoKey)
 		//if err != nil {
 		//	panic(err)
