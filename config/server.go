@@ -95,10 +95,13 @@ func InitFlagServer() (*Server, error) {
 	cfgDefault := defaultParamServer()
 	cfg = compareServerConfig(cfg, cfgDefault)
 
-	err := env.Parse(cfg)
+	e := &Server{}
+	err := env.Parse(e)
 	if err != nil {
 		return nil, err
 	}
+
+	cfg = compareServerConfig(e, cfg)
 
 	return cfg, nil
 }

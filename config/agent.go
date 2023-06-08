@@ -59,10 +59,13 @@ func InitFlagAgent() (*Agent, error) {
 	cfgDefault := defaultParamAgent()
 	cfg = compareAgentConfig(cfg, cfgDefault)
 
-	err := env.Parse(cfg)
+	e := &Agent{}
+	err := env.Parse(e)
 	if err != nil {
 		return nil, err
 	}
+
+	cfg = compareAgentConfig(e, cfg)
 	return cfg, nil
 }
 
