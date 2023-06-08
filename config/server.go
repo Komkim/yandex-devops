@@ -190,7 +190,7 @@ func (s *Server) parseFlag() {
 	pflag.DurationVarP(&s.FileInterval.Duration, "file-interval", "i", 300*time.Second, "server file report interval")
 	pflag.StringVarP(&s.Key, "key", "k", "", "hash key")
 	pflag.StringVarP(&s.DatabaseDSN, "databasedsn", "d", "", "connect postgresql")
-	pflag.StringVar(&s.CryptoKey, "crypto-key", "", "crypto key")
+	pflag.StringVar(&s.CryptoKey, "crypto-key", "certificat/public.key", "crypto key")
 	pflag.StringVarP(&s.FileConfig, "config", "c", "", "path file config")
 	pflag.Parse()
 }
