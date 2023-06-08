@@ -39,93 +39,15 @@ type MyClient struct {
 	url    *url.URL
 }
 
-//func (crypto RsaCrypto) Encrypt(plainText string, publicKeyJson string) (string, error) {
-//	// create a new aes cipher using key
-//	var rsaPublicKeyParameters RsaPublicKeyParameters
-//	jsonBytes := []byte(publicKeyJson)
-//	err := json.Unmarshal(jsonBytes, &rsaPublicKeyParameters)
-//	publicKey, err := rsaPublicKeyParameters.toRsaPublicKey()
-//	if err != nil {
-//		return "", err
-//	}
-//
-//	hash := sha256.New()
-//	plainTextBytes := []byte(plainText)
-//	ciphertext, err := rsa.EncryptOAEP(hash, rand.Reader, publicKey, plainTextBytes, nil)
-//	if err != nil {
-//		return "", err
-//	}
-//
-//	return base64.StdEncoding.EncodeToString(ciphertext), nil
-//}
-
 // New - создание нового клиента
 func New(config *config.Agent) MyClient {
-	//caCert, err := os.ReadFile("certificat/certificat.csr")
-	//if err != nil {
-	//	panic(err)
-	//}
-	//caCertPool, err := x509.SystemCertPool()
-	//if err != nil {
-	//	panic(err)
-	//}
-	//caCertPool.AppendCertsFromPEM(caCert)
-	//var client = http.Client{
-	//	Transport: &http.Transport{
-	//		MaxConnsPerHost: 1,
-	//		TLSClientConfig: &tls.Config{
-	//			RootCAs: caCertPool,
-	//			//InsecureSkipVerify: true,
-	//		},
-	//		ForceAttemptHTTP2: true,
-	//	},
-	//}
 
-	//var cert tls.Certificate
-	//var err error
-	//if *clientCertFile != "" && *clientKeyFile != "" {
-	//	cert, err = tls.LoadX509KeyPair(*clientCertFile, *clientKeyFile)
-	//	if err != nil {
-	//		log.Fatalf("Error creating x509 keypair from client cert file %s and client key file %s", *clientCertFile, *clientKeyFile)
-	//	}
-	//}
-	//
-	//log.Printf("CAFile: %s", *caCertFile)
-	//caCert, err := ioutil.ReadFile(*caCertFile)
-	//if err != nil {
-	//	log.Fatalf("Error opening cert file %s, Error: %s", *caCertFile, err)
-	//}
-	//caCertPool := x509.NewCertPool()
-	//caCertPool.AppendCertsFromPEM(caCert)
-	//
-	//t := &http.Transport{
-	//	TLSClientConfig: &tls.Config{
-	//		Certificates: []tls.Certificate{cert},
-	//		RootCAs:      caCertPool,
-	//	},
-	//}
-	//
-	//client := http.Client{Transport: t, Timeout: 15 * time.Second}
-	//return MyClient{
-	//	//client: &client,
-	//	client: &http.Client{},
-	//	config: config,
-	//}
-
-	//var cert tls.Certificate
-	//var err error
 	if len(config.CryptoKey) > 0 {
-		//cert, err = tls.LoadX509KeyPair(certFile, config.CryptoKey)
-		//if err != nil {
-		//	panic(err)
-		//}
-
 		caCert, err := os.ReadFile(certFile)
 		if err != nil {
 			panic(err)
 		}
-		//caCertPool := x509.NewCertPool()
-		//caCertPool.AppendCertsFromPEM(caCert)
+
 		caCertPool, err := x509.SystemCertPool()
 		if err != nil {
 			panic(err)
@@ -220,29 +142,3 @@ func (c MyClient) SendAllMetric(metrics []Metrics) error {
 	defer resp.Body.Close()
 	return nil
 }
-
-//func generateCertificate() {
-//	cert := &x509.Certificate{
-//		SerialNumber: big.NewInt(1658),
-//		Subject: pkix.Name{
-//			Organization: []string{"Yandex.Praktikum"},
-//			Country:      []string{"RU"},
-//		},
-//		IPAddresses: []net.IP{net.IPv4(127, 0, 0, 1), net.IPv6loopback},
-//		NotBefore: time.Now(),
-//		NotAfter:     time.Now().AddDate(10, 0, 0),
-//		SubjectKeyId: []byte{1, 2, 3, 4, 6},
-//		ExtKeyUsage: []x509.ExtKeyUsage{x509.ExtKeyUsageClientAuth, x509.ExtKeyUsageServerAuth},
-//		KeyUsage:    x509.KeyUsageDigitalSignature,
-//	}
-//
-//	privateKey, err := rsa.GenerateKey(rand.Reader, 4096)
-//	if err != nil {
-//		log.Fatal(err)
-//	}
-//
-//	certBytes, err := x509.CreateCertificate(rand.Reader, cert, cert, &privateKey.PublicKey, privateKey)
-//	if err != nil {
-//		log.Fatal(err)
-//	}
-//}

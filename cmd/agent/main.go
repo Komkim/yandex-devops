@@ -42,11 +42,6 @@ func main() {
 		cancel()
 	}()
 
-	//ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGTERM, syscall.SIGINT, syscall.SIGQUIT)
-	//defer stop()
-
-	//var wg sync.WaitGroup
-
 	cfg, err := config.InitFlagAgent()
 	if err != nil {
 		log.Panic(err)
@@ -70,20 +65,6 @@ func main() {
 	g.Go(func() error {
 		return a.SendMetric(gCtx, cfg, &client)
 	})
-
-	//quit := make(chan os.Signal, 1)
-	//signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
-	//
-	//<-quit
-
-	//wg.Add(1)
-	//go a.UpdateVirtualMemory(ctx, &wg)
-	//wg.Add(1)
-	//go a.UpdateMetric(ctx, &wg)
-	//wg.Add(1)
-	//go a.SendMetric(ctx, &wg, cfg, &client)
-	//
-	//wg.Wait()
 
 	if err := g.Wait(); err != nil {
 		fmt.Printf("exit reason: %s \n", err)

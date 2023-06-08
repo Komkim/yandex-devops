@@ -77,13 +77,17 @@ func InitFlagAgent() (*Agent, error) {
 	cfgDefault := defaultParamAgent()
 	cfg = compareAgentConfig(cfg, cfgDefault)
 
-	a := new(agent)
-	err := env.Parse(a)
+	err := env.Parse(cfg)
 	if err != nil {
 		return nil, err
 	}
-
-	cfg = compareEnvConfigAgent(a, cfg)
+	//a := new(agent)
+	//err := env.Parse(a)
+	//if err != nil {
+	//	return nil, err
+	//}
+	//
+	//cfg = compareEnvConfigAgent(a, cfg)
 
 	return cfg, nil
 }
