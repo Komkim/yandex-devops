@@ -3,11 +3,18 @@ package myclient
 
 import (
 	"bytes"
+
+	"crypto/tls"
+	"crypto/x509"
 	"encoding/json"
 	"net/http"
 	"net/url"
+	"os"
+	"time"
 	"yandex-devops/config"
 )
+
+const certFile = "certificat/certificate.crt"
 
 // Metrics - метрики
 type Metrics struct {
@@ -28,24 +35,57 @@ type MyClient struct {
 	//client - сам клиент
 	client *http.Client
 	//config - параметры клиента
-	config *config.HTTP
+	config *config.Agent
+	url    *url.URL
 }
 
 // New - создание нового клиента
-func New(config *config.HTTP) MyClient {
+func New(config *config.Agent) MyClient {
+
+	if len(config.CryptoKey) > 0 {
+		caCert, err := os.ReadFile(certFile)
+		if err != nil {
+			panic(err)
+		}
+
+		caCertPool, err := x509.SystemCertPool()
+		if err != nil {
+			panic(err)
+		}
+		caCertPool.AppendCertsFromPEM(caCert)
+
+		t := &http.Transport{
+			TLSClientConfig: &tls.Config{
+				//Certificates: []tls.Certificate{cert},
+				RootCAs: caCertPool,
+			},
+		}
+
+		client := http.Client{Transport: t, Timeout: 15 * time.Second}
+		return MyClient{
+			client: &client,
+			config: config,
+			url: &url.URL{
+				Scheme: "https",
+				Host:   config.Address,
+			},
+		}
+	}
 	return MyClient{
 		client: &http.Client{},
 		config: config,
+		url: &url.URL{
+			Scheme: "http",
+			Host:   config.Address,
+		},
 	}
+
 }
 
 // SendOneMetric - отправка одной метрики
 func (c MyClient) SendOneMetric(metric Metrics) error {
-	u := &url.URL{
-		Scheme: c.config.Scheme,
-		Host:   c.config.Address,
-	}
-	u = u.JoinPath("update")
+
+	u := c.url.JoinPath("update")
 
 	data, err := json.Marshal(metric)
 	if err != nil {

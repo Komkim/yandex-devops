@@ -17,3 +17,12 @@ generate: mock-gen
 mock-gen:
 	@rm -rf ./test/mocks/packages
 	@go generate ./...
+
+generate: certificat-gen
+
+certificat-gen:
+	@rm -rf ./certificat
+	@mkdir certificat
+	@openssl genrsa -out certificat/private.key 2048
+	@openssl rsa -in certificat/private.key -outform PEM -pubout -out certificat/public.key
+	@openssl req -new -x509 -sha256 -key certificat/private.key -out certificat/certificate.crt -subj "/CN=localhost" -addext "subjectAltName=DNS:localhost,IP:127.0.0.1" -days 3650

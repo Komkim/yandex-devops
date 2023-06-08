@@ -36,8 +36,8 @@ func NewAgent(cfg *config.Agent, updateRuntimeChan chan []myclient.Metrics, upda
 }
 
 // SendMetric - отправка метрик на сервер
-func (a *Agent) SendMetric(ctx context.Context, cfg *config.Agent, client *myclient.MyClient) {
-	ticker := time.NewTicker(a.cfg.Report)
+func (a *Agent) SendMetric(ctx context.Context, cfg *config.Agent, client *myclient.MyClient) error {
+	ticker := time.NewTicker(a.cfg.Report.Duration)
 	var metricsRuntime []myclient.Metrics
 	var metricsVirtMemory []myclient.Metrics
 	go a.sendMetric(cfg.RateLimit, client)
@@ -57,7 +57,7 @@ func (a *Agent) SendMetric(ctx context.Context, cfg *config.Agent, client *mycli
 		case metricsVirtMemory = <-a.updateVirtMemoryChan:
 
 		case <-ctx.Done():
-			return
+			return nil
 		}
 	}
 }
@@ -80,9 +80,9 @@ func (a *Agent) sendMetric(limitWorker int, client *myclient.MyClient) {
 }
 
 // UpdateMetric - обновление основных метрик
-func (a *Agent) UpdateMetric(ctx context.Context) {
+func (a *Agent) UpdateMetric(ctx context.Context) error {
 	var runtimeStats runtime.MemStats
-	ticker := time.NewTicker(a.cfg.Poll)
+	ticker := time.NewTicker(a.cfg.Poll.Duration)
 	rand.Seed(time.Now().UnixNano())
 	var counter int64
 
@@ -95,14 +95,14 @@ func (a *Agent) UpdateMetric(ctx context.Context) {
 			runtime.ReadMemStats(&runtimeStats)
 			a.updateRuntimeChan <- ConvertRuntumeStatsToStorageMetrics(&runtimeStats, counter, rnd, a.cfg.Key)
 		case <-ctx.Done():
-			return
+			return nil
 		}
 	}
 }
 
 // UpdateVirtualMemory - обновление метрик памяти
-func (a *Agent) UpdateVirtualMemory(ctx context.Context) {
-	ticker := time.NewTicker(a.cfg.Poll)
+func (a *Agent) UpdateVirtualMemory(ctx context.Context) error {
+	ticker := time.NewTicker(a.cfg.Poll.Duration)
 
 f:
 	for {
@@ -116,7 +116,7 @@ f:
 			}
 			a.updateVirtMemoryChan <- ConvertVirtualMemoryToStorageMertics(virtualMemory, a.cfg.Key)
 		case <-ctx.Done():
-			return
+			return nil
 		}
 	}
 

@@ -25,7 +25,7 @@ type FileMetrics struct {
 
 // NewFileStorage - подключение к файлу
 func NewFileStorage(cfg *config.Server) *FileStorage {
-	p, err := NewProducer(cfg.FilePath, cfg.FileInterval)
+	p, err := NewProducer(cfg.FilePath, cfg.FileInterval.Duration)
 	if err != nil {
 		log.Fatal(err)
 		return nil

@@ -58,7 +58,7 @@ func (s *FileService) restore() {
 func (s *FileService) Start(ctx context.Context) {
 	s.restore()
 
-	ticker := time.NewTicker(s.cfg.FileInterval)
+	ticker := time.NewTicker(s.cfg.FileInterval.Duration)
 
 n:
 	for {
