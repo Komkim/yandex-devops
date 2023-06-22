@@ -29,10 +29,8 @@ func (h *Router) Init() http.Handler {
 	mux := gin.Default()
 	pprof.Register(mux, "debug/pprof")
 
-	//mux.Use(gin.Recovery())
-
-	//mux.Use(h.gzipMiddleware)
 	mux.Use(gzip.Gzip(gzip.BestSpeed))
+	mux.Use(h.TrustedSubnetMiddleware)
 
 	mux.POST("/update/:t/:n/:v", h.SaveOrUpdateOld)
 	mux.POST("/update/:t/", func(c *gin.Context) { c.JSON(http.StatusNotFound, "Not Found") })

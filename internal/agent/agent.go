@@ -36,7 +36,7 @@ func NewAgent(cfg *config.Agent, updateRuntimeChan chan []myclient.Metrics, upda
 }
 
 // SendMetric - отправка метрик на сервер
-func (a *Agent) SendMetric(ctx context.Context, cfg *config.Agent, client *myclient.MyClient) error {
+func (a *Agent) SendMetric(ctx context.Context, cfg *config.Agent, client myclient.Client) error {
 	ticker := time.NewTicker(a.cfg.Report.Duration)
 	var metricsRuntime []myclient.Metrics
 	var metricsVirtMemory []myclient.Metrics
@@ -63,7 +63,7 @@ func (a *Agent) SendMetric(ctx context.Context, cfg *config.Agent, client *mycli
 }
 
 // sendMetric - запуск необходимого колличества воркеров для отправки метрик на сервер
-func (a *Agent) sendMetric(limitWorker int, client *myclient.MyClient) {
+func (a *Agent) sendMetric(limitWorker int, client myclient.Client) {
 	for i := 0; i < limitWorker; i++ {
 		go func(sChan <-chan myclient.Metrics) {
 			for {

@@ -14,22 +14,6 @@ import (
 	"yandex-devops/config"
 )
 
-const certFile = "certificat/certificate.crt"
-
-// Metrics - метрики
-type Metrics struct {
-	//ID - имя метрики
-	ID string `json:"id"` // имя метрики
-	//MType - тим метрики
-	MType string `json:"type"` // параметр, принимающий значение gauge или counter
-	//Delta - значение метрики в случае передачи счетчика
-	Delta *int64 `json:"delta,omitempty"` // значение метрики в случае передачи counter
-	//Value - значение метрики в случае передачи числа с плавающей точкой
-	Value *float64 `json:"value,omitempty"` // значение метрики в случае передачи gauge
-	//Hash - значение хэш-функции
-	Hash string `json:"hash,omitempty"` // значение хеш-функции
-}
-
 // MyClient - клиент передачи метрик
 type MyClient struct {
 	//client - сам клиент
@@ -102,6 +86,7 @@ func (c MyClient) SendOneMetric(metric Metrics) error {
 	}
 
 	req.Header.Add("Content-Type", "application/json")
+	req.Header.Add("X-Real-IP", req.Host)
 
 	resp, err := c.client.Do(req)
 	if err != nil {

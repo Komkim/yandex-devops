@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+package metrics;
+
+import "google/protobuf/wrappers.proto";
+
+option go_package = "yandex-devops/proto";
+
+message Metric {
+    string id = 1;
+    string type = 2;
+    google.protobuf.Int64Value delta = 3;
+    google.protobuf.DoubleValue value = 4;
+    string hash = 5;
+}
+
+message SaveOrUpdateRequest {
+//    Metric metric = 1;
+    string id = 1;
+    string type = 2;
+    google.protobuf.Int64Value delta = 3;
+    google.protobuf.DoubleValue value = 4;
+    string hash = 5;
+}
+
+message SaveOrUpdateResponse {
+//    Metric metric = 1;
+//    string status = 2;
+    string id = 1;
+    string type = 2;
+    google.protobuf.Int64Value delta = 3;
+    google.protobuf.DoubleValue value = 4;
+    string hash = 5;
+}
+
+service Metrics {
+    rpc SaveOrUpdate(SaveOrUpdateRequest) returns (SaveOrUpdateResponse);
+}

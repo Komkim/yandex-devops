@@ -5,12 +5,13 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"golang.org/x/sync/errgroup"
+	//"golang.org/x/sync/errgroup"
 	"log"
 	"os"
 	"os/signal"
 	"syscall"
 	"yandex-devops/config"
+	mygrpc "yandex-devops/internal/server/grpc"
 	router "yandex-devops/internal/server/http"
 	"yandex-devops/internal/server/server"
 	"yandex-devops/internal/server/service"
@@ -38,15 +39,17 @@ func main() {
 	fmt.Println()
 
 	ctx, cancel := context.WithCancel(context.Background())
-	g, gCtx := errgroup.WithContext(ctx)
+	//g, gCtx := errgroup.WithContext(ctx)
 
+	quit := make(chan os.Signal, 1)
+	//g.Go(func() error {
 	go func() {
-
-		quit := make(chan os.Signal, 1)
+		//quit := make(chan os.Signal, 1)
 		signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT, syscall.SIGQUIT)
 
-		<-quit
-		cancel()
+		//<-quit
+		//cancel()
+		//return nil
 	}()
 
 	cfg, err := config.InitFlagServer()
@@ -54,7 +57,7 @@ func main() {
 		log.Println(err)
 	}
 
-	myStorage := selectionStorage(gCtx, cfg)
+	myStorage := selectionStorage(ctx, cfg)
 
 	s := service.NewServices(myStorage)
 
@@ -66,27 +69,50 @@ func main() {
 
 		}
 		fileService := service.NewFileService(cfg, fileStorage, s.StorageService)
-		go fileService.Start(gCtx)
+		go fileService.Start(ctx)
 	}
 
 	r := router.NewRouter(cfg, s)
 	srv := server.NewServer(cfg, r.Init())
 
-	g.Go(func() error {
-		return srv.Start()
-	})
+	grpcR := mygrpc.NewRouter(cfg, s)
+	grpcSrv := server.NewGrpcServer(cfg, grpcR)
 
-	g.Go(func() error {
-		<-gCtx.Done()
-		return srv.GetServer().Shutdown(context.Background())
-	})
+	//g.Go(func() error {
+	//	return srv.Start()
+	//})
 
-	if err := g.Wait(); err != nil {
-		fmt.Printf("exit reason: %s \n", err)
-	}
+	go func() {
+		srv.Start()
+	}()
+
+	//g.Go(func() error {
+	//	return grpcSrv.Start()
+	//})
+
+	go func() {
+		grpcSrv.Start()
+	}()
+
+	//g.Go(func() error {
+	//	<-gCtx.Done()
+	//	return srv.GetServer().Shutdown(context.Background())
+	//})
+
+	go func() {
+		<-ctx.Done()
+		srv.GetServer().Shutdown(context.Background())
+	}()
+
+	//if err := g.Wait(); err != nil {
+	//	fmt.Printf("exit reason: %s \n", err)
+	//}
+
+	<-quit
+	cancel()
 
 	defer closeStorage(myStorage)
-	defer cancel()
+	//defer cancel()
 }
 
 func closeStorage(storage storage.Storage) {
