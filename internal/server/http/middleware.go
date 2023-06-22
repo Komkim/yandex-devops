@@ -7,6 +7,10 @@ import (
 )
 
 func (h *Router) TrustedSubnetMiddleware(c *gin.Context) {
+	if len(h.cfg.TrustedSubnet) == 0 {
+		c.Next()
+		return
+	}
 	ipstr := c.RemoteIP()
 	if len(ipstr) > 0 {
 		ip := net.ParseIP(ipstr)
