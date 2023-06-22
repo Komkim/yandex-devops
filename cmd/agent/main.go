@@ -61,7 +61,7 @@ func main() {
 		return a.UpdateMetric(gCtx)
 	})
 
-	switch cfg.ApiType {
+	switch cfg.APIType {
 	case config.GRPC:
 		client := myclient.NewGrpcClient(cfg)
 		g.Go(func() error {

@@ -22,7 +22,7 @@ const (
 	//defaultCryptoKeyAgent - значение ключа шифрования для агента
 	defaultCryptoKeyAgent = ""
 	//defaultApiType - дефолтное значение типа запускаемого клиента
-	defaultApiType = REST
+	defaultAPIType = REST
 
 	GRPC = "GRPC"
 	REST = "REST"
@@ -47,7 +47,7 @@ type Agent struct {
 	//FileConfig - имя файла конфигурации
 	FileConfig string `env:"CONFIG" json:"file_config,omitempty"`
 	//AptType - тип запускаемого агента
-	ApiType string `env:"APi_TYPE" json:"api_type"`
+	APIType string `env:"APi_TYPE" json:"api_type"`
 }
 
 // InitFlagAgent - инициализация параметров агента
@@ -85,7 +85,7 @@ func defaultParamAgent() *Agent {
 	a.Poll.Duration = defaultAgentPoll
 	a.Report.Duration = defaultAgentReport
 	a.RateLimit = defaultAgentRateLimit
-	a.ApiType = defaultApiType
+	a.APIType = defaultAPIType
 	return a
 }
 
@@ -148,10 +148,10 @@ func compareAgentConfig(first, second *Agent) *Agent {
 	} else if len(second.Scheme) > 0 {
 		result.Scheme = second.Scheme
 	}
-	if len(first.ApiType) > 0 {
-		result.ApiType = first.ApiType
-	} else if len(second.ApiType) > 0 {
-		result.ApiType = second.ApiType
+	if len(first.APIType) > 0 {
+		result.APIType = first.APIType
+	} else if len(second.APIType) > 0 {
+		result.APIType = second.APIType
 	}
 
 	return result
@@ -166,6 +166,6 @@ func (a *Agent) parseFlag() {
 	pflag.IntVarP(&a.RateLimit, "rate-limit", "l", 1, "agent rate limit")
 	pflag.StringVar(&a.CryptoKey, "crypto-key", "", "crypto key")
 	pflag.StringVarP(&a.FileConfig, "config", "c", "", "path file config")
-	pflag.StringVarP(&a.ApiType, "api-type", "t", "REST", "api type")
+	pflag.StringVarP(&a.APIType, "api-type", "t", "REST", "api type")
 	pflag.Parse()
 }
