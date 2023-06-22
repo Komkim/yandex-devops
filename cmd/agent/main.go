@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"golang.org/x/sync/errgroup"
+	"google.golang.org/genproto/googleapis/api/apikeys/v2"
 	"log"
 	"os"
 	"os/signal"
@@ -31,17 +32,19 @@ func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	g, gCtx := errgroup.WithContext(ctx)
+	//g, gCtx := errgroup.WithContext(ctx)
 
-	g.Go(func() error {
+	quit := make(chan os.Signal, 1)
+	go func() {
 
-		quit := make(chan os.Signal, 1)
+		//quit := make(chan os.Signal, 1)
 		signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT, syscall.SIGQUIT)
 
-		<-quit
-		cancel()
-		return nil
-	})
+		//<-quit
+		//cancel()
+		//return nil
+	}()
+	//g.Go(func() error {
 
 	cfg, err := config.InitFlagAgent()
 	if err != nil {
@@ -54,29 +57,37 @@ func main() {
 
 	a := agent.NewAgent(cfg, updateRuntimeChan, updateVirtMemoryChan, sendChan)
 
-	g.Go(func() error {
-		return a.UpdateVirtualMemory(gCtx)
-	})
+	//g.Go(func() error {
+	//	return a.UpdateVirtualMemory(gCtx)
+	//})
 
-	g.Go(func() error {
-		return a.UpdateMetric(gCtx)
-	})
+	go a.UpdateVirtualMemory(ctx)
+
+	//g.Go(func() error {
+	//	return a.UpdateMetric(gCtx)
+	//})
+
+	go a.UpdateMetric(ctx)
 
 	switch cfg.APIType {
 	case config.GRPC:
 		client := myclient.NewGrpcClient(cfg)
-		g.Go(func() error {
-			return a.SendMetric(gCtx, cfg, &client)
-		})
+		//g.Go(func() error {
+		//	return a.SendMetric(gCtx, cfg, &client)
+		//})
+		go a.SendMetric(ctx, cfg, &client)
 	default:
 		client := myclient.New(cfg)
-		g.Go(func() error {
-			return a.SendMetric(gCtx, cfg, &client)
-		})
+		//g.Go(func() error {
+		//	return a.SendMetric(gCtx, cfg, &client)
+		//})
+		go a.SendMetric(ctx, cfg, &client)
 	}
 
-	if err := g.Wait(); err != nil {
-		fmt.Printf("exit reason: %s \n", err)
-	}
+	//if err := g.Wait(); err != nil {
+	//	fmt.Printf("exit reason: %s \n", err)
+	//}
+	<-quit
+	cancel()
 	fmt.Println("Agent done")
 }
