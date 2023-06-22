@@ -5,7 +5,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"golang.org/x/sync/errgroup"
+	//"golang.org/x/sync/errgroup"
 	"log"
 	"os"
 	"os/signal"
@@ -39,24 +39,25 @@ func main() {
 	fmt.Println()
 
 	ctx, cancel := context.WithCancel(context.Background())
-	g, gCtx := errgroup.WithContext(ctx)
+	//g, gCtx := errgroup.WithContext(ctx)
 
-	g.Go(func() error {
-
-		quit := make(chan os.Signal, 1)
+	quit := make(chan os.Signal, 1)
+	//g.Go(func() error {
+	go func() {
+		//quit := make(chan os.Signal, 1)
 		signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT, syscall.SIGQUIT)
 
-		<-quit
-		cancel()
-		return nil
-	})
+		//<-quit
+		//cancel()
+		//return nil
+	}()
 
 	cfg, err := config.InitFlagServer()
 	if err != nil {
 		log.Println(err)
 	}
 
-	myStorage := selectionStorage(gCtx, cfg)
+	myStorage := selectionStorage(ctx, cfg)
 
 	s := service.NewServices(myStorage)
 
@@ -68,7 +69,7 @@ func main() {
 
 		}
 		fileService := service.NewFileService(cfg, fileStorage, s.StorageService)
-		go fileService.Start(gCtx)
+		go fileService.Start(ctx)
 	}
 
 	r := router.NewRouter(cfg, s)
@@ -77,25 +78,41 @@ func main() {
 	grpcR := mygrpc.NewRouter(cfg, s)
 	grpcSrv := server.NewGrpcServer(cfg, grpcR)
 
-	g.Go(func() error {
-		return srv.Start()
-	})
+	//g.Go(func() error {
+	//	return srv.Start()
+	//})
 
-	g.Go(func() error {
-		return grpcSrv.Start()
-	})
+	go func() {
+		srv.Start()
+	}()
 
-	g.Go(func() error {
-		<-gCtx.Done()
-		return srv.GetServer().Shutdown(context.Background())
-	})
+	//g.Go(func() error {
+	//	return grpcSrv.Start()
+	//})
 
-	if err := g.Wait(); err != nil {
-		fmt.Printf("exit reason: %s \n", err)
-	}
+	go func() {
+		grpcSrv.Start()
+	}()
+
+	//g.Go(func() error {
+	//	<-gCtx.Done()
+	//	return srv.GetServer().Shutdown(context.Background())
+	//})
+
+	go func() {
+		<-ctx.Done()
+		srv.GetServer().Shutdown(context.Background())
+	}()
+
+	//if err := g.Wait(); err != nil {
+	//	fmt.Printf("exit reason: %s \n", err)
+	//}
+
+	<-quit
+	cancel()
 
 	defer closeStorage(myStorage)
-	defer cancel()
+	//defer cancel()
 }
 
 func closeStorage(storage storage.Storage) {
