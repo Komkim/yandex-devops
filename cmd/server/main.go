@@ -11,6 +11,7 @@ import (
 	"os/signal"
 	"syscall"
 	"yandex-devops/config"
+	mygrpc "yandex-devops/internal/server/grpc"
 	router "yandex-devops/internal/server/http"
 	"yandex-devops/internal/server/server"
 	"yandex-devops/internal/server/service"
@@ -72,8 +73,15 @@ func main() {
 	r := router.NewRouter(cfg, s)
 	srv := server.NewServer(cfg, r.Init())
 
+	grpcR := mygrpc.NewRouter(cfg, s)
+	grpcSrv := server.NewGrpcServer(cfg, grpcR)
+
 	g.Go(func() error {
 		return srv.Start()
+	})
+
+	g.Go(func() error {
+		return grpcSrv.Start()
 	})
 
 	g.Go(func() error {

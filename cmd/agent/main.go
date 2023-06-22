@@ -50,7 +50,6 @@ func main() {
 	updateRuntimeChan := make(chan []myclient.Metrics)
 	updateVirtMemoryChan := make(chan []myclient.Metrics)
 	sendChan := make(chan myclient.Metrics)
-	client := myclient.New(cfg)
 
 	a := agent.NewAgent(cfg, updateRuntimeChan, updateVirtMemoryChan, sendChan)
 
@@ -62,9 +61,18 @@ func main() {
 		return a.UpdateMetric(gCtx)
 	})
 
-	g.Go(func() error {
-		return a.SendMetric(gCtx, cfg, &client)
-	})
+	switch cfg.ApiType {
+	case config.GRPC:
+		client := myclient.NewGrpcClient(cfg)
+		g.Go(func() error {
+			return a.SendMetric(gCtx, cfg, &client)
+		})
+	default:
+		client := myclient.New(cfg)
+		g.Go(func() error {
+			return a.SendMetric(gCtx, cfg, &client)
+		})
+	}
 
 	if err := g.Wait(); err != nil {
 		fmt.Printf("exit reason: %s \n", err)

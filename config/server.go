@@ -18,6 +18,7 @@ const (
 	defaultFileRestore = true
 	//defaultCryptoKeyServer - значение ключа шифрования для сервера
 	defaultCryptoKeyServer = ""
+	defaultTrustedSubnet   = ""
 )
 
 type Duration struct {
@@ -76,6 +77,10 @@ type Server struct {
 	CryptoKey string `env:"CRYPTO_KEY" json:"crypto_key"`
 	//FileConfig - имя файла конфигурации
 	FileConfig string `env:"CONFIG" json:"file_config,omitempty"`
+	//TrustedSubnet - строковое представление бесклассовой адресации (CIDR)
+	TrustedSubnet string
+	//GrpcAddress - адрес подключеня агента к grpc серверу
+	GrpcAddress string
 }
 
 // InitFlagServer - инициализация параметров сервера
@@ -113,6 +118,7 @@ func defaultParamServer() *Server {
 	s.FilePath = defaultFilePath
 	s.FileRestore = defaultFileRestore
 	s.CryptoKey = defaultCryptoKeyServer
+	s.TrustedSubnet = defaultTrustedSubnet
 
 	return s
 }
@@ -179,6 +185,18 @@ func compareServerConfig(first, second *Server) *Server {
 		result.FileInterval = second.FileInterval
 	}
 
+	if len(first.GrpcAddress) > 0 {
+		result.GrpcAddress = first.GrpcAddress
+	} else if len(second.GrpcAddress) > 0 {
+		result.GrpcAddress = second.GrpcAddress
+	}
+
+	if len(first.TrustedSubnet) > 0 {
+		result.TrustedSubnet = first.TrustedSubnet
+	} else if len(second.TrustedSubnet) > 0 {
+		result.TrustedSubnet = second.TrustedSubnet
+	}
+
 	return result
 }
 
@@ -192,5 +210,7 @@ func (s *Server) parseFlag() {
 	pflag.StringVarP(&s.DatabaseDSN, "databasedsn", "d", "", "connect postgresql")
 	pflag.StringVar(&s.CryptoKey, "crypto-key", "", "crypto key")
 	pflag.StringVarP(&s.FileConfig, "config", "c", "", "path file config")
+	pflag.StringVarP(&s.TrustedSubnet, "trusted_subnet", "t", "", "string representation of classless addressing")
+	pflag.StringVarP(&s.GrpcAddress, "grpc address", "g", "127.0.0.1:8081", "gprc address")
 	pflag.Parse()
 }
