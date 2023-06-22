@@ -33,14 +33,15 @@ func main() {
 
 	g, gCtx := errgroup.WithContext(ctx)
 
-	go func() {
+	g.Go(func() error {
 
 		quit := make(chan os.Signal, 1)
 		signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT, syscall.SIGQUIT)
 
 		<-quit
 		cancel()
-	}()
+		return nil
+	})
 
 	cfg, err := config.InitFlagAgent()
 	if err != nil {

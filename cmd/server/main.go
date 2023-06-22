@@ -41,14 +41,15 @@ func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	g, gCtx := errgroup.WithContext(ctx)
 
-	go func() {
+	g.Go(func() error {
 
 		quit := make(chan os.Signal, 1)
 		signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT, syscall.SIGQUIT)
 
 		<-quit
 		cancel()
-	}()
+		return nil
+	})
 
 	cfg, err := config.InitFlagServer()
 	if err != nil {
