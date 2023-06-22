@@ -4,8 +4,7 @@ package main
 import (
 	"context"
 	"fmt"
-	"golang.org/x/sync/errgroup"
-	"google.golang.org/genproto/googleapis/api/apikeys/v2"
+	//"golang.org/x/sync/errgroup"
 	"log"
 	"os"
 	"os/signal"
